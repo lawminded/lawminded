@@ -9,6 +9,7 @@ from flask import (Flask, render_template, request, redirect, url_for,
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeSerializer, BadSignature
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_wtf import CSRFProtect
 from flask_wtf.csrf import CSRFError
 from flask_limiter import Limiter
@@ -27,6 +28,12 @@ IS_PROD = os.getenv('PRODUCTION', 'false').lower() in ('1', 'true', 'yes')
 
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', 'dev-secret-change-in-production')
+
+# Behind a reverse proxy (nginx on the Oracle VM, or Render's edge), trust the
+# X-Forwarded-* headers so request.scheme is 'https'. Without this, Talisman's
+# force_https would redirect-loop forever when the app sits behind nginx.
+if IS_PROD:
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1)
 
 # ── Hardened session / request config ──
 app.config['SESSION_COOKIE_HTTPONLY'] = True
