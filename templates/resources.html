@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% from '_icons.html' import icon as ic %}
+{% block title %}Helpful Legal Resources - Law Minded{% endblock %}
+{% block meta_desc %}Trusted government portals and official resources for compliance filings and legal research in India.{% endblock %}
+
+{% block content %}
+
+<div class="page-hero">
+  <span class="section-tag">Resources</span>
+  <h1>Helpful External Resources</h1>
+  <p>Trusted government portals and official resources for compliance filings and legal research.</p>
+</div>
+
+<!-- AD (top) -->
+<div class="ad-container">
+  {% with ad_slot = adsense_slots['top'] %}{% include '_ad.html' %}{% endwith %}
+</div>
+
+<section>
+  <div class="resources-grid">
+    {% for icon, title, desc, rtype, url in resources %}
+    <div class="resource-card">
+      <span class="resource-type">{{ rtype }}</span>
+      <h3><span class="resource-glyph">{{ ic('globe', 18) }}</span> {{ title }}</h3>
+      <p>{{ desc }}</p>
+      <a href="{{ url }}" target="_blank" rel="noopener" class="btn-dl btn-dl-link">Visit Portal {{ ic('share', 15) }}</a>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- AD (bottom) -->
+<div class="ad-container">
+  {% with ad_slot = adsense_slots['bottom'] %}{% include '_ad.html' %}{% endwith %}
+</div>
+
+{% endblock %}

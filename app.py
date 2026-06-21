@@ -1,0 +1,954 @@
+import os
+import re
+import sqlite3
+from io import BytesIO
+from datetime import date
+from functools import wraps
+from flask import (Flask, render_template, request, redirect, url_for,
+                   session, flash, jsonify, send_from_directory, send_file, abort)
+from flask_mail import Mail, Message
+from itsdangerous import URLSafeSerializer, BadSignature
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_wtf import CSRFProtect
+from flask_wtf.csrf import CSRFError
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from flask_talisman import Talisman
+import bleach
+from dotenv import load_dotenv
+from database import get_db, init_db, seed_articles, seed_documents
+import content as C
+
+load_dotenv()
+
+# Production flag: enables HTTPS enforcement, HSTS, and Secure cookies on the live
+# server. Stays off locally so http://localhost development still works.
+IS_PROD = os.getenv('PRODUCTION', 'false').lower() in ('1', 'true', 'yes')
+
+app = Flask(__name__)
+app.secret_key = os.getenv('SECRET_KEY', 'dev-secret-change-in-production')
+
+# ── Hardened session / request config ──
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['SESSION_COOKIE_SECURE'] = IS_PROD
+app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024  # 1 MB cap on request bodies
+app.config['WTF_CSRF_TIME_LIMIT'] = None            # token valid for the session
+
+# Mail configuration (Gmail SMTP)
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_USERNAME')
+
+mail = Mail(app)
+
+# ── CSRF protection on every POST form ──
+csrf = CSRFProtect(app)
+
+# ── Rate limiting (brute-force + spam protection) ──
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=['300 per hour'],
+    storage_uri='memory://',
+)
+
+# ── Security headers + Content-Security-Policy ──
+# script-src is intentionally permissive (https:) so Google AdSense and the
+# Three.js CDN load reliably; the high-value protections (clickjacking, object/base
+# lockdown, MIME-sniffing, referrer, HSTS, secure cookies) are all enforced.
+CSP = {
+    'default-src': "'self'",
+    'script-src': ["'self'", "'unsafe-inline'", 'https:'],
+    'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+    'font-src': ["'self'", 'https://fonts.gstatic.com', 'data:'],
+    'img-src': ["'self'", 'data:', 'https:'],
+    'frame-src': ['https://*.googlesyndication.com', 'https://*.google.com',
+                  'https://*.doubleclick.net'],
+    'connect-src': ["'self'", 'https:'],
+    'object-src': "'none'",
+    'base-uri': "'self'",
+    'frame-ancestors': "'self'",
+    'form-action': "'self'",
+}
+Talisman(
+    app,
+    content_security_policy=CSP,
+    force_https=IS_PROD,
+    strict_transport_security=IS_PROD,
+    session_cookie_secure=IS_PROD,
+    referrer_policy='strict-origin-when-cross-origin',
+)
+
+
+@app.errorhandler(CSRFError)
+def handle_csrf_error(e):
+    return render_template('error.html', code=400,
+                           message='Your session expired. Please go back and try again.'), 400
+
+
+# ── HTML sanitisation for admin-entered article content ──
+ALLOWED_TAGS = ['h2', 'h3', 'h4', 'p', 'ul', 'ol', 'li', 'strong', 'em', 'b', 'i',
+                'u', 'a', 'br', 'blockquote', 'code', 'pre', 'span', 'hr', 'table',
+                'thead', 'tbody', 'tr', 'th', 'td']
+ALLOWED_ATTRS = {'a': ['href', 'title', 'rel', 'target'], 'span': ['class'],
+                 'td': ['colspan', 'rowspan'], 'th': ['colspan', 'rowspan']}
+
+
+def sanitize_html(raw):
+    return bleach.clean(raw or '', tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRS, strip=True)
+
+CONTACT_RECEIVER = os.getenv('CONTACT_RECEIVER', os.getenv('MAIL_USERNAME'))
+ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD', 'Wine123')
+
+# Google AdSense — set ADSENSE_CLIENT in .env to your publisher id (ca-pub-XXXX).
+# Ad slot ids are configured per-placement in ADSENSE_SLOTS below.
+ADSENSE_CLIENT = os.getenv('ADSENSE_CLIENT', '')
+ADSENSE_SLOTS = {
+    'top': os.getenv('ADSENSE_SLOT_TOP', ''),
+    'mid': os.getenv('ADSENSE_SLOT_MID', ''),
+    'bottom': os.getenv('ADSENSE_SLOT_BOTTOM', ''),
+    'article_top': os.getenv('ADSENSE_SLOT_ARTICLE_TOP', ''),
+    'article_bottom': os.getenv('ADSENSE_SLOT_ARTICLE_BOTTOM', ''),
+}
+
+VALID_EMAIL_RE = re.compile(r'^[^\s@]+@[^\s@]+\.[^\s@]+$')
+
+# Public base URL of the live site (used for canonical tags, sitemap, OG, JSON-LD).
+SITE_URL = os.getenv('SITE_URL', 'https://lawminded.in').rstrip('/')
+
+CATEGORY_MAP = C.CATEGORY_MAP
+
+# Signed, tamper-proof tokens for one-click newsletter unsubscribe links.
+# itsdangerous ships with Flask, so no new dependency is needed.
+_unsub_serializer = URLSafeSerializer(app.secret_key, salt='lm-unsubscribe')
+
+
+def unsubscribe_url(email):
+    """Absolute, signed unsubscribe link for inclusion in outgoing emails."""
+    token = _unsub_serializer.dumps(email)
+    return f'{SITE_URL}{url_for("unsubscribe")}?token={token}'
+
+
+# ─── Context Processor (globals available in every template) ─────────────────
+
+def asset_version(rel_path):
+    """Cache-busting token (file mtime) so browsers always fetch the latest CSS/JS."""
+    try:
+        return int(os.path.getmtime(os.path.join(app.static_folder, rel_path)))
+    except OSError:
+        return 1
+
+
+@app.template_filter('humandate')
+def humandate(value):
+    """Render a stored timestamp as day-first, e.g. '21 Jun 2026'."""
+    if not value:
+        return ''
+    s = str(value)[:10]
+    try:
+        from datetime import datetime as _dt
+        return _dt.strptime(s, '%Y-%m-%d').strftime('%d %b %Y')
+    except ValueError:
+        return s
+
+
+@app.context_processor
+def inject_globals():
+    return {
+        'adsense_client': ADSENSE_CLIENT,
+        'adsense_slots': ADSENSE_SLOTS,
+        'category_map': CATEGORY_MAP,
+        'current_year': date.today().year,
+        'site_url': SITE_URL,
+        'canonical_url': SITE_URL + request.path,
+        'asset_v': asset_version,
+    }
+
+
+# ─── Helpers ────────────────────────────────────────────────────────────────
+
+def slugify(text):
+    text = text.lower().strip()
+    text = re.sub(r'[^\w\s-]', '', text)
+    return re.sub(r'[\s_-]+', '-', text)
+
+
+def get_articles_by_cat():
+    db = get_db()
+    by_cat = {}
+    for cat in CATEGORY_MAP:
+        by_cat[cat] = db.execute(
+            'SELECT * FROM articles WHERE category=? AND published=1 ORDER BY created_at DESC',
+            (cat,)
+        ).fetchall()
+    db.close()
+    return by_cat
+
+
+def get_all_articles():
+    db = get_db()
+    rows = db.execute(
+        'SELECT * FROM articles WHERE published=1 ORDER BY created_at DESC'
+    ).fetchall()
+    db.close()
+    return rows
+
+
+def admin_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not session.get('admin_logged_in'):
+            return redirect(url_for('admin_login'))
+        return f(*args, **kwargs)
+    return decorated
+
+
+# ─── Documents (DB-managed templates & resolutions) ──────────────────────────
+DOC_TYPES = {'template': 'Template', 'board': 'Board Resolution',
+             'special': 'Special Resolution', 'partner': 'Partner Resolution'}
+DOC_LIST_TITLE = {'board': 'Board Resolutions', 'special': 'Special Resolutions',
+                  'partner': 'LLP Partner Resolutions'}
+
+
+def get_documents(doc_type):
+    db = get_db()
+    rows = db.execute(
+        'SELECT * FROM documents WHERE doc_type=? ORDER BY sort_order, id', (doc_type,)
+    ).fetchall()
+    db.close()
+    return rows
+
+
+def get_document(doc_type, slug):
+    db = get_db()
+    row = db.execute(
+        'SELECT * FROM documents WHERE doc_type=? AND slug=?', (doc_type, slug)
+    ).fetchone()
+    db.close()
+    return row
+
+
+def doc_to_view(d):
+    """Shape a DB document row for the public templates/resolutions pages."""
+    return dict(
+        d,
+        desc=d['description'],
+        tags=(d['tags'].split(',') if d['tags'] else []),
+        html=C.render_resolution_html(C.parse_doc_body(d['body'])),
+    )
+
+
+def get_setting(key):
+    db = get_db()
+    row = db.execute('SELECT value FROM settings WHERE key=?', (key,)).fetchone()
+    db.close()
+    return row['value'] if row else None
+
+
+def set_setting(key, value):
+    db = get_db()
+    db.execute(
+        'INSERT INTO settings (key, value) VALUES (?,?) '
+        'ON CONFLICT(key) DO UPDATE SET value=excluded.value',
+        (key, value)
+    )
+    db.commit()
+    db.close()
+
+
+def check_admin_password(entered):
+    """Verify against the DB-stored hash if set; otherwise the .env fallback."""
+    stored_hash = get_setting('admin_password_hash')
+    if stored_hash:
+        return check_password_hash(stored_hash, entered)
+    return entered == ADMIN_PASSWORD
+
+
+def build_resolution_docx(title, blocks):
+    """Build a Word (.docx) document from resolution blocks, returned as BytesIO."""
+    from docx import Document
+    from docx.shared import Pt
+
+    doc = Document()
+    style = doc.styles['Normal']
+    style.font.name = 'Calibri'
+    style.font.size = Pt(11)
+
+    for kind, text in blocks:
+        if kind == 'spacer':
+            doc.add_paragraph('')
+        elif kind in ('heading', 'subheading'):
+            p = doc.add_paragraph()
+            run = p.add_run(text)
+            run.bold = True
+            if kind == 'heading':
+                run.font.size = Pt(12)
+        elif kind == 'bullet':
+            doc.add_paragraph(text, style='List Bullet')
+        else:
+            doc.add_paragraph(text)
+
+    bio = BytesIO()
+    doc.save(bio)
+    bio.seek(0)
+    return bio
+
+
+# ─── Public Pages ─────────────────────────────────────────────────────────────
+
+@app.route('/')
+def index():
+    articles = get_all_articles()
+    featured = articles[:6]
+    return render_template('index.html', featured=featured)
+
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+
+@app.route('/blogs')
+def blogs():
+    return render_template('blogs.html', articles_by_cat=get_articles_by_cat())
+
+
+@app.route('/article/<slug>')
+def article(slug):
+    db = get_db()
+    row = db.execute(
+        'SELECT * FROM articles WHERE slug=? AND published=1', (slug,)
+    ).fetchone()
+    if not row:
+        db.close()
+        abort(404)
+    related = db.execute(
+        'SELECT * FROM articles WHERE category=? AND id!=? AND published=1 ORDER BY created_at DESC LIMIT 4',
+        (row['category'], row['id'])
+    ).fetchall()
+    # Top up to 4 with recent articles from other categories so the row is always full.
+    if len(related) < 4:
+        seen = {r['id'] for r in related} | {row['id']}
+        extra = db.execute(
+            'SELECT * FROM articles WHERE published=1 ORDER BY created_at DESC LIMIT 12'
+        ).fetchall()
+        related = list(related) + [r for r in extra if r['id'] not in seen][:4 - len(related)]
+    db.close()
+    return render_template('article.html', article=row, related=related)
+
+
+@app.route('/templates')
+def templates_page():
+    rendered = [doc_to_view(d) for d in get_documents('template')]
+    return render_template('templates_page.html', templates=rendered)
+
+
+@app.route('/template/<slug>/download')
+def template_download(slug):
+    item = get_document('template', slug)
+    if not item:
+        abort(404)
+    bio = build_resolution_docx(item['title'], C.parse_doc_body(item['body']))
+    return send_file(
+        bio, as_attachment=True, download_name=f'{slug}.docx',
+        mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    )
+
+
+@app.route('/compare')
+def compare():
+    return render_template('compare.html')
+
+
+@app.route('/judgments')
+def judgments():
+    return render_template('judgments.html', judgments=C.JUDGMENTS)
+
+
+@app.route('/judgment/<slug>')
+def judgment(slug):
+    j = next((x for x in C.JUDGMENTS if x['slug'] == slug), None)
+    if not j:
+        abort(404)
+    return render_template('judgment.html', j=j)
+
+
+@app.route('/resolutions/<rtype>')
+def resolutions(rtype):
+    if rtype not in DOC_LIST_TITLE:
+        abort(404)
+    rendered = [doc_to_view(d) for d in get_documents(rtype)]
+    return render_template('resolutions.html', rtype=rtype,
+                           list_title=DOC_LIST_TITLE[rtype], items=rendered)
+
+
+@app.route('/resolution/<rtype>/<slug>/download')
+def resolution_download(rtype, slug):
+    if rtype not in DOC_LIST_TITLE:
+        abort(404)
+    item = get_document(rtype, slug)
+    if not item:
+        abort(404)
+    bio = build_resolution_docx(item['title'], C.parse_doc_body(item['body']))
+    return send_file(
+        bio, as_attachment=True, download_name=f'{slug}.docx',
+        mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    )
+
+
+@app.route('/resources')
+def resources():
+    return render_template('resources.html', resources=C.RESOURCES)
+
+
+@app.route('/faq')
+def faq():
+    return render_template('faq.html', faqs=C.FAQS)
+
+
+@app.route('/contact')
+def contact_page():
+    return render_template('contact.html')
+
+
+@app.route('/terms')
+def terms():
+    return render_template('terms.html')
+
+
+@app.route('/privacy')
+def privacy():
+    return render_template('privacy.html')
+
+
+@app.route('/search')
+def search():
+    query = request.args.get('q', '').strip()
+    results = C.search_all(query, get_all_articles()) if query else []
+    if query:
+        q = query.lower()
+        db = get_db()
+        docs = db.execute('SELECT * FROM documents').fetchall()
+        db.close()
+        for d in docs:
+            hay = ' '.join(str(d[k] or '') for k in ('title', 'description', 'tags', 'body')).lower()
+            if q in hay:
+                if d['doc_type'] == 'template':
+                    results.append({'type': 'Template', 'title': f"{d['icon']} {d['title']}",
+                                    'snippet': d['description'], 'url_kind': 'page', 'url_arg': 'templates_page'})
+                else:
+                    results.append({'type': DOC_TYPES.get(d['doc_type'], 'Document'), 'title': d['title'],
+                                    'snippet': d['description'], 'url_kind': 'resolutions', 'url_arg': d['doc_type']})
+    return render_template('search.html', query=query, results=results)
+
+
+# ─── Form / API Endpoints ─────────────────────────────────────────────────────
+
+@app.route('/contact', methods=['POST'])
+@limiter.limit('6 per minute')
+def contact():
+    # Honeypot: real users never fill the hidden "website" field; bots do.
+    if request.form.get('website', '').strip():
+        return jsonify({'success': True, 'message': 'Your query has been submitted successfully!'})
+
+    name = request.form.get('name', '').strip()
+    email = request.form.get('email', '').strip()
+    query = request.form.get('query', '').strip()
+
+    errors = {}
+    if not name:
+        errors['name'] = 'Name is required.'
+    if not email or not VALID_EMAIL_RE.match(email):
+        errors['email'] = 'Valid email is required.'
+    if not query or len(query) < 20:
+        errors['query'] = 'Please describe your query (at least 20 characters).'
+
+    if errors:
+        return jsonify({'success': False, 'errors': errors}), 400
+
+    db = get_db()
+    db.execute(
+        'INSERT INTO contact_messages (name, email, query) VALUES (?,?,?)',
+        (name, email, query)
+    )
+    db.commit()
+    db.close()
+
+    try:
+        msg = Message(
+            subject='New Contact Form Submission — Law Minded',
+            recipients=[CONTACT_RECEIVER],
+            body=f'Name: {name}\nEmail: {email}\n\nQuery:\n{query}'
+        )
+        mail.send(msg)
+        ack = Message(
+            subject='We received your query — Law Minded',
+            recipients=[email],
+            body=(f'Hi {name},\n\nThank you for reaching out to Law Minded. '
+                  f'We have received your query and will get back to you shortly.\n\n'
+                  f'Regards,\nLaw Minded Team')
+        )
+        mail.send(ack)
+    except Exception:
+        pass
+
+    return jsonify({'success': True, 'message': 'Your query has been submitted successfully!'})
+
+
+@app.route('/newsletter', methods=['POST'])
+@limiter.limit('6 per minute')
+def newsletter():
+    if request.form.get('website', '').strip():
+        return jsonify({'success': True, 'message': "Thank you! You've been subscribed."})
+
+    name = request.form.get('name', '').strip()
+    email = request.form.get('email', '').strip()
+
+    if not email or not VALID_EMAIL_RE.match(email):
+        return jsonify({'success': False, 'message': 'Please enter a valid email address.'}), 400
+
+    db = get_db()
+    try:
+        db.execute('INSERT INTO subscribers (name, email) VALUES (?,?)', (name, email))
+        db.commit()
+    except sqlite3.IntegrityError:
+        db.close()
+        return jsonify({'success': True, 'message': "You're already subscribed!"})
+    db.close()
+
+    try:
+        unsub = unsubscribe_url(email)
+        welcome = Message(
+            subject='Thank you for joining the Law Minded newsletter',
+            recipients=[email],
+        )
+        welcome.body = (
+            f'Hi {name or "there"},\n\n'
+            f'Thank you for joining the Law Minded newsletter — you have successfully subscribed.\n\n'
+            f'You will start receiving updates on new compliance changes, fresh articles, landmark '
+            f'judgments, and legal events shortly. Our newsletter service is being set up and goes '
+            f'live soon, so please keep an eye on your inbox.\n\n'
+            f'Warm regards,\nThe Law Minded Team\n\n'
+            f'—\nDon\'t want these emails? Unsubscribe anytime: {unsub}'
+        )
+        welcome.html = (
+            '<div style="font-family:Arial,Helvetica,sans-serif;max-width:520px;margin:0 auto;'
+            'color:#34312A;line-height:1.6;">'
+            '<div style="border-top:4px solid #E8A020;padding:20px 4px 8px;">'
+            '<h1 style="font-size:20px;margin:0 0 4px;color:#1C1B16;">Law&nbsp;Minded</h1>'
+            '<p style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#8B8475;'
+            'margin:0 0 18px;">Where complexity meets clarity</p>'
+            f'<p>Hi {name or "there"},</p>'
+            '<p><strong>Thank you for joining the Law Minded newsletter</strong> — you have '
+            'successfully subscribed.</p>'
+            '<p>You will start receiving updates on new compliance changes, fresh articles, '
+            'landmark judgments, and legal events shortly. Our newsletter service is being set up '
+            'and goes live soon, so please keep an eye on your inbox.</p>'
+            '<p style="margin-top:24px;">Warm regards,<br>The Law Minded Team</p>'
+            '<hr style="border:none;border-top:1px solid #E7E2D6;margin:22px 0 10px;">'
+            f'<p style="font-size:12px;color:#8B8475;">Don\'t want these emails? '
+            f'<a href="{unsub}" style="color:#8A5E07;">Unsubscribe anytime</a>.</p>'
+            '</div></div>'
+        )
+        mail.send(welcome)
+    except Exception:
+        pass
+
+    return jsonify({'success': True, 'message': f'Thank you{", " + name if name else ""}! You\'ve been subscribed.'})
+
+
+@app.route('/unsubscribe')
+def unsubscribe():
+    """One-click unsubscribe via a signed token in the welcome email."""
+    token = request.args.get('token', '')
+    email = None
+    try:
+        email = _unsub_serializer.loads(token)
+    except BadSignature:
+        email = None
+
+    removed = False
+    if email:
+        db = get_db()
+        cur = db.execute('DELETE FROM subscribers WHERE email=?', (email,))
+        db.commit()
+        removed = cur.rowcount > 0
+        db.close()
+    return render_template('unsubscribe.html', email=email, removed=removed,
+                           valid=bool(email))
+
+
+@app.route('/download-request', methods=['POST'])
+@limiter.limit('20 per minute')
+def download_request():
+    email = request.form.get('email', '').strip()
+    template_name = request.form.get('template', '').strip()
+
+    if email and VALID_EMAIL_RE.match(email):
+        db = get_db()
+        db.execute(
+            'INSERT INTO download_requests (email, template_name) VALUES (?,?)',
+            (email, template_name)
+        )
+        try:
+            db.execute('INSERT INTO subscribers (name, email) VALUES (?,?)', ('', email))
+        except sqlite3.IntegrityError:
+            pass
+        db.commit()
+        db.close()
+
+    return jsonify({'success': True, 'message': 'Download ready!'})
+
+
+@app.route('/uploads/templates/<filename>')
+def serve_template(filename):
+    return send_from_directory(
+        os.path.join(app.root_path, 'static', 'uploads', 'templates'),
+        filename
+    )
+
+
+@app.route('/ads.txt')
+def ads_txt():
+    # Required by Google AdSense to authorise this site to show your ads.
+    if not ADSENSE_CLIENT:
+        abort(404)
+    pub = ADSENSE_CLIENT.replace('ca-', '')
+    line = f'google.com, {pub}, DIRECT, f08c47fec0942fa0\n'
+    return app.response_class(line, mimetype='text/plain')
+
+
+@app.route('/robots.txt')
+def robots_txt():
+    lines = [
+        'User-agent: *',
+        'Allow: /',
+        'Disallow: /admin',
+        'Disallow: /admin/',
+        f'Sitemap: {SITE_URL}/sitemap.xml',
+        '',
+    ]
+    return app.response_class('\n'.join(lines), mimetype='text/plain')
+
+
+@app.route('/sitemap.xml')
+def sitemap_xml():
+    # Static pages
+    pages = [
+        ('index', 'weekly', '1.0'),
+        ('about', 'monthly', '0.7'),
+        ('blogs', 'daily', '0.9'),
+        ('templates_page', 'weekly', '0.8'),
+        ('compare', 'monthly', '0.7'),
+        ('judgments', 'monthly', '0.7'),
+        ('resources', 'monthly', '0.6'),
+        ('faq', 'monthly', '0.7'),
+        ('contact_page', 'yearly', '0.5'),
+        ('terms', 'yearly', '0.3'),
+        ('privacy', 'yearly', '0.3'),
+    ]
+    urls = []
+    for endpoint, freq, prio in pages:
+        urls.append((SITE_URL + url_for(endpoint), freq, prio, None))
+
+    # Resolution library pages
+    for rtype in ('board', 'special', 'partner'):
+        urls.append((SITE_URL + url_for('resolutions', rtype=rtype), 'monthly', '0.6', None))
+
+    # Landmark judgment briefs
+    for jd in C.JUDGMENTS:
+        urls.append((SITE_URL + url_for('judgment', slug=jd['slug']), 'monthly', '0.6', None))
+
+    # Published articles (with last-modified)
+    db = get_db()
+    rows = db.execute(
+        'SELECT slug, updated_at FROM articles WHERE published=1 ORDER BY updated_at DESC'
+    ).fetchall()
+    db.close()
+    for r in rows:
+        lastmod = (r['updated_at'] or '')[:10] or None
+        urls.append((SITE_URL + url_for('article', slug=r['slug']), 'monthly', '0.8', lastmod))
+
+    xml = ['<?xml version="1.0" encoding="UTF-8"?>',
+           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+    for loc, freq, prio, lastmod in urls:
+        xml.append('  <url>')
+        xml.append(f'    <loc>{loc}</loc>')
+        if lastmod:
+            xml.append(f'    <lastmod>{lastmod}</lastmod>')
+        xml.append(f'    <changefreq>{freq}</changefreq>')
+        xml.append(f'    <priority>{prio}</priority>')
+        xml.append('  </url>')
+    xml.append('</urlset>')
+    return app.response_class('\n'.join(xml), mimetype='application/xml')
+
+
+@app.errorhandler(404)
+def not_found(e):
+    return render_template('404.html'), 404
+
+
+# ─── Admin Routes ────────────────────────────────────────────────────────────
+
+@app.route('/admin/login', methods=['GET', 'POST'])
+@limiter.limit('10 per minute; 40 per hour', methods=['POST'])
+def admin_login():
+    if request.method == 'POST':
+        if check_admin_password(request.form.get('password', '')):
+            session['admin_logged_in'] = True
+            return redirect(url_for('admin_dashboard'))
+        flash('Incorrect password.', 'error')
+    return render_template('admin/login.html')
+
+
+@app.route('/admin/password', methods=['GET', 'POST'])
+@admin_required
+def admin_password():
+    if request.method == 'POST':
+        current = request.form.get('current', '')
+        new = request.form.get('new', '')
+        confirm = request.form.get('confirm', '')
+        if not check_admin_password(current):
+            flash('Your current password is incorrect.', 'error')
+        elif len(new) < 6:
+            flash('New password must be at least 6 characters.', 'error')
+        elif new != confirm:
+            flash('New password and confirmation do not match.', 'error')
+        else:
+            set_setting('admin_password_hash', generate_password_hash(new, method='pbkdf2:sha256'))
+            flash('Password changed successfully.', 'success')
+            return redirect(url_for('admin_dashboard'))
+    return render_template('admin/password.html')
+
+
+@app.route('/admin/logout')
+def admin_logout():
+    session.clear()
+    return redirect(url_for('admin_login'))
+
+
+@app.route('/admin')
+@admin_required
+def admin_dashboard():
+    db = get_db()
+    stats = {
+        'articles': db.execute('SELECT COUNT(*) FROM articles').fetchone()[0],
+        'published': db.execute('SELECT COUNT(*) FROM articles WHERE published=1').fetchone()[0],
+        'subscribers': db.execute('SELECT COUNT(*) FROM subscribers').fetchone()[0],
+        'messages': db.execute('SELECT COUNT(*) FROM contact_messages').fetchone()[0],
+    }
+    recent_messages = db.execute(
+        'SELECT * FROM contact_messages ORDER BY created_at DESC LIMIT 5'
+    ).fetchall()
+    db.close()
+    return render_template('admin/dashboard.html', stats=stats, recent_messages=recent_messages)
+
+
+@app.route('/admin/articles')
+@admin_required
+def admin_articles():
+    db = get_db()
+    articles = db.execute('SELECT * FROM articles ORDER BY created_at DESC').fetchall()
+    db.close()
+    return render_template('admin/articles.html', articles=articles)
+
+
+@app.route('/admin/articles/new', methods=['GET', 'POST'])
+@admin_required
+def admin_article_new():
+    if request.method == 'POST':
+        title = request.form.get('title', '').strip()
+        category = request.form.get('category', '').strip()
+        act = request.form.get('act', '').strip()
+        read_time = request.form.get('read_time', '').strip()
+        summary = request.form.get('summary', '').strip()
+        content_html = sanitize_html(request.form.get('content', '').strip())
+        published = 1 if request.form.get('published') else 0
+        slug = slugify(title)
+
+        db = get_db()
+        base_slug = slug
+        i = 1
+        while db.execute('SELECT id FROM articles WHERE slug=?', (slug,)).fetchone():
+            slug = f'{base_slug}-{i}'
+            i += 1
+        db.execute(
+            'INSERT INTO articles (title, slug, category, act, read_time, summary, content, published) VALUES (?,?,?,?,?,?,?,?)',
+            (title, slug, category, act, read_time, summary, content_html, published)
+        )
+        db.commit()
+        db.close()
+        flash('Article created successfully.', 'success')
+        return redirect(url_for('admin_articles'))
+
+    return render_template('admin/article_edit.html', article=None)
+
+
+@app.route('/admin/articles/<int:article_id>/edit', methods=['GET', 'POST'])
+@admin_required
+def admin_article_edit(article_id):
+    db = get_db()
+    art = db.execute('SELECT * FROM articles WHERE id=?', (article_id,)).fetchone()
+    if not art:
+        db.close()
+        abort(404)
+
+    if request.method == 'POST':
+        title = request.form.get('title', '').strip()
+        category = request.form.get('category', '').strip()
+        act = request.form.get('act', '').strip()
+        read_time = request.form.get('read_time', '').strip()
+        summary = request.form.get('summary', '').strip()
+        content_html = sanitize_html(request.form.get('content', '').strip())
+        published = 1 if request.form.get('published') else 0
+        db.execute(
+            '''UPDATE articles SET title=?, category=?, act=?, read_time=?, summary=?,
+               content=?, published=?, updated_at=CURRENT_TIMESTAMP WHERE id=?''',
+            (title, category, act, read_time, summary, content_html, published, article_id)
+        )
+        db.commit()
+        db.close()
+        flash('Article updated successfully.', 'success')
+        return redirect(url_for('admin_articles'))
+
+    db.close()
+    return render_template('admin/article_edit.html', article=art)
+
+
+@app.route('/admin/articles/<int:article_id>/delete', methods=['POST'])
+@admin_required
+def admin_article_delete(article_id):
+    db = get_db()
+    db.execute('DELETE FROM articles WHERE id=?', (article_id,))
+    db.commit()
+    db.close()
+    flash('Article deleted.', 'success')
+    return redirect(url_for('admin_articles'))
+
+
+@app.route('/admin/subscribers')
+@admin_required
+def admin_subscribers():
+    db = get_db()
+    subscribers = db.execute('SELECT * FROM subscribers ORDER BY created_at DESC').fetchall()
+    db.close()
+    return render_template('admin/subscribers.html', subscribers=subscribers)
+
+
+@app.route('/admin/messages')
+@admin_required
+def admin_messages():
+    db = get_db()
+    messages = db.execute('SELECT * FROM contact_messages ORDER BY created_at DESC').fetchall()
+    db.close()
+    return render_template('admin/messages.html', messages=messages)
+
+
+# ─── Admin: Documents (templates & resolutions) ──────────────────────────────
+
+@app.route('/admin/documents')
+@admin_required
+def admin_documents():
+    db = get_db()
+    docs = db.execute('SELECT * FROM documents ORDER BY doc_type, sort_order, id').fetchall()
+    db.close()
+    grouped = {'template': [], 'board': [], 'special': [], 'partner': []}
+    for d in docs:
+        grouped.get(d['doc_type'], grouped.setdefault(d['doc_type'], [])).append(d)
+    return render_template('admin/documents.html', grouped=grouped, doc_types=DOC_TYPES)
+
+
+def _save_document(form, doc_id=None):
+    doc_type = form.get('doc_type', '').strip()
+    title = form.get('title', '').strip()
+    icon = form.get('icon', '').strip() or '📄'
+    description = form.get('description', '').strip()
+    tags = ','.join([t.strip() for t in form.get('tags', '').split(',') if t.strip()])
+    body = form.get('body', '').strip()
+    if doc_type not in DOC_TYPES or not title or not body:
+        return None, 'Type, title and body are required.'
+    db = get_db()
+    base = slugify(title) or 'document'
+    slug = base
+    i = 1
+    while True:
+        clash = db.execute(
+            'SELECT id FROM documents WHERE doc_type=? AND slug=? AND id IS NOT ?',
+            (doc_type, slug, doc_id)
+        ).fetchone()
+        if not clash:
+            break
+        slug = f'{base}-{i}'; i += 1
+    if doc_id:
+        db.execute(
+            'UPDATE documents SET doc_type=?, slug=?, icon=?, title=?, description=?, tags=?, body=?, '
+            'updated_at=CURRENT_TIMESTAMP WHERE id=?',
+            (doc_type, slug, icon, title, description, tags, body, doc_id)
+        )
+    else:
+        order = db.execute('SELECT COALESCE(MAX(sort_order),0)+1 FROM documents WHERE doc_type=?',
+                           (doc_type,)).fetchone()[0]
+        db.execute(
+            'INSERT INTO documents (doc_type, slug, icon, title, description, tags, body, sort_order) '
+            'VALUES (?,?,?,?,?,?,?,?)',
+            (doc_type, slug, icon, title, description, tags, body, order)
+        )
+    db.commit()
+    db.close()
+    return True, None
+
+
+@app.route('/admin/documents/new', methods=['GET', 'POST'])
+@admin_required
+def admin_document_new():
+    if request.method == 'POST':
+        ok, err = _save_document(request.form)
+        if ok:
+            flash('Document created.', 'success')
+            return redirect(url_for('admin_documents'))
+        flash(err, 'error')
+    return render_template('admin/document_edit.html', doc=None, doc_types=DOC_TYPES)
+
+
+@app.route('/admin/documents/<int:doc_id>/edit', methods=['GET', 'POST'])
+@admin_required
+def admin_document_edit(doc_id):
+    db = get_db()
+    doc = db.execute('SELECT * FROM documents WHERE id=?', (doc_id,)).fetchone()
+    db.close()
+    if not doc:
+        abort(404)
+    if request.method == 'POST':
+        ok, err = _save_document(request.form, doc_id=doc_id)
+        if ok:
+            flash('Document updated.', 'success')
+            return redirect(url_for('admin_documents'))
+        flash(err, 'error')
+    return render_template('admin/document_edit.html', doc=doc, doc_types=DOC_TYPES)
+
+
+@app.route('/admin/documents/<int:doc_id>/delete', methods=['POST'])
+@admin_required
+def admin_document_delete(doc_id):
+    db = get_db()
+    db.execute('DELETE FROM documents WHERE id=?', (doc_id,))
+    db.commit()
+    db.close()
+    flash('Document deleted.', 'success')
+    return redirect(url_for('admin_documents'))
+
+
+# ─── App Init ────────────────────────────────────────────────────────────────
+
+with app.app_context():
+    init_db()
+    seed_articles()
+    seed_documents()
+
+if __name__ == '__main__':
+    # PORT lets the dev preview pick a free port; defaults to 8000 locally.
+    app.run(host='0.0.0.0', port=int(os.getenv('PORT', '8000')), debug=not IS_PROD)

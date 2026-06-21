@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% from '_icons.html' import icon %}
+{% block title %}{{ article['title'] }} - Law Minded{% endblock %}
+{% block meta_desc %}{{ article['summary'] }}{% endblock %}
+{% block og_type %}article{% endblock %}
+{% block head_extra %}
+<script type="application/ld+json">
+{
+ "@context":"https://schema.org",
+ "@type":"Article",
+ "headline":"{{ article['title']|replace('"','') }}",
+ "description":"{{ (article['summary'] or '')|replace('"','') }}",
+ "datePublished":"{{ article['created_at'] }}",
+ "dateModified":"{{ article['updated_at'] or article['created_at'] }}",
+ "author":{"@type":"Organization","name":"Law Minded"},
+ "publisher":{"@type":"Organization","name":"Law Minded","logo":{"@type":"ImageObject","url":"{{ site_url }}{{ url_for('static', filename='img/logo-full.png') }}"}},
+ "mainEntityOfPage":"{{ canonical_url }}",
+ "image":"{{ site_url }}{{ url_for('static', filename='img/logo-full.png') }}"
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context":"https://schema.org",
+ "@type":"BreadcrumbList",
+ "itemListElement":[
+  {"@type":"ListItem","position":1,"name":"Home","item":"{{ site_url }}{{ url_for('index') }}"},
+  {"@type":"ListItem","position":2,"name":"Knowledge Hub","item":"{{ site_url }}{{ url_for('blogs') }}"},
+  {"@type":"ListItem","position":3,"name":"{{ (category_map.get(article['category'],'Article'))|replace('"','') }}","item":"{{ canonical_url }}"}
+ ]
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<!-- Reading progress -->
+<div class="reading-progress" aria-hidden="true"><span id="readBar"></span></div>
+
+<div class="article-hero">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="{{ url_for('index') }}">Home</a>
+    <span class="bc-sep">//</span>
+    <a href="{{ url_for('blogs') }}">Knowledge Hub</a>
+    <span class="bc-sep">//</span>
+    <span class="bc-current">{{ category_map.get(article['category'], 'Article') }}</span>
+  </nav>
+  <span class="section-tag">{{ category_map.get(article['category'], 'Article') }}</span>
+  <h1>{{ article['title'] }}</h1>
+  <div class="article-meta">
+    <span class="byline">By Law Minded Editorial</span>
+    <span>{{ icon('clock', 14) }} {{ article['read_time'] or '5 min read' }}</span>
+    {% if article['act'] %}<span>{{ icon('bookmark', 14) }} {{ article['act'] }}</span>{% endif %}
+    <span>{{ icon('calendar', 14) }} {{ article['created_at']|humandate }}</span>
+    {% if article['updated_at'] and article['updated_at'][:10] != article['created_at'][:10] %}
+    <span class="meta-updated">Updated {{ article['updated_at']|humandate }}</span>
+    {% endif %}
+  </div>
+</div>
+
+<div class="article-body">
+  <div class="article-main">
+  <a href="{{ url_for('blogs') }}" class="back-link">{{ icon('arrow-left', 15) }} Back to Knowledge Hub</a>
+
+  <div class="prose" id="articleProse">{{ article['content'] | safe }}</div>
+  </div><!-- /.article-main -->
+
+  <aside class="toc-side">
+    <div class="toc-sticky">
+      <nav class="toc" id="toc" aria-label="On this page" hidden>
+        <span class="toc-title">On this page</span>
+        <ul id="tocList"></ul>
+      </nav>
+      <!-- Sidebar ad: runs only alongside the blog content, and stops at the takeaways -->
+      <div class="side-ad">
+        {% with ad_slot = adsense_slots['mid'] %}{% include '_ad.html' %}{% endwith %}
+      </div>
+    </div>
+  </aside>
+</div><!-- /.article-body grid -->
+
+<!-- Everything below the article runs full screen width -->
+<div class="article-after">
+  <hr class="rule">
+
+  <div class="article-footer-row">
+    <div class="article-footer-note">
+      This article is for educational purposes only and does not constitute legal advice.
+    </div>
+    <button class="wa-share" onclick="openShare('{{ article['title']|replace("'","") }}', '{{ url_for('article', slug=article['slug'], _external=True) }}')">{{ icon('share', 14) }} Share this article</button>
+  </div>
+
+  {% if related %}
+  <div class="related-block">
+    <h2 class="related-title">Related Articles</h2>
+    <div class="blog-grid">
+      {% for art in related %}
+      <article class="blog-card">
+        <div class="blog-card-body">
+          <div class="blog-meta">{{ icon('clock', 13) }} {{ art['read_time'] or '5 min' }}</div>
+          <h3>{{ art['title'] }}</h3>
+          <p>{{ art['summary'][:90] }}…</p>
+          <a href="{{ url_for('article', slug=art['slug']) }}" class="blog-link">Read Article {{ icon('arrow-right', 15) }}</a>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="article-nl">
+    <div class="article-nl-tag">Stay Updated</div>
+    <p>Get compliance updates and new articles straight to your inbox.</p>
+    <form class="article-nl-row" id="nlForm" action="{{ url_for('newsletter') }}" method="post" onsubmit="subscribeNewsletter();return false;">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="text" id="nlHp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" class="hp-field">
+      <input type="hidden" id="nlName" name="name" value="">
+      <label class="sr-only" for="nlEmail">Email address</label>
+      <input type="email" id="nlEmail" name="email" placeholder="your@email.com" required>
+      <button id="nlBtn" type="submit">Subscribe Free</button>
+    </form>
+  </div>
+</div><!-- /.article-after -->
+{% endblock %}

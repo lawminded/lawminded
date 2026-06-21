@@ -1,0 +1,54 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_title %}Dashboard{% endblock %}
+{% block admin_content %}
+
+<div class="admin-stats">
+  <div class="admin-stat-card">
+    <div class="num">{{ stats.articles }}</div>
+    <div class="lbl">Total Articles</div>
+  </div>
+  <div class="admin-stat-card">
+    <div class="num">{{ stats.published }}</div>
+    <div class="lbl">Published</div>
+  </div>
+  <div class="admin-stat-card">
+    <div class="num">{{ stats.subscribers }}</div>
+    <div class="lbl">Subscribers</div>
+  </div>
+  <div class="admin-stat-card">
+    <div class="num">{{ stats.messages }}</div>
+    <div class="lbl">Messages</div>
+  </div>
+</div>
+
+<div style="display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+  <a href="{{ url_for('admin_article_new') }}" class="btn-primary btn-sm">+ New Article</a>
+  <a href="{{ url_for('admin_articles') }}" class="btn-secondary btn-sm">Manage Articles</a>
+  <a href="{{ url_for('admin_subscribers') }}" class="btn-secondary btn-sm">View Subscribers</a>
+  <a href="{{ url_for('admin_messages') }}" class="btn-secondary btn-sm">View Messages</a>
+</div>
+
+{% if recent_messages %}
+<h3 style="font-family:var(--hf);font-size:1.1rem;color:var(--dark);margin-bottom:1rem;">Recent Contact Messages</h3>
+<table class="admin-table">
+  <thead>
+    <tr>
+      <th>Name</th><th>Email</th><th>Query (preview)</th><th>Date</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for msg in recent_messages %}
+    <tr>
+      <td>{{ msg['name'] }}</td>
+      <td>{{ msg['email'] }}</td>
+      <td>{{ msg['query'][:80] }}{% if msg['query']|length > 80 %}…{% endif %}</td>
+      <td>{{ msg['created_at']|humandate }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p style="font-family:var(--uf);font-size:.88rem;color:var(--muted);">No contact messages yet.</p>
+{% endif %}
+
+{% endblock %}

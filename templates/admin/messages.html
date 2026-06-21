@@ -1,0 +1,31 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_title %}Contact Messages{% endblock %}
+{% block admin_content %}
+
+<p style="font-family:var(--uf);font-size:.88rem;color:var(--mid);margin-bottom:1.5rem;">
+  {{ messages|length }} total message{% if messages|length != 1 %}s{% endif %}
+</p>
+
+{% if messages %}
+<table class="admin-table">
+  <thead>
+    <tr><th>Name</th><th>Email</th><th>Query</th><th>Date</th></tr>
+  </thead>
+  <tbody>
+    {% for msg in messages %}
+    <tr>
+      <td style="white-space:nowrap;">{{ msg['name'] }}</td>
+      <td>{{ msg['email'] }}</td>
+      <td style="max-width:400px;">{{ msg['query'] }}</td>
+      <td style="white-space:nowrap;">{{ msg['created_at']|humandate }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p style="font-family:var(--uf);font-size:.88rem;color:var(--muted);text-align:center;padding:2rem;">
+  No contact messages yet.
+</p>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Error {{ code }} · Law Minded{% endblock %}
+{% block content %}
+<div class="page-hero">
+  <span class="section-tag">Error {{ code }}</span>
+  <h1>Something went wrong</h1>
+  <p>{{ message or 'An unexpected error occurred. Please try again.' }}</p>
+</div>
+<section style="text-align:center;">
+  <a href="{{ url_for('index') }}" class="btn-primary">Back to Home</a>
+</section>
+{% endblock %}

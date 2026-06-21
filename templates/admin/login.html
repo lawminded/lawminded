@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login - Law Minded</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body data-theme="light">
+<div class="admin-login">
+  <div class="admin-login-card">
+    <h1>Law <span style="color:var(--gold)">Minded</span></h1>
+    <p>Admin Panel - sign in to manage content</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="flash flash-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('admin_login') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="form-group" style="text-align:left;">
+        <label style="font-family:var(--uf);font-size:.8rem;font-weight:500;color:var(--charcoal);display:block;margin-bottom:.35rem;">Password</label>
+        <input type="password" name="password" placeholder="Enter admin password"
+               style="width:100%;padding:10px 13px;border:1px solid var(--border);border-radius:4px;font-family:var(--uf);font-size:.88rem;color:var(--charcoal);background:var(--bg);outline:none;"
+               autofocus required>
+      </div>
+      <button type="submit" class="form-submit" style="margin-top:.5rem;">Sign In</button>
+    </form>
+
+    <div style="margin-top:1.25rem;">
+      <a href="{{ url_for('index') }}" style="font-family:var(--uf);font-size:.82rem;color:var(--gold);text-decoration:none;">← Back to website</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

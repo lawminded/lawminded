@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% from '_icons.html' import icon %}
+{% block title %}Free Legal Document Templates - Law Minded{% endblock %}
+{% block meta_desc %}Download free, professionally drafted Indian legal document templates - agreements, resolutions, NDAs and more.{% endblock %}
+
+{% block content %}
+
+<div class="page-hero">
+  <span class="section-tag">Document Templates</span>
+  <h1>Free Legal Document Templates</h1>
+  <p>Professionally drafted Indian legal document templates - free to download. Enter your email to receive updates along with your download, or skip to download directly.</p>
+</div>
+
+<!-- AD (top) -->
+<div class="ad-container">
+  {% with ad_slot = adsense_slots['top'] %}{% include '_ad.html' %}{% endwith %}
+</div>
+
+<section>
+  <div class="templates-grid">
+    {% for t in templates %}
+    <div class="template-card">
+      <div class="template-icon">📄</div>
+      <h3>{{ t.title }}</h3>
+      <p>{{ t.desc }}</p>
+      <div class="template-tags">
+        {% for tag in t.tags %}<span class="template-tag">{{ tag }}</span>{% endfor %}
+      </div>
+      <div class="template-actions">
+        <button class="btn-read" onclick="previewResolution('{{ t.slug }}')">{{ icon('eye', 16) }} Preview</button>
+        <button class="btn-dl" data-dl-url="{{ url_for('template_download', slug=t.slug) }}" data-dl-name="{{ t.title }}" onclick="openDlModal(this.dataset.dlUrl, this.dataset.dlName)">{{ icon('download', 16) }} Download</button>
+      </div>
+      <div class="resolution-content" id="res-{{ t.slug }}" hidden
+           data-title="{{ t.title }}"
+           data-download="{{ url_for('template_download', slug=t.slug) }}">{{ t.html | safe }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- RESOLUTION LIBRARIES -->
+<section class="section-alt">
+  <span class="section-tag">Resolution Libraries</span>
+  <h2 class="section-title">Board &amp; Special Resolutions</h2>
+  <p class="section-sub">Don't settle for one generic format. Pick the exact resolution you need - for opening a bank account, GST, striking off and more - preview it, then download an editable Word file.</p>
+  <div class="offer-grid">
+    <a href="{{ url_for('resolutions', rtype='board') }}" class="offer-card">
+      <div class="offer-icon">🗂️</div>
+      <h3>Board Resolutions</h3>
+      <p>Ready formats for decisions taken by the Board of Directors - bank accounts, GST, authorisations and more.</p>
+      <span class="offer-link">Browse &amp; Download {{ icon('arrow-right', 16) }}</span>
+    </a>
+    <a href="{{ url_for('resolutions', rtype='special') }}" class="offer-card">
+      <div class="offer-icon">📜</div>
+      <h3>Special Resolutions</h3>
+      <p>Formats for matters needing 75% shareholder approval - registered office change, capital increase and more.</p>
+      <span class="offer-link">Browse &amp; Download {{ icon('arrow-right', 16) }}</span>
+    </a>
+    <a href="{{ url_for('resolutions', rtype='partner') }}" class="offer-card">
+      <div class="offer-icon">🤝</div>
+      <h3>LLP Partner Resolutions</h3>
+      <p>Resolutions passed by the partners of an LLP - bank accounts, GST, admitting a designated partner and more.</p>
+      <span class="offer-link">Browse &amp; Download {{ icon('arrow-right', 16) }}</span>
+    </a>
+  </div>
+</section>
+
+<!-- AD (bottom) -->
+<div class="ad-container">
+  {% with ad_slot = adsense_slots['bottom'] %}{% include '_ad.html' %}{% endwith %}
+</div>
+
+<!-- PREVIEW MODAL -->
+<div class="preview-overlay" id="previewOverlay">
+  <div class="preview-modal">
+    <div class="preview-head">
+      <h3 id="previewTitle">Preview</h3>
+      <button class="dl-close" onclick="closePreview()" aria-label="Close">{{ icon('close', 18) }}</button>
+    </div>
+    <div class="preview-doc" id="previewBody"></div>
+    <div class="preview-foot">
+      <span class="preview-note">This is a preview. Download the Word file to edit and fill in your details.</span>
+      <a class="btn-dl" id="previewDownload" href="#">{{ icon('download', 16) }} Download Word</a>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

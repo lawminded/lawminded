@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Compare Laws Side by Side - Law Minded{% endblock %}
+{% block meta_desc %}Instantly compare key Indian laws - Private Limited vs LLP, Lease vs Leave & License, Consumer Forum vs Civil Court, and more.{% endblock %}
+
+{% block content %}
+
+<div class="page-hero">
+  <span class="section-tag">Act Comparison Tool</span>
+  <h1>Compare Laws Side by Side</h1>
+  <p>Instantly compare key Indian laws - structure, applicability, compliance requirements, and more.</p>
+</div>
+
+<!-- AD (top) -->
+<div class="ad-container">
+  {% with ad_slot = adsense_slots['top'] %}{% include '_ad.html' %}{% endwith %}
+</div>
+
+<section>
+  <div class="compare-controls">
+    <label for="compareSelect">Choose a comparison:</label>
+    <select class="compare-select" id="compareSelect" onchange="loadComparison()">
+      <option value="pvt-llp">Private Limited Company vs LLP</option>
+      <option value="lease-ll">Lease Agreement vs Leave &amp; License</option>
+      <option value="partner-llp">Partnership Firm vs LLP</option>
+      <option value="forum-court">Consumer Forum vs Civil Court</option>
+      <option value="rti-pil">RTI vs PIL</option>
+    </select>
+  </div>
+  <div id="compareResult"></div>
+</section>
+
+<!-- AD (bottom) -->
+<div class="ad-container">
+  {% with ad_slot = adsense_slots['bottom'] %}{% include '_ad.html' %}{% endwith %}
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>if (document.getElementById('compareSelect')) loadComparison();</script>
+{% endblock %}

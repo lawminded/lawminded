@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% from '_icons.html' import icon %}
+{% block title %}Law Minded · Where Complexity Meets Clarity{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-content">
+    <span class="hero-badge">India's Legal Awareness Platform</span>
+    <h1>Where <em>Complexity</em><br>Meets Clarity</h1>
+    <p class="hero-sub">Corporate compliance, labour laws and consumer rights, explained simply for founders, CAs, HR professionals and every Indian citizen.</p>
+    <div class="hero-tags">
+      <span class="hero-tag">Companies Act 2013</span>
+      <span class="hero-tag">LLP Compliance</span>
+      <span class="hero-tag">Labour Law</span>
+      <span class="hero-tag">Consumer Rights</span>
+      <span class="hero-tag">RTI</span>
+    </div>
+    <div class="hero-actions">
+      <a href="{{ url_for('blogs') }}" class="btn-primary">Explore Knowledge Hub</a>
+      <a href="{{ url_for('templates_page') }}" class="btn-secondary">Free Templates</a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <!-- Ambient particle/circuit field + floating legal motifs around the brain logo -->
+    <div class="hero-fx" id="heroFx" aria-hidden="true">
+      <canvas id="heroParticles"></canvas>
+      <span class="fx-motif fx-1">⚖️</span>
+      <span class="fx-motif fx-2">📜</span>
+      <span class="fx-motif fx-3">🏛️</span>
+      <svg class="fx-motif fx-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M1 21h12v2H1zM5.24 8.07l2.83-2.83 14.14 14.14-2.83 2.83zM12.31 1l5.66 5.66-2.83 2.83-5.66-5.66zM3.83 9.48l5.66 5.66-2.83 2.83-5.66-5.66z"/></svg>
+    </div>
+    <img src="{{ url_for('static', filename='img/logo-full.png') }}" alt="Law Minded" class="hero-logo logo-light" width="380" height="380">
+    <img src="{{ url_for('static', filename='img/logo-full-ondark.png') }}" alt="Law Minded" class="hero-logo logo-dark" width="380" height="380">
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar" id="statsBar">
+  <div class="stat-item"><div class="stat-num" data-target="50" data-suffix="+">0+</div><div class="stat-label">Compliance Topics Covered</div></div>
+  <div class="stat-item"><div class="stat-num" data-target="10" data-suffix="+">0+</div><div class="stat-label">Document Templates</div></div>
+  <div class="stat-item"><div class="stat-num" data-target="100" data-suffix="+">0+</div><div class="stat-label">Rights &amp; Procedures Explained</div></div>
+  <div class="stat-item"><div class="stat-num" data-target="100" data-suffix="%">0%</div><div class="stat-label">Free, Forever</div></div>
+</div>
+
+<!-- AD (top) -->
+<div class="ad-container">
+  {% with ad_slot = adsense_slots['top'] %}{% include '_ad.html' %}{% endwith %}
+</div>
+
+<!-- WHAT WE OFFER -->
+<section>
+  <span class="section-tag">What We Offer</span>
+  <h2 class="section-title">Everything you need to stay compliant</h2>
+  <p class="section-sub">Plain-English knowledge, practical tools and free templates, all in one place.</p>
+  <div class="offer-grid">
+    <a href="{{ url_for('blogs') }}" class="offer-card">
+      <div class="offer-icon">📚</div>
+      <h3>Knowledge Hub</h3>
+      <p>In-depth, jargon-free articles on corporate, labour, consumer and constitutional law.</p>
+      <span class="offer-link">Read Articles {{ icon('arrow-right', 16) }}</span>
+    </a>
+    <a href="{{ url_for('compare') }}" class="offer-card">
+      <div class="offer-icon">⚖️</div>
+      <h3>Compare Laws</h3>
+      <p>Side-by-side comparisons of key Indian laws across structure, compliance and applicability.</p>
+      <span class="offer-link">Compare Now {{ icon('arrow-right', 16) }}</span>
+    </a>
+    <a href="{{ url_for('templates_page') }}" class="offer-card">
+      <div class="offer-icon">📄</div>
+      <h3>Free Templates</h3>
+      <p>Professionally drafted legal document templates you can download for free.</p>
+      <span class="offer-link">Get Templates {{ icon('arrow-right', 16) }}</span>
+    </a>
+    <a href="{{ url_for('judgments') }}" class="offer-card">
+      <div class="offer-icon">🏛️</div>
+      <h3>Landmark Judgments</h3>
+      <p>The Supreme Court rulings that shaped Indian law, explained simply.</p>
+      <span class="offer-link">Explore Cases {{ icon('arrow-right', 16) }}</span>
+    </a>
+  </div>
+</section>
+
+<!-- FEATURED ARTICLES -->
+<section class="section-alt">
+  <span class="section-tag">From the Knowledge Hub</span>
+  <h2 class="section-title">Latest articles</h2>
+  <p class="section-sub">Fresh, plain-English guides on the laws that affect your business and your rights.</p>
+  {% if featured %}
+  <div class="blog-grid">
+    {% for art in featured %}
+    <article class="blog-card">
+      <div class="blog-card-top">
+        <span class="blog-tag">{{ art['act'] or category_map.get(art['category'], '') }}</span>
+        <button class="wa-share" onclick="openShare('{{ art['title']|replace("'","") }}', '{{ url_for('article', slug=art['slug'], _external=True) }}')">{{ icon('share', 14) }} Share</button>
+      </div>
+      <div class="blog-card-body">
+        <div class="blog-meta">{{ icon('clock', 13) }} {{ art['read_time'] or '5 min' }} · {{ category_map.get(art['category'], '') }}</div>
+        <h3>{{ art['title'] }}</h3>
+        <p>{{ art['summary'] }}</p>
+        <a href="{{ url_for('article', slug=art['slug']) }}" class="blog-link">Read Article {{ icon('arrow-right', 15) }}</a>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  <div class="section-cta">
+    <a href="{{ url_for('blogs') }}" class="btn-primary">View All Articles</a>
+  </div>
+  {% else %}
+  <p class="empty-note">No articles published yet.</p>
+  {% endif %}
+</section>
+
+<!-- AD (bottom) -->
+<div class="ad-container">
+  {% with ad_slot = adsense_slots['bottom'] %}{% include '_ad.html' %}{% endwith %}
+</div>
+
+<!-- NEWSLETTER -->
+<section class="newsletter-section">
+  <div class="newsletter-inner">
+    <div>
+      <h2>Stay ahead of every compliance update</h2>
+      <p>MCA circulars, budget changes, labour code notifications and new Supreme Court rulings, delivered to your inbox. No spam. Unsubscribe anytime.</p>
+    </div>
+    <form class="nl-form" id="nlForm" action="{{ url_for('newsletter') }}" method="post" onsubmit="subscribeNewsletter();return false;">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="text" id="nlHp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" class="hp-field">
+      <label class="sr-only" for="nlName">Your name (optional)</label>
+      <input type="text" id="nlName" name="name" placeholder="Your name (optional)">
+      <label class="sr-only" for="nlEmail">Email address</label>
+      <input type="email" id="nlEmail" name="email" placeholder="your@email.com" required>
+      <button id="nlBtn" type="submit">Subscribe Free</button>
+      <span class="nl-note">No spam. Unsubscribe anytime.</span>
+    </form>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/hero-fx.js') }}"></script>
+{% endblock %}

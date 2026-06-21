@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% from '_icons.html' import icon %}
+{% block title %}Landmark Judgments - Law Minded{% endblock %}
+{% block meta_desc %}Supreme Court and High Court decisions that shaped Indian law - Kesavananda Bharati, Maneka Gandhi, D.K. Basu, Puttaswamy and more.{% endblock %}
+
+{% block content %}
+
+<div class="page-hero">
+  <span class="section-tag">Landmark Judgments</span>
+  <h1>Cases That Shaped Indian Law</h1>
+  <p>Supreme Court decisions every compliance professional and citizen should know - explained in plain English.</p>
+</div>
+
+<!-- AD (top) -->
+<div class="ad-container">
+  {% with ad_slot = adsense_slots['top'] %}{% include '_ad.html' %}{% endwith %}
+</div>
+
+<section>
+  <div class="landmark-grid">
+    {% for j in judgments %}
+    <article class="landmark-card">
+      <div class="landmark-year">{{ j.year }}</div>
+      <h3>{{ j.title }}</h3>
+      <p>{{ j.summary }}</p>
+      <div class="landmark-foot">
+        <span class="landmark-area">{{ j.area }}</span>
+        <span class="landmark-read">Read brief {{ icon('arrow-right', 14) }}</span>
+      </div>
+      <a href="{{ url_for('judgment', slug=j.slug) }}" class="landmark-link" aria-label="Read brief: {{ j.title }}"></a>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- AD (bottom) -->
+<div class="ad-container">
+  {% with ad_slot = adsense_slots['bottom'] %}{% include '_ad.html' %}{% endwith %}
+</div>
+
+{% endblock %}

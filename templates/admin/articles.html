@@ -1,0 +1,53 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_title %}Articles{% endblock %}
+{% block admin_content %}
+
+<div style="display:flex;justify-content:flex-end;margin-bottom:1.25rem;">
+  <a href="{{ url_for('admin_article_new') }}" class="btn-primary btn-sm">+ New Article</a>
+</div>
+
+{% if articles %}
+<table class="admin-table">
+  <thead>
+    <tr>
+      <th>Title</th><th>Category</th><th>Act</th><th>Status</th><th>Date</th><th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for art in articles %}
+    <tr>
+      <td style="max-width:260px;">
+        <a href="{{ url_for('article', slug=art['slug']) }}" target="_blank"
+           style="color:var(--dark);text-decoration:none;font-weight:500;">{{ art['title'] }}</a>
+      </td>
+      <td>{{ category_map.get(art['category'], art['category']) }}</td>
+      <td>{{ art['act'] or '-' }}</td>
+      <td>
+        {% if art['published'] %}
+          <span class="badge badge-green">Published</span>
+        {% else %}
+          <span class="badge badge-grey">Draft</span>
+        {% endif %}
+      </td>
+      <td>{{ art['created_at']|humandate }}</td>
+      <td style="white-space:nowrap;">
+        <a href="{{ url_for('admin_article_edit', article_id=art['id']) }}"
+           class="btn-secondary btn-sm" style="margin-right:.4rem;">Edit</a>
+        <form method="POST" action="{{ url_for('admin_article_delete', article_id=art['id']) }}"
+              style="display:inline;"
+              onsubmit="return confirm('Delete this article? This cannot be undone.');">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn-danger">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div style="text-align:center;padding:3rem;font-family:var(--uf);color:var(--muted);">
+  No articles yet. <a href="{{ url_for('admin_article_new') }}" style="color:var(--gold);">Create your first article →</a>
+</div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Search{% if query %}: {{ query }}{% endif %} - Law Minded{% endblock %}
+
+{% block content %}
+
+<div class="page-hero">
+  <span class="section-tag">Search</span>
+  <h1>Search Results</h1>
+  <form action="{{ url_for('search') }}" method="get" class="search-page-form">
+    <input type="search" name="q" value="{{ query }}" placeholder="Search articles, templates, judgments, FAQs…" autofocus>
+    <button type="submit">Search</button>
+  </form>
+</div>
+
+<section>
+  {% if query %}
+    <p class="search-count">
+      {{ results|length }} result{{ '' if results|length == 1 else 's' }} for <strong>"{{ query }}"</strong>
+    </p>
+    {% if results %}
+    <div class="search-results">
+      {% for r in results %}
+      <div class="search-result">
+        <span class="search-result-type">{{ r.type }}</span>
+        {% if r.url_kind == 'article' %}
+          <a href="{{ url_for('article', slug=r.url_arg) }}"><h3>{{ r.title }}</h3></a>
+        {% elif r.url_kind == 'external' %}
+          <a href="{{ r.url_arg }}" target="_blank" rel="noopener"><h3>{{ r.title }} ↗</h3></a>
+        {% elif r.url_kind == 'resolutions' %}
+          <a href="{{ url_for('resolutions', rtype=r.url_arg) }}"><h3>{{ r.title }}</h3></a>
+        {% else %}
+          <a href="{{ url_for(r.url_arg) }}"><h3>{{ r.title }}</h3></a>
+        {% endif %}
+        <p>{{ r.snippet }}</p>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="search-empty">
+      <p class="search-empty-lead">No results found for "{{ query }}".</p>
+      <p>Try different keywords, or browse the <a href="{{ url_for('blogs') }}">Knowledge Hub</a>.</p>
+    </div>
+    {% endif %}
+  {% else %}
+    <p class="empty-note">Type something above to search across articles, templates, judgments, resources and FAQs.</p>
+  {% endif %}
+</section>
+
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% from '_icons.html' import icon %}
+{% block title %}{{ list_title }} - Law Minded{% endblock %}
+{% block meta_desc %}Ready-to-use {{ list_title }} formats for Indian companies - preview and download editable Word documents, free.{% endblock %}
+
+{% block content %}
+
+<div class="page-hero">
+  <span class="section-tag">Document Templates</span>
+  <h1>{{ list_title }}</h1>
+  <p>Ready-to-use, properly formatted {{ list_title|lower }} for common corporate needs. Preview any format, then download an editable Word file and fill in your details.</p>
+</div>
+
+<!-- AD (top) -->
+<div class="ad-container">
+  {% with ad_slot = adsense_slots['top'] %}{% include '_ad.html' %}{% endwith %}
+</div>
+
+<section>
+  <a href="{{ url_for('templates_page') }}" class="back-link">{{ icon('arrow-left', 15) }} Back to Templates</a>
+  {% if items %}
+  <div class="templates-grid" style="margin-top:1rem;">
+    {% for it in items %}
+    <div class="resolution-card">
+      <h3>{{ it.title }}</h3>
+      <p>{{ it.desc }}</p>
+      <div class="template-actions">
+        <button class="btn-read" onclick="previewResolution('{{ it.slug }}')">{{ icon('eye', 16) }} Preview</button>
+        <button class="btn-dl" data-dl-url="{{ url_for('resolution_download', rtype=rtype, slug=it.slug) }}" data-dl-name="{{ it.title }}" onclick="openDlModal(this.dataset.dlUrl, this.dataset.dlName)">{{ icon('download', 16) }} Download</button>
+      </div>
+      <div class="resolution-content" id="res-{{ it.slug }}" hidden
+           data-title="{{ it.title }}"
+           data-download="{{ url_for('resolution_download', rtype=rtype, slug=it.slug) }}">{{ it.html | safe }}</div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p style="font-family:var(--uf);color:var(--muted);text-align:center;padding:2rem;">
+    These formats are being added shortly. Please check back soon.
+  </p>
+  {% endif %}
+</section>
+
+<!-- AD (bottom) -->
+<div class="ad-container">
+  {% with ad_slot = adsense_slots['bottom'] %}{% include '_ad.html' %}{% endwith %}
+</div>
+
+<!-- PREVIEW MODAL -->
+<div class="preview-overlay" id="previewOverlay">
+  <div class="preview-modal">
+    <div class="preview-head">
+      <h3 id="previewTitle">Preview</h3>
+      <button class="dl-close" onclick="closePreview()" aria-label="Close">{{ icon('close', 18) }}</button>
+    </div>
+    <div class="preview-doc" id="previewBody"></div>
+    <div class="preview-foot">
+      <span class="preview-note">This is a preview. Download the Word file to edit and fill in your details.</span>
+      <a class="btn-dl" id="previewDownload" href="#">{{ icon('download', 16) }} Download Word</a>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% from '_icons.html' import icon %}
+{% block title %}Unsubscribe - Law Minded{% endblock %}
+{% block meta_desc %}Manage your Law Minded email subscription.{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <span class="section-tag">Newsletter</span>
+  {% if removed %}
+    <h1>You've been unsubscribed</h1>
+    <p>{{ email }} has been removed from the Law Minded mailing list. You won't receive any more emails from us. Changed your mind? You can re-subscribe from any page anytime.</p>
+  {% elif valid %}
+    <h1>You're not on the list</h1>
+    <p>We couldn't find {{ email }} among our subscribers — you may have already unsubscribed. No further action is needed.</p>
+  {% else %}
+    <h1>This link isn't valid</h1>
+    <p>This unsubscribe link is invalid or has expired. Please use the link from a recent Law Minded email, or contact us and we'll remove you manually.</p>
+  {% endif %}
+  <div class="error-actions">
+    <a href="{{ url_for('index') }}" class="btn-primary">Back to Home</a>
+    <a href="{{ url_for('contact_page') }}" class="btn-secondary">Contact Us</a>
+  </div>
+</div>
+{% endblock %}

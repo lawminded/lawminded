@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% from '_icons.html' import icon %}
+{% block title %}Contact Us - Law Minded{% endblock %}
+{% block meta_desc %}Get in touch with Law Minded - ask a compliance question, suggest a topic, or collaborate with us.{% endblock %}
+
+{% block content %}
+
+<div class="page-hero">
+  <span class="section-tag">Contact</span>
+  <h1>Get in Touch</h1>
+  <p>Have a compliance question, want to suggest a topic, or collaborate with Law Minded? We'd love to hear from you.</p>
+</div>
+
+<!-- AD (top) -->
+<div class="ad-container">
+  {% with ad_slot = adsense_slots['top'] %}{% include '_ad.html' %}{% endwith %}
+</div>
+
+<section>
+  <div class="contact-grid">
+    <div class="contact-info">
+      <h2>Reach Out</h2>
+      <p>We typically respond within 1-2 business days. For legal awareness queries, please remember our content is educational and not a substitute for professional legal advice.</p>
+      <div class="contact-detail">
+        <div class="contact-detail-icon">{{ icon('mail', 20) }}</div>
+        <div class="contact-detail-text"><strong>Email</strong><a href="mailto:lawminded.in@gmail.com">lawminded.in@gmail.com</a></div>
+      </div>
+      <div class="contact-detail">
+        <div class="contact-detail-icon">{{ icon('globe', 20) }}</div>
+        <div class="contact-detail-text"><strong>Website</strong>lawminded.in</div>
+      </div>
+      <div class="contact-detail">
+        <div class="contact-detail-icon">{{ icon('pin', 20) }}</div>
+        <div class="contact-detail-text"><strong>Location</strong>India</div>
+      </div>
+    </div>
+    <form class="contact-form" id="contactForm" action="{{ url_for('contact') }}" method="post" onsubmit="submitForm();return false;" novalidate>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="text" id="fhp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" class="hp-field">
+      <div class="form-group">
+        <label for="fname">Full Name <span class="req">*</span></label>
+        <input type="text" id="fname" name="name" placeholder="Your full name" autocomplete="name">
+        <div class="form-err" id="fnameErr">Name is required.</div>
+      </div>
+      <div class="form-group">
+        <label for="femail">Email Address <span class="req">*</span></label>
+        <input type="email" id="femail" name="email" placeholder="your@email.com" autocomplete="email">
+        <div class="form-err" id="femailErr">Valid email is required.</div>
+      </div>
+      <div class="form-group">
+        <label for="fquery">Your Query <span class="req">*</span></label>
+        <textarea id="fquery" name="query" placeholder="Describe your question or how we can help you..."></textarea>
+        <div class="form-err" id="fqueryErr">Please describe your query (at least 20 characters).</div>
+      </div>
+      <button type="submit" class="form-submit">Send Message</button>
+      <div class="form-success" id="formSuccess">{{ icon('check', 16) }} Your message has been sent. We'll get back to you soon.</div>
+      <div class="form-error-msg" id="formErrorMsg"></div>
+    </form>
+  </div>
+</section>
+
+<!-- AD (bottom) -->
+<div class="ad-container">
+  {% with ad_slot = adsense_slots['bottom'] %}{% include '_ad.html' %}{% endwith %}
+</div>
+
+{% endblock %}

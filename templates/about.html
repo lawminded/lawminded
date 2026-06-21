@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% from '_icons.html' import icon %}
+{% block title %}About Us - Law Minded{% endblock %}
+{% block meta_desc %}Why Law Minded exists - making India's legal and compliance landscape accessible to every citizen, in plain English.{% endblock %}
+
+{% block content %}
+
+<div class="page-hero">
+  <span class="section-tag">About Us</span>
+  <h1>Why Law Minded Exists</h1>
+  <p>Making India's legal and compliance landscape accessible to everyone - one plain-English article at a time.</p>
+</div>
+
+<!-- AD (top) -->
+<div class="ad-container">
+  {% with ad_slot = adsense_slots['top'] %}{% include '_ad.html' %}{% endwith %}
+</div>
+
+<section>
+  <div class="about-grid">
+    <div class="about-idea">
+      <h2>Our Story</h2>
+      <p>India's legal system is complex, jargon-heavy, and often inaccessible to the people it's meant to serve. Founders miss ROC deadlines because nobody told them. Employees don't claim rights they're entitled to. Citizens don't know how to file an RTI.</p>
+      <p>Law Minded was created to change that - to bridge the gap between legal complexity and everyday understanding.</p>
+      <blockquote class="about-quote">"Every Indian citizen deserves to understand the laws that govern their life - not just those who can afford a lawyer."</blockquote>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-text"><strong>2024 - The Idea</strong><br>While exploring the Right to Information Act, 2005, we realised something powerful: every Indian has the right to information - yet most people have no idea what rights they actually hold. That gap between rights and awareness is exactly what Law Minded set out to close.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-text"><strong>2025 - The Research</strong><br>We spent the year researching, structuring, and writing - turning dense laws across corporate, labour, consumer and constitutional domains into clear, plain-English content.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-text"><strong>2026 - We Go Live</strong><br>Law Minded launched to the public - a platform where any Indian can understand the law, access free templates, and stay compliant.</div>
+        </div>
+      </div>
+    </div>
+    <div class="person-card">
+      <div class="masked-avatar">👤</div>
+      <div class="person-name">Anonymous Founder</div>
+      <div class="person-title">Founder, Law Minded</div>
+      <p class="person-bio">The founder prefers to stay anonymous and let the work speak for itself. With a background spanning corporate law, startups, and digital content, they built Law Minded to bridge the gap between legal complexity and everyday understanding — and to make India's legal landscape accessible to everyone.</p>
+    </div>
+  </div>
+</section>
+
+<!-- MISSION / VALUES -->
+<section class="section-alt">
+  <span class="section-tag">What We Stand For</span>
+  <h2 class="section-title">Our Principles</h2>
+  <div class="offer-grid">
+    <div class="offer-card is-static">
+      <div class="offer-icon">🗣️</div>
+      <h3>Plain English</h3>
+      <p>No jargon, no legalese. If a 12th-grade student can't understand it, we rewrite it.</p>
+    </div>
+    <div class="offer-card is-static">
+      <div class="offer-icon">🆓</div>
+      <h3>Free &amp; Open</h3>
+      <p>Legal awareness shouldn't be a luxury. Our knowledge and templates are free for everyone.</p>
+    </div>
+    <div class="offer-card is-static">
+      <div class="offer-icon">✅</div>
+      <h3>Accurate &amp; Current</h3>
+      <p>We track amendments, circulars, and judgments so the content stays up to date.</p>
+    </div>
+    <div class="offer-card is-static">
+      <div class="offer-icon">🇮🇳</div>
+      <h3>For Every Indian</h3>
+      <p>From founders and HR teams to students and everyday citizens - knowing your rights matters.</p>
+    </div>
+  </div>
+</section>
+
+<!-- AD (bottom) -->
+<div class="ad-container">
+  {% with ad_slot = adsense_slots['bottom'] %}{% include '_ad.html' %}{% endwith %}
+</div>
+
+{% endblock %}

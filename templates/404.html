@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Page Not Found - Law Minded{% endblock %}
+
+{% block content %}
+<div class="page-hero error-page">
+  <div class="error-code">404</div>
+  <h1>This page doesn't exist</h1>
+  <p>The page you're looking for may have moved or never existed. Let's get you back on track.</p>
+  <div class="error-actions">
+    <a href="{{ url_for('index') }}" class="btn-primary">Back to Home</a>
+    <a href="{{ url_for('blogs') }}" class="btn-secondary">Browse Articles</a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% from '_icons.html' import icon %}
+{% block title %}Frequently Asked Questions - Law Minded{% endblock %}
+{% block meta_desc %}Answers to common questions on ROC compliance, Private Limited vs LLP, consumer complaints, RTI, and more.{% endblock %}
+
+{% block head_extra %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {% for q, a in faqs %}
+    {"@type":"Question","name":"{{ q|replace('"','') }}","acceptedAnswer":{"@type":"Answer","text":"{{ a|replace('"','') }}"}}{{ "," if not loop.last }}
+    {% endfor %}
+  ]
+}
+</script>
+{% endblock %}
+
+{% block content %}
+
+<div class="page-hero">
+  <span class="section-tag">FAQ</span>
+  <h1>Frequently Asked Questions</h1>
+  <p>Quick, plain-English answers to the questions we hear most often.</p>
+</div>
+
+<!-- AD (top) -->
+<div class="ad-container">
+  {% with ad_slot = adsense_slots['top'] %}{% include '_ad.html' %}{% endwith %}
+</div>
+
+<section>
+  <div class="faq-wrap">
+    {% for q, a in faqs %}
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">{{ q }}<span class="faq-toggle">{{ icon('plus', 18) }}</span></div>
+      <div class="faq-a">{{ a }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- AD (bottom) -->
+<div class="ad-container">
+  {% with ad_slot = adsense_slots['bottom'] %}{% include '_ad.html' %}{% endwith %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+{% from '_icons.html' import icon %}
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Law Minded · Where Complexity Meets Clarity{% endblock %}</title>
+<meta name="description" content="{% block meta_desc %}Law Minded is India's compliance and legal awareness platform covering corporate compliance, labour laws, consumer rights and fundamental rights, in plain English.{% endblock %}">
+<meta name="author" content="Law Minded">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#E8A020">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<link rel="canonical" href="{{ canonical_url }}">
+{% set _social_img = site_url ~ url_for('static', filename='img/logo-full.png') %}
+<!-- Open Graph -->
+<meta property="og:site_name" content="Law Minded">
+<meta property="og:title" content="{{ self.title() }}">
+<meta property="og:description" content="{{ self.meta_desc() }}">
+<meta property="og:type" content="{% block og_type %}website{% endblock %}">
+<meta property="og:url" content="{{ canonical_url }}">
+<meta property="og:image" content="{{ _social_img }}">
+<meta property="og:locale" content="en_IN">
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ self.title() }}">
+<meta name="twitter:description" content="{{ self.meta_desc() }}">
+<meta name="twitter:image" content="{{ _social_img }}">
+<!-- Organization + WebSite structured data -->
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+{"@type":"Organization","@id":"{{ site_url }}/#org","name":"Law Minded","url":"{{ site_url }}/","logo":"{{ _social_img }}","description":"India's compliance and legal awareness platform covering corporate compliance, labour laws and consumer rights, in plain English."},
+{"@type":"WebSite","@id":"{{ site_url }}/#website","url":"{{ site_url }}/","name":"Law Minded","publisher":{"@id":"{{ site_url }}/#org"},"potentialAction":{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"{{ site_url }}/search?q={search_term_string}"},"query-input":"required name=search_term_string"}}
+]}
+</script>
+<link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon-32.png') }}">
+<link rel="icon" type="image/png" sizes="180x180" href="{{ url_for('static', filename='img/favicon-180.png') }}">
+<link rel="apple-touch-icon" href="{{ url_for('static', filename='img/favicon-180.png') }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v={{ asset_v('css/style.css') }}">
+{% if adsense_client %}
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ adsense_client }}" crossorigin="anonymous"></script>
+{% endif %}
+{% block head_extra %}{% endblock %}
+</head>
+<body data-theme="light">
+
+<!-- ACCESSIBILITY: skip straight to main content for keyboard / screen-reader users -->
+<a href="#main" class="skip-link">Skip to content</a>
+
+<!-- COOKIE BANNER -->
+<div class="cookie-banner" id="cookieBanner">
+  <span>We use cookies to improve your experience. By continuing, you agree to our <a href="{{ url_for('privacy') }}">Privacy Policy</a>.</span>
+  <div class="cookie-actions">
+    <button class="cookie-decline" onclick="declineCookie()">Decline</button>
+    <button class="cookie-accept" onclick="acceptCookie()">Accept &amp; Continue</button>
+  </div>
+</div>
+
+<!-- SHARE MODAL -->
+<div class="share-overlay" id="shareOverlay">
+  <div class="share-modal">
+    <button class="dl-close" onclick="closeShare()" aria-label="Close">{{ icon('close', 18) }}</button>
+    <div class="dl-modal-icon">{{ icon('share', 26) }}</div>
+    <h3>Share this</h3>
+    <p id="shareTitle" class="share-subtitle"></p>
+    <div class="share-options">
+      <button class="share-opt share-wa" onclick="shareWhatsApp()">{{ icon('whatsapp', 18) }} WhatsApp</button>
+      <button class="share-opt share-link" onclick="shareCopy()">{{ icon('link', 18) }} Copy Link</button>
+      <button class="share-opt share-more" id="shareMoreBtn" onclick="shareNative()" style="display:none;">{{ icon('more', 18) }} More options</button>
+    </div>
+    <div class="share-copied" id="shareCopied">{{ icon('check', 16) }} Link copied to clipboard</div>
+  </div>
+</div>
+
+<!-- DOWNLOAD EMAIL POPUP -->
+<div class="dl-overlay" id="dlOverlay">
+  <div class="dl-modal">
+    <button class="dl-close" onclick="closeDlModal()" aria-label="Close">{{ icon('close', 18) }}</button>
+    <div class="dl-modal-icon">{{ icon('file', 26) }}</div>
+    <h3>Get Your Free Template</h3>
+    <p>Enter your email to receive compliance updates along with your download, or skip to download directly.</p>
+    <div class="dl-email-row">
+      <input type="email" id="dlEmail" placeholder="your@email.com">
+      <button onclick="dlSubscribeAndDownload()">Subscribe &amp; Download</button>
+    </div>
+    <button class="dl-skip" onclick="dlSkipAndDownload()">No thanks, just download</button>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <a href="{{ url_for('index') }}" class="nav-logo" aria-label="Law Minded home">
+    <img src="{{ url_for('static', filename='img/logo-horizontal.png') }}" alt="Law Minded" class="logo-light">
+    <img src="{{ url_for('static', filename='img/logo-horizontal-ondark.png') }}" alt="Law Minded" class="logo-dark">
+  </a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="{{ url_for('index') }}" class="{{ 'active' if request.endpoint == 'index' }}">Home</a></li>
+    <li><a href="{{ url_for('about') }}" class="{{ 'active' if request.endpoint == 'about' }}">About</a></li>
+    <li><a href="{{ url_for('blogs') }}" class="{{ 'active' if request.endpoint in ['blogs','article'] }}">Blogs</a></li>
+    <li><a href="{{ url_for('templates_page') }}" class="{{ 'active' if request.endpoint == 'templates_page' }}">Templates</a></li>
+    <li><a href="{{ url_for('compare') }}" class="{{ 'active' if request.endpoint == 'compare' }}">Compare Laws</a></li>
+    <li><a href="{{ url_for('judgments') }}" class="{{ 'active' if request.endpoint == 'judgments' }}">Judgments</a></li>
+    <li><a href="{{ url_for('faq') }}" class="{{ 'active' if request.endpoint == 'faq' }}">FAQ</a></li>
+    <!-- Contact appears here on mobile (the header button is hidden on small screens) -->
+    <li class="nav-mobile-only"><a href="{{ url_for('contact_page') }}" class="{{ 'active' if request.endpoint == 'contact_page' }}">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="icon-btn" id="searchToggle" onclick="toggleSearch()" title="Search" aria-label="Search">{{ icon('search', 18) }}</button>
+    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle dark mode">
+      <span class="theme-ic theme-moon">{{ icon('moon', 16) }}</span>
+      <span class="theme-ic theme-sun">{{ icon('sun', 16) }}</span>
+    </button>
+    <a href="{{ url_for('contact_page') }}" class="nav-cta">Contact</a>
+    <button class="hamburger" onclick="toggleNav()" aria-label="Open menu">{{ icon('menu', 22) }}</button>
+  </div>
+</nav>
+
+<!-- SEARCH BAR - desktop (toggled by the search icon) -->
+<div class="search-bar" id="searchBar">
+  <form action="{{ url_for('search') }}" method="get" class="search-bar-inner">
+    <span class="search-bar-icon">{{ icon('search', 17) }}</span>
+    <input type="search" name="q" id="searchInput" placeholder="Search articles, templates, judgments, FAQs…" required>
+    <button type="submit">Search</button>
+  </form>
+</div>
+
+<!-- FLOATING SEARCH WIDGET (mobile) -->
+<button class="search-fab" id="searchFab" onclick="openSearchModal()" aria-label="Search">{{ icon('search', 22) }}</button>
+
+<!-- SEARCH MODAL (opened by the floating widget) -->
+<div class="search-modal-overlay" id="searchModal">
+  <div class="search-modal">
+    <button class="dl-close" onclick="closeSearchModal()" aria-label="Close">{{ icon('close', 18) }}</button>
+    <h3>Search Law Minded</h3>
+    <form action="{{ url_for('search') }}" method="get" class="search-modal-form">
+      <input type="search" name="q" id="searchModalInput" placeholder="Articles, templates, judgments, FAQs…" required>
+      <button type="submit">Search</button>
+    </form>
+  </div>
+</div>
+
+<main id="main">
+{% block content %}{% endblock %}
+</main>
+
+<!-- DISCLAIMER -->
+<div class="disclaimer-wrap">
+  <div class="disclaimer">
+    <div class="disclaimer-title">{{ icon('alert', 15) }} Legal Disclaimer</div>
+    <p>All content on Law Minded is for legal awareness and educational purposes only. It does not constitute legal advice. Laws and regulations change frequently, so always consult a qualified legal professional for advice specific to your situation. Law Minded is not a law firm and does not provide legal representation.</p>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <img src="{{ url_for('static', filename='img/logo-full-ondark.png') }}" alt="Law Minded" class="footer-logo">
+      <p>India's compliance and legal awareness hub. Helping founders, HR professionals, CAs and citizens understand the law, in plain English.</p>
+      <!-- Social profiles launch soon; rendered as disabled chips until they go live. -->
+      <div class="footer-social" aria-label="Social media (coming soon)">
+        <span class="f-social-btn is-soon" title="LinkedIn — coming soon" aria-disabled="true">{{ icon('linkedin', 17) }}</span>
+        <span class="f-social-btn is-soon" title="X (Twitter) — coming soon" aria-disabled="true">{{ icon('x', 15) }}</span>
+        <span class="f-social-btn is-soon" title="Instagram — coming soon" aria-disabled="true">{{ icon('instagram', 17) }}</span>
+        <span class="f-social-btn is-soon" title="WhatsApp — coming soon" aria-disabled="true">{{ icon('whatsapp', 17) }}</span>
+      </div>
+      <span class="footer-soon-note">Social channels launching soon</span>
+    </div>
+    <div class="footer-col">
+      <h4>Explore</h4>
+      <ul>
+        <li><a href="{{ url_for('index') }}">Home</a></li>
+        <li><a href="{{ url_for('about') }}">About Us</a></li>
+        <li><a href="{{ url_for('blogs') }}">Knowledge Hub</a></li>
+        <li><a href="{{ url_for('faq') }}">FAQ</a></li>
+        <li><a href="{{ url_for('contact_page') }}">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Tools</h4>
+      <ul>
+        <li><a href="{{ url_for('compare') }}">Compare Laws</a></li>
+        <li><a href="{{ url_for('templates_page') }}">Free Templates</a></li>
+        <li><a href="{{ url_for('judgments') }}">Landmark Judgments</a></li>
+        <li><a href="{{ url_for('resources') }}">Resources</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <ul>
+        <li><a href="{{ url_for('terms') }}">Terms &amp; Conditions</a></li>
+        <li><a href="{{ url_for('privacy') }}">Privacy Policy</a></li>
+        <li><a href="{{ url_for('terms') }}#responsibilities">User Responsibilities</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© {{ current_year }} Law Minded. All rights reserved.</span>
+    <span>Made for legal awareness in India</span>
+    <a href="{{ url_for('privacy') }}">Privacy Policy</a>
+  </div>
+</footer>
+
+<script src="{{ url_for('static', filename='js/main.js') }}?v={{ asset_v('js/main.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

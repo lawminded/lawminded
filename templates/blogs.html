@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% from '_icons.html' import icon %}
+{% block title %}Knowledge Hub - Law Minded{% endblock %}
+{% block meta_desc %}Plain-English guides on Indian corporate compliance, labour law, consumer rights, and landmark legal acts.{% endblock %}
+
+{% block content %}
+
+<div class="page-hero">
+  <span class="section-tag">Knowledge Hub</span>
+  <h1>India's Compliance &amp; Legal Knowledge - Simplified</h1>
+  <p>Plain-English guides on the laws that affect your business, your work, and your rights as a citizen.</p>
+</div>
+
+<!-- AD (top) -->
+<div class="ad-container">
+  {% with ad_slot = adsense_slots['top'] %}{% include '_ad.html' %}{% endwith %}
+</div>
+
+<section>
+  <div class="blog-tabs">
+    {% for key, label in category_map.items() %}
+    <button class="tab-btn {{ 'active' if loop.first }}" onclick="switchTab('{{ key }}', this)">{{ label }}</button>
+    {% endfor %}
+  </div>
+
+  {% for cat_key, label in category_map.items() %}
+  <div class="tab-content {{ 'active' if loop.first }}" id="tab-{{ cat_key }}">
+    {% set arts = articles_by_cat.get(cat_key, []) %}
+    {% if arts %}
+      {% for art in arts %}
+      <article class="blog-card">
+        <div class="blog-card-top">
+          <span class="blog-tag">{{ art['act'] or label }}</span>
+          <button class="wa-share" onclick="openShare('{{ art['title']|replace("'","") }}', '{{ url_for('article', slug=art['slug'], _external=True) }}')">{{ icon('share', 14) }} Share</button>
+        </div>
+        <div class="blog-card-body">
+          <div class="blog-meta">{{ icon('clock', 13) }} {{ art['read_time'] or '5 min' }}</div>
+          <h3>{{ art['title'] }}</h3>
+          <p>{{ art['summary'] }}</p>
+          <a href="{{ url_for('article', slug=art['slug']) }}" class="blog-link">Read Article {{ icon('arrow-right', 15) }}</a>
+        </div>
+      </article>
+      {% endfor %}
+    {% else %}
+      <div style="grid-column:1/-1;text-align:center;padding:2rem;font-family:var(--uf);color:var(--muted);">
+        No articles published in this category yet.
+      </div>
+    {% endif %}
+  </div>
+  {% endfor %}
+</section>
+
+<!-- AD (bottom) -->
+<div class="ad-container">
+  {% with ad_slot = adsense_slots['bottom'] %}{% include '_ad.html' %}{% endwith %}
+</div>
+
+{% endblock %}

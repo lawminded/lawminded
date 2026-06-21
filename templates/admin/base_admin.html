@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block admin_title %}Admin{% endblock %} - Law Minded Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body data-theme="light">
+<div class="admin-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar">
+    <div class="brand">Law <span>Minded</span><br><small style="font-family:var(--uf);font-size:.72rem;color:#888;font-weight:400;">Admin Panel</small></div>
+    <ul class="admin-nav">
+      <li><a href="{{ url_for('admin_dashboard') }}" {% if request.endpoint == 'admin_dashboard' %}class="active"{% endif %}>📊 Dashboard</a></li>
+      <li><a href="{{ url_for('admin_articles') }}" {% if request.endpoint in ['admin_articles','admin_article_new','admin_article_edit'] %}class="active"{% endif %}>📝 Articles</a></li>
+      <li><a href="{{ url_for('admin_article_new') }}">+ New Article</a></li>
+      <li><a href="{{ url_for('admin_documents') }}" {% if request.endpoint in ['admin_documents','admin_document_new','admin_document_edit'] %}class="active"{% endif %}>📄 Documents</a></li>
+      <li><a href="{{ url_for('admin_subscribers') }}" {% if request.endpoint == 'admin_subscribers' %}class="active"{% endif %}>📧 Subscribers</a></li>
+      <li><a href="{{ url_for('admin_messages') }}" {% if request.endpoint == 'admin_messages' %}class="active"{% endif %}>💬 Messages</a></li>
+      <li><a href="{{ url_for('admin_password') }}" {% if request.endpoint == 'admin_password' %}class="active"{% endif %}>🔑 Change Password</a></li>
+      <li style="margin-top:auto;border-top:1px solid #333;padding-top:.5rem;">
+        <a href="{{ url_for('index') }}" target="_blank">🌐 View Site</a>
+      </li>
+      <li><a href="{{ url_for('admin_logout') }}">🚪 Logout</a></li>
+    </ul>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="admin-main">
+    <div class="admin-header">
+      <h1>{{ self.admin_title() }}</h1>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="flash flash-{{ category }}" style="margin-bottom:1rem;">{{ message }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    {% block admin_content %}{% endblock %}
+  </main>
+
+</div>
+</body>
+</html>

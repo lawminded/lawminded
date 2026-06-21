@@ -1,0 +1,38 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_title %}Documents{% endblock %}
+{% block admin_content %}
+
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+  <p style="font-family:var(--uf);font-size:.88rem;color:var(--mid);">Manage your templates and board / special resolutions. Changes appear on the site instantly.</p>
+  <a href="{{ url_for('admin_document_new') }}" class="btn-primary btn-sm">+ New Document</a>
+</div>
+
+{% for type_key, label in doc_types.items() %}
+<h3 style="font-family:var(--hf);font-size:1.1rem;color:var(--dark);margin:1.75rem 0 .75rem;">{{ label }}s</h3>
+{% set items = grouped.get(type_key, []) %}
+{% if items %}
+<table class="admin-table">
+  <thead><tr><th>Title</th><th>Slug</th><th>Tags</th><th>Actions</th></tr></thead>
+  <tbody>
+    {% for d in items %}
+    <tr>
+      <td style="font-weight:500;color:var(--dark);">{{ d['icon'] }} {{ d['title'] }}</td>
+      <td>{{ d['slug'] }}</td>
+      <td>{{ d['tags'] or '—' }}</td>
+      <td style="white-space:nowrap;">
+        <a href="{{ url_for('admin_document_edit', doc_id=d['id']) }}" class="btn-secondary btn-sm" style="margin-right:.4rem;">Edit</a>
+        <form method="POST" action="{{ url_for('admin_document_delete', doc_id=d['id']) }}" style="display:inline;" onsubmit="return confirm('Delete this document? This cannot be undone.');">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn-danger">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p style="font-family:var(--uf);font-size:.86rem;color:var(--muted);">No {{ label|lower }}s yet. <a href="{{ url_for('admin_document_new') }}" style="color:var(--gold);">Add one →</a></p>
+{% endif %}
+{% endfor %}
+
+{% endblock %}
