@@ -28,6 +28,8 @@
           <a href="{{ r.url_arg }}" target="_blank" rel="noopener"><h3>{{ r.title }} ↗</h3></a>
         {% elif r.url_kind == 'resolutions' %}
           <a href="{{ url_for('resolutions', rtype=r.url_arg) }}"><h3>{{ r.title }}</h3></a>
+        {% elif r.url_kind == 'judgment' %}
+          <a href="{{ url_for('judgment', slug=r.url_arg) }}"><h3>{{ r.title }}</h3></a>
         {% else %}
           <a href="{{ url_for(r.url_arg) }}"><h3>{{ r.title }}</h3></a>
         {% endif %}

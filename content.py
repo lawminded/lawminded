@@ -361,15 +361,16 @@ def search_all(query, articles):
 
     # (Templates & Resolutions are now DB-managed and searched in the /search route.)
 
-    # Judgments
-    for year, title, desc, area in JUDGMENTS:
-        if q in (title + ' ' + desc + ' ' + area + ' ' + year).lower():
+    # Judgments (each entry is a dict: slug, year, area, title, summary, brief)
+    for j in JUDGMENTS:
+        haystack = ' '.join((j['title'], j['summary'], j['area'], j['year'])).lower()
+        if q in haystack:
             results.append({
                 'type': 'Judgment',
-                'title': f'{title} ({year})',
-                'snippet': desc,
-                'url_kind': 'page',
-                'url_arg': 'judgments',
+                'title': f"{j['title']} ({j['year']})",
+                'snippet': j['summary'],
+                'url_kind': 'judgment',
+                'url_arg': j['slug'],
             })
 
     # Resources
