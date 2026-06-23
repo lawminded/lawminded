@@ -134,12 +134,11 @@ def seed_documents():
 
 
 def seed_articles():
-    """Insert sample articles if table is empty."""
+    """Insert sample + imported blog articles for any slug not already present.
+    Idempotent: existing rows (including articles edited via admin) are never
+    overwritten, so this is safe to run on every startup."""
     conn = get_db()
-    count = conn.execute('SELECT COUNT(*) FROM articles').fetchone()[0]
-    if count > 0:
-        conn.close()
-        return
+    existing = {r[0] for r in conn.execute('SELECT slug FROM articles').fetchall()}
 
     articles = [
         ('Annual Compliance Checklist for Private Limited Companies',
@@ -882,9 +881,19 @@ def seed_articles():
 
     ]
 
-    conn.executemany(
-        'INSERT INTO articles (title, slug, category, act, read_time, summary, content) VALUES (?,?,?,?,?,?,?)',
-        articles
-    )
-    conn.commit()
+    # Append the 20 imported long-form blogs (generated into blog_seed.py).
+    try:
+        from blog_seed import BLOG_ARTICLES
+        articles = articles + list(BLOG_ARTICLES)
+    except Exception:
+        pass
+
+    # Only insert slugs that aren't already in the table (never overwrite).
+    to_insert = [a for a in articles if a[1] not in existing]
+    if to_insert:
+        conn.executemany(
+            'INSERT INTO articles (title, slug, category, act, read_time, summary, content) VALUES (?,?,?,?,?,?,?)',
+            to_insert
+        )
+        conn.commit()
     conn.close()
