@@ -102,6 +102,9 @@ def preprocess(lines):
             continue
         if re.fullmatch(r"(-{3,}|\*{3,}|_{3,})", s):
             continue
+        # Editorial scaffolding that must never reach readers.
+        if "[Author name]" in s or re.match(r"\*?\s*Reviewed by\b", s):
+            continue
         out.append(ln)
     return out
 
@@ -193,7 +196,9 @@ def main():
         cat, act = META[slug]
         path = os.path.join(SRC, slug + ".md")
         with open(path, encoding="utf-8") as f:
-            lines = f.readlines()
+            text = f.read()
+        text = re.sub(r"<!--.*?-->", "", text, flags=re.S)   # drop "do not publish" comments
+        lines = text.splitlines(keepends=True)
         title, body = None, []
         for ln in lines:
             s = ln.strip()

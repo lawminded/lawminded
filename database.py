@@ -919,5 +919,20 @@ def seed_articles():
 
     # Remove retired duplicates that may already live in the (persistent) DB.
     conn.executemany('DELETE FROM articles WHERE slug=?', [(s,) for s in sorted(RETIRED_SLUGS)])
+
+    # Self-heal: replace any seeded article whose stored content still carries
+    # editorial scaffolding that leaked into an earlier seed (the "do not
+    # publish" SEO notes, the "[Author name]" reviewer placeholder). Idempotent:
+    # a no-op once the content is clean.
+    corrected = {a[1]: a for a in articles}
+    SCAFFOLD = ('[Author name]', 'PUBLISHING NOTES', '&lt;!--', 'Last reviewed:')
+    for r in conn.execute('SELECT id, slug, content FROM articles').fetchall():
+        a = corrected.get(r['slug'])
+        if a and any(m in (r['content'] or '') for m in SCAFFOLD):
+            conn.execute(
+                'UPDATE articles SET title=?, category=?, act=?, read_time=?, summary=?, content=? WHERE id=?',
+                (a[0], a[2], a[3], a[4], a[5], a[6], r['id'])
+            )
+
     conn.commit()
     conn.close()
