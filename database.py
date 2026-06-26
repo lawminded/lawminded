@@ -888,6 +888,13 @@ def seed_articles():
     except Exception:
         pass
 
+    # Append the 45 advanced blogs (generated into blog_seed2.py).
+    try:
+        from blog_seed2 import BLOG_ARTICLES_2
+        articles = articles + list(BLOG_ARTICLES_2)
+    except Exception:
+        pass
+
     # Only insert slugs that aren't already in the table (never overwrite).
     to_insert = [a for a in articles if a[1] not in existing]
     if to_insert:

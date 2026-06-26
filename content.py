@@ -7,6 +7,9 @@ single source of truth.
 CATEGORY_MAP = {
     'corp': 'Corporate Compliance',
     'labour': 'Labour & Employment',
+    'contracts': 'Contracts & Agreements',
+    'tax': 'Tax & GST',
+    'property': 'Property & Estate',
     'consumer': 'Consumer & RTI',
     'acts': 'Legal Acts Explained',
     'updates': 'Updates & Amendments',

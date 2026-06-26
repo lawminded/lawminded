@@ -392,6 +392,18 @@ ins.adsbygoogle[data-ad-status="unfilled"]{display:none!important;}
 .article-body .prose ul,.article-body .prose ol,.article-body ul,.article-body ol{font-family:var(--bf);font-size:1.04rem;color:var(--charcoal);line-height:1.85;margin-bottom:1.15rem;padding-left:1.5rem;}
 .article-body .prose li,.article-body li{margin-bottom:.5rem;}
 .article-body .prose strong,.article-body strong{color:var(--dark);font-weight:600;}
+/* Tables, callouts & inline code inside article prose (match site tokens) */
+.article-body .prose .table-wrap{overflow-x:auto;margin:1.7rem 0;border:1px solid var(--border);border-radius:var(--r-md);box-shadow:var(--shadow-sm);}
+.article-body .prose table.prose-table{width:100%;border-collapse:collapse;background:var(--card-bg);font-family:var(--uf);font-size:.92rem;}
+.article-body .prose table.prose-table th{background:var(--band);color:var(--on-band);font-weight:600;text-align:left;padding:12px 16px;}
+.article-body .prose table.prose-table td{padding:11px 16px;color:var(--charcoal);border-bottom:1px solid var(--hairline);vertical-align:top;line-height:1.6;}
+.article-body .prose table.prose-table tr:last-child td{border-bottom:none;}
+.article-body .prose table.prose-table tbody tr:nth-child(even) td{background:var(--alt);}
+.article-body .prose table.prose-table tbody tr:hover td{background:var(--gold-tint);}
+[data-theme=dark] .article-body .prose table.prose-table tbody tr:hover td{background:rgba(232,160,32,.08);}
+.article-body .prose blockquote{margin:1.7rem 0;padding:1rem 1.35rem;border-left:3px solid var(--band);background:var(--alt);border-radius:0 var(--r-md) var(--r-md) 0;font-family:var(--bf);font-size:1.02rem;color:var(--charcoal);line-height:1.8;}
+.article-body .prose blockquote strong{color:var(--dark);}
+.article-body .prose code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88em;background:var(--gold-tint);color:var(--dark);padding:.12em .4em;border-radius:4px;}
 
 /* ─── LEGAL PAGES ─────────────────────────────────────────────────────── */
 .legal-body{max-width:800px;margin:2.5rem auto 1rem;padding:0 var(--pad-x);}
