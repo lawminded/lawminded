@@ -133,6 +133,19 @@ def seed_documents():
     conn.close()
 
 
+# De-duplicated articles: older/shorter versions retired in favour of a single
+# stronger article per topic. Never re-seeded, and removed from the DB on startup.
+# To bring one back, just delete its slug from this set.
+RETIRED_SLUGS = {
+    'rti-act', 'rti-complete-guide',                  # -> right-to-information-act-guide
+    'consumer-protection-act',                        # -> consumer-protection-act-2019-guide
+    'annual-compliance-pvt-ltd',                      # -> annual-compliance-companies
+    'gst-registration-thresholds-composition',        # -> gst-registration
+    'trademark-registration-india-guide',             # -> trademark-registration
+    'llp-compliance-calendar',                        # -> annual-compliance-llps
+}
+
+
 def seed_articles():
     """Insert sample + imported blog articles for any slug not already present.
     Idempotent: existing rows (including articles edited via admin) are never
@@ -895,12 +908,16 @@ def seed_articles():
     except Exception:
         pass
 
-    # Only insert slugs that aren't already in the table (never overwrite).
-    to_insert = [a for a in articles if a[1] not in existing]
+    # Only insert slugs that aren't already in the table (never overwrite),
+    # and never re-seed a retired (de-duplicated) article.
+    to_insert = [a for a in articles if a[1] not in existing and a[1] not in RETIRED_SLUGS]
     if to_insert:
         conn.executemany(
             'INSERT INTO articles (title, slug, category, act, read_time, summary, content) VALUES (?,?,?,?,?,?,?)',
             to_insert
         )
-        conn.commit()
+
+    # Remove retired duplicates that may already live in the (persistent) DB.
+    conn.executemany('DELETE FROM articles WHERE slug=?', [(s,) for s in sorted(RETIRED_SLUGS)])
+    conn.commit()
     conn.close()
