@@ -358,7 +358,7 @@ ins.adsbygoogle[data-ad-status="unfilled"]{display:none!important;}
 
 /* ─── PAGE HERO (sub-pages) ───────────────────────────────────────────── */
 .page-hero{background:var(--white);padding:4rem var(--pad-x) 3rem;border-bottom:1px solid var(--hairline);text-align:center;position:relative;overflow:hidden;}
-.page-hero::after{content:'';position:absolute;left:50%;bottom:-120px;transform:translateX(-50%);width:480px;height:240px;background:radial-gradient(ellipse,rgba(232,160,32,.1),transparent 70%);}
+.page-hero::after{content:'';position:absolute;left:50%;bottom:-120px;transform:translateX(-50%);width:480px;height:240px;background:radial-gradient(ellipse,rgba(232,160,32,.1),transparent 70%);pointer-events:none;}
 .page-hero .section-tag{display:block;margin-bottom:.6rem;}
 .page-hero h1{font-family:var(--hf);font-size:clamp(2.1rem,4.4vw,3.2rem);color:var(--dark);line-height:1.1;letter-spacing:-.02em;margin-bottom:1rem;position:relative;}
 .page-hero p{font-family:var(--uf);font-size:1.05rem;color:var(--mid);max-width:640px;margin:0 auto;line-height:1.65;position:relative;}
