@@ -17,10 +17,13 @@ from flask_limiter.util import get_remote_address
 from flask_talisman import Talisman
 import bleach
 from dotenv import load_dotenv
+
+# Load .env BEFORE importing database, which reads DATABASE_PATH at import time.
+# (If load_dotenv runs after that import, the custom DB path is silently ignored.)
+load_dotenv()
+
 from database import get_db, init_db, seed_articles, seed_documents
 import content as C
-
-load_dotenv()
 
 # Production flag: enables HTTPS enforcement, HSTS, and Secure cookies on the live
 # server. Stays off locally so http://localhost development still works.

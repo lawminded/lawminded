@@ -908,6 +908,13 @@ def seed_articles():
     except Exception:
         pass
 
+    # Append the 36 corporate-compliance blogs (generated into blog_seed3.py).
+    try:
+        from blog_seed3 import BLOG_ARTICLES_3
+        articles = articles + list(BLOG_ARTICLES_3)
+    except Exception:
+        pass
+
     # Only insert slugs that aren't already in the table (never overwrite),
     # and never re-seed a retired (de-duplicated) article.
     to_insert = [a for a in articles if a[1] not in existing and a[1] not in RETIRED_SLUGS]
