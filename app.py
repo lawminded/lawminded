@@ -615,7 +615,7 @@ def newsletter():
                 'You are now subscribed — thank you for joining.</p>'
                 '<p style="margin:0 0 12px;font:400 15px/1.65 Arial,sans-serif;">'
                 'From time to time we will send plain-English updates on compliance changes, '
-                'new guides, and important court judgments. Nothing more, and never any spam.</p>'
+                'new guides, and important court judgments. Nothing more, and nothing you did not sign up for.</p>'
                 '<p style="margin:0;font:400 15px/1.65 Arial,sans-serif;">'
                 f'In the meantime, browse our free <a href="{hub}" style="color:#8A5E07;">Knowledge Hub</a> '
                 'for guides written for founders, professionals, and everyday citizens.</p>'
