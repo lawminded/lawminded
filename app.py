@@ -920,6 +920,71 @@ def admin_subscribers():
     return render_template('admin/subscribers.html', subscribers=subscribers)
 
 
+@app.route('/admin/subscribers/add', methods=['POST'])
+@admin_required
+def admin_subscriber_add():
+    name = request.form.get('name', '').strip()
+    email = request.form.get('email', '').strip()
+    if not email or not VALID_EMAIL_RE.match(email):
+        flash('Please enter a valid email address.', 'error')
+        return redirect(url_for('admin_subscribers'))
+    db = get_db()
+    try:
+        db.execute('INSERT INTO subscribers (name, email) VALUES (?,?)', (name, email))
+        db.commit()
+        flash(f'Subscriber {email} added.', 'success')
+    except sqlite3.IntegrityError:
+        flash(f'{email} is already subscribed.', 'error')
+    db.close()
+    return redirect(url_for('admin_subscribers'))
+
+
+@app.route('/admin/subscribers/<int:sub_id>/delete', methods=['POST'])
+@admin_required
+def admin_subscriber_delete(sub_id):
+    db = get_db()
+    db.execute('DELETE FROM subscribers WHERE id=?', (sub_id,))
+    db.commit()
+    db.close()
+    flash('Subscriber removed.', 'success')
+    return redirect(url_for('admin_subscribers'))
+
+
+@app.route('/admin/subscribers/export')
+@admin_required
+def admin_subscribers_export():
+    """Download all subscribers as a real .xlsx (opens directly in Excel)."""
+    db = get_db()
+    rows = db.execute(
+        'SELECT name, email, created_at FROM subscribers ORDER BY created_at DESC'
+    ).fetchall()
+    db.close()
+
+    from openpyxl import Workbook
+    from openpyxl.styles import Font
+    wb = Workbook()
+    ws = wb.active
+    ws.title = 'Subscribers'
+    ws.append(['Name', 'Email', 'Subscribed On'])
+    for col in ('A1', 'B1', 'C1'):
+        ws[col].font = Font(bold=True)
+    for r in rows:
+        ws.append([r['name'] or '', r['email'], (str(r['created_at'])[:19] if r['created_at'] else '')])
+    ws.column_dimensions['A'].width = 24
+    ws.column_dimensions['B'].width = 36
+    ws.column_dimensions['C'].width = 22
+    ws.freeze_panes = 'A2'
+
+    bio = BytesIO()
+    wb.save(bio)
+    bio.seek(0)
+    fname = f'lawminded-subscribers-{date.today().isoformat()}.xlsx'
+    return send_file(
+        bio, as_attachment=True, download_name=fname,
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+
+
 @app.route('/admin/messages')
 @admin_required
 def admin_messages():

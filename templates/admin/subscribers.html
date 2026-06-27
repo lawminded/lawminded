@@ -2,14 +2,31 @@
 {% block admin_title %}Subscribers{% endblock %}
 {% block admin_content %}
 
-<p style="font-family:var(--uf);font-size:.88rem;color:var(--mid);margin-bottom:1.5rem;">
-  {{ subscribers|length }} total subscriber{% if subscribers|length != 1 %}s{% endif %}
-</p>
+<div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:1.25rem;">
+  <p style="font-family:var(--uf);font-size:.88rem;color:var(--mid);margin:0;">
+    {{ subscribers|length }} total subscriber{% if subscribers|length != 1 %}s{% endif %}
+  </p>
+  {% if subscribers %}
+  <a href="{{ url_for('admin_subscribers_export') }}" class="btn-secondary btn-sm">⬇ Export to Excel</a>
+  {% endif %}
+</div>
+
+<!-- Add subscriber manually -->
+<form method="POST" action="{{ url_for('admin_subscriber_add') }}"
+      style="display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;background:var(--white);
+             border:1px solid var(--hairline);border-radius:var(--r-md);padding:1rem 1.1rem;margin-bottom:1.5rem;">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <input type="text" name="name" placeholder="Name (optional)"
+         style="flex:1;min-width:140px;padding:9px 12px;border:1px solid var(--border);border-radius:var(--r-sm);font-family:var(--uf);font-size:.88rem;">
+  <input type="email" name="email" placeholder="Email address" required
+         style="flex:2;min-width:200px;padding:9px 12px;border:1px solid var(--border);border-radius:var(--r-sm);font-family:var(--uf);font-size:.88rem;">
+  <button type="submit" class="btn-primary btn-sm">+ Add Subscriber</button>
+</form>
 
 {% if subscribers %}
 <table class="admin-table">
   <thead>
-    <tr><th>Name</th><th>Email</th><th>Subscribed On</th></tr>
+    <tr><th>Name</th><th>Email</th><th>Subscribed On</th><th>Actions</th></tr>
   </thead>
   <tbody>
     {% for sub in subscribers %}
@@ -17,13 +34,21 @@
       <td>{{ sub['name'] or '-' }}</td>
       <td>{{ sub['email'] }}</td>
       <td>{{ sub['created_at']|humandate }}</td>
+      <td style="white-space:nowrap;">
+        <form method="POST" action="{{ url_for('admin_subscriber_delete', sub_id=sub['id']) }}"
+              style="display:inline;"
+              onsubmit="return confirm('Remove {{ sub['email'] }} from the subscriber list?');">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn-danger">Delete</button>
+        </form>
+      </td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
 {% else %}
 <p style="font-family:var(--uf);font-size:.88rem;color:var(--muted);text-align:center;padding:2rem;">
-  No subscribers yet.
+  No subscribers yet. Add one above, or they'll appear here when people sign up.
 </p>
 {% endif %}
 
