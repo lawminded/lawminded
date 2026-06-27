@@ -143,6 +143,62 @@ def unsubscribe_url(email):
     return f'{SITE_URL}{url_for("unsubscribe")}?token={token}'
 
 
+# ─── Branded transactional email ─────────────────────────────────────────────
+# A single shell keeps every outgoing email on-brand (logo, palette) and
+# improves deliverability: real plain-text part, List-Unsubscribe header, and
+# an inline (cid:) logo so it shows even when remote images are blocked.
+EMAIL_LOGO = 'static/img/logo-horizontal.png'
+
+
+def _email_html(heading, body_html, unsub=None):
+    foot_unsub = (
+        '<p style="margin:14px 0 0;font:400 12px/1.6 Arial,sans-serif;color:#A99B78;">'
+        'You are receiving this because you subscribed at Law Minded. '
+        f'<a href="{unsub}" style="color:#8A5E07;">Unsubscribe</a>.</p>'
+    ) if unsub else ''
+    return (
+        '<!doctype html><html lang="en"><body style="margin:0;padding:0;background:#F4F0E6;">'
+        '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" '
+        'style="background:#F4F0E6;padding:28px 12px;font-family:Arial,Helvetica,sans-serif;">'
+        '<tr><td align="center">'
+        '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" '
+        'style="max-width:540px;background:#ffffff;border:1px solid #ECE6D8;border-radius:14px;overflow:hidden;">'
+        '<tr><td style="height:4px;background:#E8A020;font-size:0;line-height:0;">&nbsp;</td></tr>'
+        '<tr><td style="padding:26px 34px 0;">'
+        '<img src="cid:logo" alt="LAW MiNDED" width="168" style="display:block;height:auto;border:0;outline:none;text-decoration:none;">'
+        '<p style="margin:10px 0 0;font:600 10px/1 Arial,sans-serif;letter-spacing:.16em;'
+        'text-transform:uppercase;color:#B7AC8E;">Where complexity meets clarity</p>'
+        '</td></tr>'
+        '<tr><td style="padding:20px 34px 28px;color:#33302A;">'
+        f'<h1 style="margin:0 0 14px;font:700 20px/1.3 Georgia,\'Times New Roman\',serif;color:#1C1B16;">{heading}</h1>'
+        f'{body_html}'
+        '<hr style="border:0;border-top:1px solid #ECE6D8;margin:22px 0 12px;">'
+        '<p style="margin:0;font:400 12px/1.6 Arial,sans-serif;color:#A99B78;">'
+        'Law&nbsp;Minded — India\'s free legal-awareness platform.</p>'
+        f'{foot_unsub}'
+        '</td></tr></table></td></tr></table></body></html>'
+    )
+
+
+def send_branded_email(subject, recipients, heading, body_html, body_text, unsub=None):
+    """Build + send a branded HTML email (with plain-text alt + inline logo)."""
+    msg = Message(subject=subject, recipients=recipients)
+    msg.body = body_text
+    msg.html = _email_html(heading, body_html, unsub)
+    if CONTACT_RECEIVER:
+        msg.reply_to = CONTACT_RECEIVER
+    if unsub:
+        # RFC 2369 + RFC 8058 one-click unsubscribe — a strong inbox-placement signal.
+        msg.extra_headers = {
+            'List-Unsubscribe': f'<{unsub}>',
+            'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+        }
+    with app.open_resource(EMAIL_LOGO) as f:
+        msg.attach('logo.png', 'image/png', f.read(), 'inline',
+                   headers=[('Content-ID', '<logo>'), ('X-Attachment-Id', 'logo')])
+    mail.send(msg)
+
+
 # ─── Context Processor (globals available in every template) ─────────────────
 
 def asset_version(rel_path):
@@ -489,20 +545,33 @@ def contact():
     db.close()
 
     try:
-        msg = Message(
-            subject='New Contact Form Submission — Law Minded',
+        # Internal notification to the team (reply goes straight to the sender).
+        notify = Message(
+            subject=f'New enquiry from {name} — Law Minded',
             recipients=[CONTACT_RECEIVER],
-            body=f'Name: {name}\nEmail: {email}\n\nQuery:\n{query}'
+            body=f'Name: {name}\nEmail: {email}\n\nMessage:\n{query}'
         )
-        mail.send(msg)
-        ack = Message(
-            subject='We received your query — Law Minded',
+        notify.reply_to = email
+        mail.send(notify)
+        # Branded acknowledgement to the person who wrote in.
+        send_branded_email(
+            subject='We received your message — Law Minded',
             recipients=[email],
-            body=(f'Hi {name},\n\nThank you for reaching out to Law Minded. '
-                  f'We have received your query and will get back to you shortly.\n\n'
-                  f'Regards,\nLaw Minded Team')
+            heading=f'Thanks, {name} — we have your message',
+            body_html=(
+                '<p style="margin:0 0 12px;font:400 15px/1.65 Arial,sans-serif;">'
+                'Thanks for reaching out to Law Minded. We have received your message '
+                'and will get back to you as soon as we can.</p>'
+                '<p style="margin:0;font:400 15px/1.65 Arial,sans-serif;color:#6F6857;">'
+                'You can simply reply to this email if you have anything to add.</p>'
+            ),
+            body_text=(
+                f'Hi {name},\n\n'
+                'Thanks for reaching out to Law Minded. We have received your message '
+                'and will get back to you as soon as we can.\n\n'
+                '— Law Minded'
+            ),
         )
-        mail.send(ack)
     except Exception:
         pass
 
@@ -532,49 +601,45 @@ def newsletter():
 
     try:
         unsub = unsubscribe_url(email)
-        welcome = Message(
-            subject='Thank you for joining the Law Minded newsletter',
+        hi = name or 'there'
+        hub = f'{SITE_URL}{url_for("blogs")}'
+        send_branded_email(
+            subject='Welcome to Law Minded',
             recipients=[email],
+            heading=f'Welcome, {hi}',
+            body_html=(
+                '<p style="margin:0 0 12px;font:400 15px/1.65 Arial,sans-serif;">'
+                'You are now subscribed — thank you for joining.</p>'
+                '<p style="margin:0 0 12px;font:400 15px/1.65 Arial,sans-serif;">'
+                'From time to time we will send plain-English updates on compliance changes, '
+                'new guides, and important court judgments. Nothing more, and never any spam.</p>'
+                '<p style="margin:0;font:400 15px/1.65 Arial,sans-serif;">'
+                f'In the meantime, browse our free <a href="{hub}" style="color:#8A5E07;">Knowledge Hub</a> '
+                'for guides written for founders, professionals, and everyday citizens.</p>'
+            ),
+            body_text=(
+                f'Hi {hi},\n\n'
+                'You are now subscribed to Law Minded — thank you for joining.\n\n'
+                'From time to time we will send plain-English updates on compliance changes, '
+                'new guides, and important court judgments.\n\n'
+                f'Browse our free Knowledge Hub: {hub}\n\n'
+                '— Law Minded\n\n'
+                f'Unsubscribe anytime: {unsub}'
+            ),
+            unsub=unsub,
         )
-        welcome.body = (
-            f'Hi {name or "there"},\n\n'
-            f'Thank you for joining the Law Minded newsletter — you have successfully subscribed.\n\n'
-            f'You will start receiving updates on new compliance changes, fresh articles, landmark '
-            f'judgments, and legal events shortly. Our newsletter service is being set up and goes '
-            f'live soon, so please keep an eye on your inbox.\n\n'
-            f'Warm regards,\nThe Law Minded Team\n\n'
-            f'—\nDon\'t want these emails? Unsubscribe anytime: {unsub}'
-        )
-        welcome.html = (
-            '<div style="font-family:Arial,Helvetica,sans-serif;max-width:520px;margin:0 auto;'
-            'color:#34312A;line-height:1.6;">'
-            '<div style="border-top:4px solid #E8A020;padding:20px 4px 8px;">'
-            '<h1 style="font-size:20px;margin:0 0 4px;color:#1C1B16;">Law&nbsp;Minded</h1>'
-            '<p style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#8B8475;'
-            'margin:0 0 18px;">Where complexity meets clarity</p>'
-            f'<p>Hi {name or "there"},</p>'
-            '<p><strong>Thank you for joining the Law Minded newsletter</strong> — you have '
-            'successfully subscribed.</p>'
-            '<p>You will start receiving updates on new compliance changes, fresh articles, '
-            'landmark judgments, and legal events shortly. Our newsletter service is being set up '
-            'and goes live soon, so please keep an eye on your inbox.</p>'
-            '<p style="margin-top:24px;">Warm regards,<br>The Law Minded Team</p>'
-            '<hr style="border:none;border-top:1px solid #E7E2D6;margin:22px 0 10px;">'
-            f'<p style="font-size:12px;color:#8B8475;">Don\'t want these emails? '
-            f'<a href="{unsub}" style="color:#8A5E07;">Unsubscribe anytime</a>.</p>'
-            '</div></div>'
-        )
-        mail.send(welcome)
     except Exception:
         pass
 
     return jsonify({'success': True, 'message': f'Thank you{", " + name if name else ""}! You\'ve been subscribed.'})
 
 
-@app.route('/unsubscribe')
+@app.route('/unsubscribe', methods=['GET', 'POST'])
+@csrf.exempt
 def unsubscribe():
-    """One-click unsubscribe via a signed token in the welcome email."""
-    token = request.args.get('token', '')
+    """Unsubscribe via a signed token. GET shows a confirmation page; POST is the
+    RFC 8058 one-click path that Gmail/Outlook call from the List-Unsubscribe header."""
+    token = request.values.get('token', '')
     email = None
     try:
         email = _unsub_serializer.loads(token)
@@ -588,6 +653,9 @@ def unsubscribe():
         db.commit()
         removed = cur.rowcount > 0
         db.close()
+
+    if request.method == 'POST':       # one-click; mail clients expect a bare 2xx
+        return ('', 204)
     return render_template('unsubscribe.html', email=email, removed=removed,
                            valid=bool(email))
 
