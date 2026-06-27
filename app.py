@@ -45,13 +45,16 @@ app.config['SESSION_COOKIE_SECURE'] = IS_PROD
 app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024  # 1 MB cap on request bodies
 app.config['WTF_CSRF_TIME_LIMIT'] = None            # token valid for the session
 
-# Mail configuration (Gmail SMTP)
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
+# Mail configuration — provider-agnostic via env (defaults to Gmail SMTP).
+# Set MAIL_SERVER/PORT for a custom-domain mailbox (e.g. Zoho, Titan, Workspace).
+app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER', 'smtp.gmail.com')
+app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT', '587'))
+app.config['MAIL_USE_TLS'] = os.getenv('MAIL_USE_TLS', 'true').lower() in ('1', 'true', 'yes')
+app.config['MAIL_USE_SSL'] = os.getenv('MAIL_USE_SSL', 'false').lower() in ('1', 'true', 'yes')
 app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
-app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_USERNAME')
+# Sender can differ from the login user (defaults to the login user).
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER', os.getenv('MAIL_USERNAME'))
 
 mail = Mail(app)
 
