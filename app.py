@@ -195,7 +195,7 @@ def send_branded_email(subject, recipients, heading, body_html, body_text, unsub
         }
     with app.open_resource(EMAIL_LOGO) as f:
         msg.attach('logo.png', 'image/png', f.read(), 'inline',
-                   headers=[('Content-ID', '<logo>'), ('X-Attachment-Id', 'logo')])
+                   headers={'Content-ID': '<logo>', 'X-Attachment-Id': 'logo'})
     mail.send(msg)
 
 
