@@ -170,6 +170,11 @@ img{max-width:100%;display:block;}
 .btn-primary:active{transform:translateY(0);}
 .btn-secondary{background:transparent;color:var(--charcoal);border:1.5px solid var(--border);padding:13px 28px;border-radius:var(--r-sm);font-family:var(--uf);font-weight:600;font-size:.94rem;text-decoration:none;display:inline-block;cursor:pointer;transition:all .2s;}
 .btn-secondary:hover{border-color:var(--gold);color:var(--gold-ink);transform:translateY(-2px);}
+/* Show/hide password toggle */
+.pw-wrap{position:relative;}
+.pw-wrap input{padding-right:3.6rem !important;}
+.pw-toggle{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--gold);font-size:.74rem;font-weight:600;cursor:pointer;font-family:var(--uf);padding:4px 6px;line-height:1;}
+.pw-toggle:hover{color:var(--gold-dark);text-decoration:underline;}
 
 /* ─── STATS (dark band, gold figures) ─────────────────────────────────── */
 .stats-bar{background:var(--band);padding:3rem var(--pad-x);display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1.5rem;text-align:center;}
