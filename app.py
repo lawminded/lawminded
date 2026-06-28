@@ -244,6 +244,24 @@ def inject_globals():
     }
 
 
+# Canonical host: in production, funnel every alternate hostname (www, the
+# lawminded.co.in domain, etc.) to the single primary domain from SITE_URL — one
+# site for SEO + AdSense. ACME challenges are always let through for cert renewal.
+CANONICAL_HOST = SITE_URL.split('://', 1)[-1].split('/', 1)[0].lower()
+
+
+@app.before_request
+def _force_canonical_host():
+    if not IS_PROD or request.path.startswith('/.well-known/'):
+        return
+    host = (request.host or '').split(':')[0].lower()
+    if host and host != CANONICAL_HOST and host.endswith(('lawminded.in', 'lawminded.co.in')):
+        target = f'https://{CANONICAL_HOST}{request.path}'
+        if request.query_string:
+            target += '?' + request.query_string.decode()
+        return redirect(target, code=301)
+
+
 # ─── Helpers ────────────────────────────────────────────────────────────────
 
 def slugify(text):
