@@ -6,7 +6,7 @@
 <title>{% block admin_title %}Admin{% endblock %} - Law Minded Admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v={{ asset_v('css/style.css') }}">
 </head>
 <body data-theme="light">
 <div class="admin-layout">
