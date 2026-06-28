@@ -1,6 +1,8 @@
 import os
 import re
 import sqlite3
+import base64
+import hmac
 from io import BytesIO
 from datetime import date
 from functools import wraps
@@ -115,7 +117,11 @@ def sanitize_html(raw):
     return bleach.clean(raw or '', tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRS, strip=True)
 
 CONTACT_RECEIVER = os.getenv('CONTACT_RECEIVER', os.getenv('MAIL_USERNAME'))
-ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD', 'Wine123')
+# Admin credentials live in .env (ADMIN_USERNAME + ADMIN_PW_HASH_B64), never in
+# the database — so a database reset can NEVER revert access to a default password.
+# There is intentionally NO hardcoded default: if credentials are unset, the admin
+# login fails closed (no access until credentials are configured on the server).
+ENV_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env')
 
 # Google AdSense — set ADSENSE_CLIENT in .env to your publisher id (ca-pub-XXXX).
 # Ad slot ids are configured per-placement in ADSENSE_SLOTS below.
@@ -329,12 +335,82 @@ def set_setting(key, value):
     db.close()
 
 
-def check_admin_password(entered):
-    """Verify against the DB-stored hash if set; otherwise the .env fallback."""
-    stored_hash = get_setting('admin_password_hash')
-    if stored_hash:
-        return check_password_hash(stored_hash, entered)
-    return entered == ADMIN_PASSWORD
+def _set_env_vars(updates):
+    """Persist key=value pairs to .env (atomic) and the live process env."""
+    lines = []
+    if os.path.exists(ENV_PATH):
+        with open(ENV_PATH, 'r') as f:
+            lines = f.read().splitlines()
+    seen, out = set(), []
+    for ln in lines:
+        key = ln.split('=', 1)[0] if ('=' in ln and not ln.lstrip().startswith('#')) else None
+        if key in updates:
+            out.append(f'{key}={updates[key]}'); seen.add(key)
+        else:
+            out.append(ln)
+    for k, v in updates.items():
+        if k not in seen:
+            out.append(f'{k}={v}')
+    tmp = ENV_PATH + '.tmp'
+    with open(tmp, 'w') as f:
+        f.write('\n'.join(out) + '\n')
+    os.replace(tmp, ENV_PATH)
+    for k, v in updates.items():
+        os.environ[k] = v
+
+
+def _env_value(key):
+    """Read a key straight from .env each time, so every gunicorn worker sees a
+    credential change immediately (no restart). Falls back to the process env."""
+    try:
+        with open(ENV_PATH, 'r') as f:
+            for ln in f:
+                ln = ln.rstrip('\n')
+                if ln.startswith(key + '='):
+                    return ln.split('=', 1)[1]
+    except OSError:
+        pass
+    return os.getenv(key, '')
+
+
+def get_admin_username():
+    return (_env_value('ADMIN_USERNAME') or '').strip()
+
+
+def _admin_hash():
+    """Admin password hash, stored base64-encoded in .env (keeps the '$'-laden
+    hash safe from dotenv variable interpolation)."""
+    b64 = _env_value('ADMIN_PW_HASH_B64') or ''
+    try:
+        return base64.b64decode(b64).decode('utf-8') if b64 else ''
+    except Exception:
+        return ''
+
+
+def admin_configured():
+    return bool(get_admin_username() and _admin_hash())
+
+
+def check_admin(username, password):
+    """Verify admin username + password. Fails closed — there is no default."""
+    u, h = get_admin_username(), _admin_hash()
+    if not u or not h:
+        return False
+    if not hmac.compare_digest((username or '').strip().lower(), u.lower()):
+        return False
+    return check_password_hash(h, password or '')
+
+
+def set_admin_credentials(username=None, password=None):
+    """Write new admin credentials to .env (password stored only as a hash)."""
+    updates = {}
+    if username is not None:
+        updates['ADMIN_USERNAME'] = username.strip()
+    if password is not None:
+        h = generate_password_hash(password, method='pbkdf2:sha256')
+        updates['ADMIN_PW_HASH_B64'] = base64.b64encode(h.encode('utf-8')).decode('ascii')
+    if updates:
+        _set_env_vars(updates)
 
 
 def build_resolution_docx(title, blocks):
@@ -779,10 +855,13 @@ def not_found(e):
 @limiter.limit('10 per minute; 40 per hour', methods=['POST'])
 def admin_login():
     if request.method == 'POST':
-        if check_admin_password(request.form.get('password', '')):
+        username = request.form.get('username', '')
+        password = request.form.get('password', '')
+        if check_admin(username, password):
+            session.clear()                      # rotate session on login (anti-fixation)
             session['admin_logged_in'] = True
             return redirect(url_for('admin_dashboard'))
-        flash('Incorrect password.', 'error')
+        flash('Incorrect username or password.', 'error')
     return render_template('admin/login.html')
 
 
@@ -791,19 +870,23 @@ def admin_login():
 def admin_password():
     if request.method == 'POST':
         current = request.form.get('current', '')
+        new_username = request.form.get('username', '').strip()
         new = request.form.get('new', '')
         confirm = request.form.get('confirm', '')
-        if not check_admin_password(current):
+        cur_hash = _admin_hash()
+        if not cur_hash or not check_password_hash(cur_hash, current):
             flash('Your current password is incorrect.', 'error')
-        elif len(new) < 6:
-            flash('New password must be at least 6 characters.', 'error')
+        elif new_username and not re.fullmatch(r'[A-Za-z0-9._-]{3,40}', new_username):
+            flash('Username must be 3–40 characters (letters, numbers, . _ - only).', 'error')
+        elif len(new) < 8:
+            flash('New password must be at least 8 characters.', 'error')
         elif new != confirm:
             flash('New password and confirmation do not match.', 'error')
         else:
-            set_setting('admin_password_hash', generate_password_hash(new, method='pbkdf2:sha256'))
-            flash('Password changed successfully.', 'success')
+            set_admin_credentials(username=new_username or get_admin_username(), password=new)
+            flash('Admin credentials updated successfully.', 'success')
             return redirect(url_for('admin_dashboard'))
-    return render_template('admin/password.html')
+    return render_template('admin/password.html', admin_username=get_admin_username())
 
 
 @app.route('/admin/logout')
