@@ -464,27 +464,35 @@ document.addEventListener('keydown', function (e) {
   toc.hidden = false;
 })();
 
-// ─── AdSense: show a slot ONLY when a real ad is served ─────────────────────────
-// Collapses the zone entirely on localhost, before approval, when no ad fills,
-// or when an ad-blocker prevents loading - so users never see an empty ad box.
+// ─── AdSense: reveal a slot when an ad is served, collapse it otherwise ─────────
+// filled   -> show the ad and its "Advertisement" label.
+// unfilled -> collapse the zone (no empty box).
+// blocked / never resolves -> collapse the zone (after a generous wait).
+// The zone is left visible + measurable WHILE loading, because collapsing it up
+// front (display:none) stops responsive AdSense units from ever filling.
 (function () {
-  function settle(zone) {
-    var ins = zone.querySelector('ins.adsbygoogle');
-    var filled = !!ins && ins.getAttribute('data-ad-status') === 'filled' && ins.offsetHeight > 1;
+  function apply(zone, filled) {
     var container = zone.closest('.ad-container') || zone;
     zone.classList.toggle('is-filled', filled);
     if (container !== zone) container.classList.toggle('is-filled', filled);
-    // Collapse the reserved slot space whenever an ad is not actually filled
-    // (covers data-ad-status null on localhost / pre-approval, and ad-blockers).
-    if (ins) ins.style.display = filled ? '' : 'none';
+    zone.style.display = filled ? '' : 'none';
   }
   [].slice.call(document.querySelectorAll('[data-ad-zone]')).forEach(function (zone) {
     var ins = zone.querySelector('ins.adsbygoogle');
     if (!ins) return;
-    var mo = new MutationObserver(function () { settle(zone); });
+    function resolve() {
+      var status = ins.getAttribute('data-ad-status');
+      if (status === 'filled')   { apply(zone, true);  return true; }
+      if (status === 'unfilled') { apply(zone, false); return true; }
+      return false; // not resolved yet — leave the zone so the ad can still load
+    }
+    if (resolve()) return;
+    var mo = new MutationObserver(function () { if (resolve()) mo.disconnect(); });
     mo.observe(ins, { attributes: true, attributeFilter: ['data-ad-status'] });
-    // Fallback for ad-blockers / no-fill where data-ad-status is never set.
-    setTimeout(function () { settle(zone); }, 2500);
+    // Ad-blocker / no-response fallback: collapse ONLY if still unresolved after 12s.
+    setTimeout(function () {
+      if (ins.getAttribute('data-ad-status') == null) { mo.disconnect(); apply(zone, false); }
+    }, 12000);
   });
 })();
 
