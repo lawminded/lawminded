@@ -38,6 +38,31 @@
   </div>
 </section>
 
+<!-- READY-TO-USE DOCUMENT FORMATS (real .docx downloads) -->
+<section id="document-formats">
+  <span class="section-tag">Document Formats Library</span>
+  <h2 class="section-title">Ready-to-Use Word Formats</h2>
+  <p class="section-sub">{{ formats_count }} genuine, professionally drafted formats - board resolutions, share-certificate and demat papers, meeting notices, director's reports, agreements and declarations. Every file has been cleaned of personal details and is free to download as an editable Word document.</p>
+
+  {% for cat in format_categories %}
+  <div class="format-group">
+    <h3 class="format-group-title">{{ cat.icon }} {{ cat.name }} <span class="format-group-count">{{ cat.docs|length }}</span></h3>
+    <div class="templates-grid">
+      {% for f in cat.docs %}
+      <div class="template-card">
+        <div class="template-icon">📄</div>
+        <h3>{{ f.title }}</h3>
+        <p>{{ f.desc }}</p>
+        <div class="template-actions">
+          <button class="btn-dl" data-dl-url="{{ url_for('format_download', slug=f.slug) }}" data-dl-name="{{ f.title }}" onclick="openDlModal(this.dataset.dlUrl, this.dataset.dlName)">{{ icon('download', 16) }} Download Word</button>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+</section>
+
 <!-- RESOLUTION LIBRARIES -->
 <section class="section-alt">
   <span class="section-tag">Resolution Libraries</span>

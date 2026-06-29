@@ -26,6 +26,7 @@ load_dotenv()
 
 from database import get_db, init_db, seed_articles, seed_documents
 import content as C
+from formats import FORMAT_CATEGORIES, FORMATS_BY_SLUG, FORMATS_COUNT
 
 # Production flag: enables HTTPS enforcement, HSTS, and Secure cookies on the live
 # server. Stays off locally so http://localhost development still works.
@@ -507,7 +508,9 @@ def article(slug):
 @app.route('/templates')
 def templates_page():
     rendered = [doc_to_view(d) for d in get_documents('template')]
-    return render_template('templates_page.html', templates=rendered)
+    return render_template('templates_page.html', templates=rendered,
+                           format_categories=FORMAT_CATEGORIES,
+                           formats_count=FORMATS_COUNT)
 
 
 @app.route('/template/<slug>/download')
@@ -518,6 +521,22 @@ def template_download(slug):
     bio = build_resolution_docx(item['title'], C.parse_doc_body(item['body']))
     return send_file(
         bio, as_attachment=True, download_name=f'{slug}.docx',
+        mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    )
+
+
+@app.route('/format/<slug>/download')
+def format_download(slug):
+    """Serve one of the real .docx document formats from static/formats.
+
+    The slug is looked up in FORMATS_BY_SLUG, so only known filenames are ever
+    served (no path-traversal from user input)."""
+    item = FORMATS_BY_SLUG.get(slug)
+    if not item:
+        abort(404)
+    folder = os.path.join(app.static_folder, 'formats')
+    return send_from_directory(
+        folder, item['file'], as_attachment=True, download_name=item['file'],
         mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
     )
 
