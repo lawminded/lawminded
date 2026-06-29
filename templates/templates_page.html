@@ -54,7 +54,8 @@
         <h3>{{ f.title }}</h3>
         <p>{{ f.desc }}</p>
         <div class="template-actions">
-          <button class="btn-dl" data-dl-url="{{ url_for('format_download', slug=f.slug) }}" data-dl-name="{{ f.title }}" onclick="openDlModal(this.dataset.dlUrl, this.dataset.dlName)">{{ icon('download', 16) }} Download Word</button>
+          <button class="btn-read" data-prev-slug="{{ f.slug }}" data-prev-name="{{ f.title }}" data-prev-url="{{ url_for('format_download', slug=f.slug) }}" onclick="previewFormat(this.dataset.prevSlug, this.dataset.prevName, this.dataset.prevUrl)">{{ icon('eye', 16) }} Preview</button>
+          <button class="btn-dl" data-dl-url="{{ url_for('format_download', slug=f.slug) }}" data-dl-name="{{ f.title }}" onclick="openDlModal(this.dataset.dlUrl, this.dataset.dlName)">{{ icon('download', 16) }} Download</button>
         </div>
       </div>
       {% endfor %}
@@ -66,15 +67,9 @@
 <!-- RESOLUTION LIBRARIES -->
 <section class="section-alt">
   <span class="section-tag">Resolution Libraries</span>
-  <h2 class="section-title">Board &amp; Special Resolutions</h2>
-  <p class="section-sub">Don't settle for one generic format. Pick the exact resolution you need - for opening a bank account, GST, striking off and more - preview it, then download an editable Word file.</p>
+  <h2 class="section-title">Special &amp; LLP Partner Resolutions</h2>
+  <p class="section-sub">Pick the exact resolution you need - capital increase, registered office change, LLP bank accounts, GST and more - preview it, then download an editable Word file.</p>
   <div class="offer-grid">
-    <a href="{{ url_for('resolutions', rtype='board') }}" class="offer-card">
-      <div class="offer-icon">🗂️</div>
-      <h3>Board Resolutions</h3>
-      <p>Ready formats for decisions taken by the Board of Directors - bank accounts, GST, authorisations and more.</p>
-      <span class="offer-link">Browse &amp; Download {{ icon('arrow-right', 16) }}</span>
-    </a>
     <a href="{{ url_for('resolutions', rtype='special') }}" class="offer-card">
       <div class="offer-icon">📜</div>
       <h3>Special Resolutions</h3>

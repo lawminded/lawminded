@@ -5,7 +5,7 @@ import base64
 import hmac
 from io import BytesIO
 from datetime import date
-from functools import wraps
+from functools import wraps, lru_cache
 from flask import (Flask, render_template, request, redirect, url_for,
                    session, flash, jsonify, send_from_directory, send_file, abort)
 from flask_mail import Mail, Message
@@ -539,6 +539,70 @@ def format_download(slug):
         folder, item['file'], as_attachment=True, download_name=item['file'],
         mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
     )
+
+
+@lru_cache(maxsize=128)
+def _render_format_preview(slug):
+    """Render a stored .docx format to safe HTML for the in-page preview modal.
+
+    Returns an HTML fragment (headings, paragraphs, tables) built from our own
+    trusted files, with all text escaped. Cached per slug so repeat previews
+    don't re-parse the document."""
+    item = FORMATS_BY_SLUG.get(slug)
+    if not item:
+        return None
+    from markupsafe import escape
+    from docx import Document
+    from docx.oxml.ns import qn
+    from docx.table import Table as _Tbl
+    from docx.text.paragraph import Paragraph as _Para
+
+    doc = Document(os.path.join(app.static_folder, 'formats', item['file']))
+
+    def runs_html(p):
+        parts = []
+        for r in p.runs:
+            t = str(escape(r.text or ''))
+            if not t:
+                continue
+            if r.bold:
+                t = f'<strong>{t}</strong>'
+            if r.italic:
+                t = f'<em>{t}</em>'
+            parts.append(t)
+        return ''.join(parts) if parts else str(escape(p.text or ''))
+
+    def cell_html(cell):
+        bits = [runs_html(p) for p in cell.paragraphs if p.text.strip()]
+        return '<br>'.join(bits)
+
+    out = []
+    for child in doc.element.body.iterchildren():
+        if child.tag == qn('w:p'):
+            p = _Para(child, doc)
+            txt = runs_html(p)
+            if not txt.strip():
+                continue
+            style = (p.style.name if p.style else '') or ''
+            tag = 'h4' if (style.startswith('Heading') or style.startswith('Title')) else 'p'
+            out.append(f'<{tag}>{txt}</{tag}>')
+        elif child.tag == qn('w:tbl'):
+            tbl = _Tbl(child, doc)
+            rows = ''.join(
+                '<tr>' + ''.join(f'<td>{cell_html(c)}</td>' for c in row.cells) + '</tr>'
+                for row in tbl.rows
+            )
+            if rows:
+                out.append(f'<table class="preview-table"><tbody>{rows}</tbody></table>')
+    return '\n'.join(out)
+
+
+@app.route('/format/<slug>/preview')
+def format_preview(slug):
+    html_out = _render_format_preview(slug)
+    if html_out is None:
+        abort(404)
+    return html_out
 
 
 @app.route('/compare')

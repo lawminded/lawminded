@@ -512,6 +512,8 @@ footer{background:var(--band);color:var(--on-band-muted);padding:4rem var(--pad-
 .preview-doc p{font-family:var(--bf);font-size:.94rem;color:var(--charcoal);line-height:1.85;margin-bottom:.85rem;text-align:justify;}
 .preview-doc ul{margin:0 0 .85rem 1.5rem;font-family:var(--bf);font-size:.94rem;color:var(--charcoal);line-height:1.8;}
 .preview-doc .res-spacer{height:.9rem;}
+.preview-doc .preview-table{width:100%;border-collapse:collapse;margin:.4rem 0 1rem;font-family:var(--bf);}
+.preview-doc .preview-table td{border:1px solid var(--border);padding:.5rem .65rem;font-size:.86rem;color:var(--charcoal);line-height:1.6;vertical-align:top;text-align:left;}
 .preview-foot{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;padding:1rem 1.5rem;border-top:1px solid var(--border);}
 .preview-note{font-family:var(--uf);font-size:.78rem;color:var(--muted);}
 .preview-foot .btn-dl{text-decoration:none;}

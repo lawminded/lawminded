@@ -415,6 +415,21 @@ function previewResolution(slug) {
   dl.onclick = function (e) { e.preventDefault(); closePreview(); openDlModal(url, name); };
   document.getElementById('previewOverlay').classList.add('open');
 }
+// Preview for the real .docx document formats — fetches rendered HTML on demand.
+function previewFormat(slug, name, url) {
+  var body = document.getElementById('previewBody');
+  document.getElementById('previewTitle').textContent = name || 'Preview';
+  body.innerHTML = '<p style="text-align:center;color:var(--mid)">Loading preview…</p>';
+  var dl = document.getElementById('previewDownload');
+  dl.onclick = function (e) { e.preventDefault(); closePreview(); openDlModal(url, name); };
+  document.getElementById('previewOverlay').classList.add('open');
+  fetch('/format/' + encodeURIComponent(slug) + '/preview')
+    .then(function (r) { if (!r.ok) throw new Error('bad status'); return r.text(); })
+    .then(function (htmlStr) { body.innerHTML = htmlStr; body.scrollTop = 0; })
+    .catch(function () {
+      body.innerHTML = '<p style="text-align:center;color:var(--mid)">Preview unavailable. Please download the Word file to view it.</p>';
+    });
+}
 function closePreview() {
   var o = document.getElementById('previewOverlay');
   if (o) o.classList.remove('open');
