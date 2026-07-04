@@ -64,26 +64,33 @@
   {% endfor %}
 </section>
 
-<!-- RESOLUTION LIBRARIES -->
+<!-- RESOLUTION LIBRARY (board resolutions) -->
+{% if board_resolutions %}
 <section class="section-alt">
-  <span class="section-tag">Resolution Libraries</span>
-  <h2 class="section-title">Special &amp; LLP Partner Resolutions</h2>
-  <p class="section-sub">Pick the exact resolution you need - capital increase, registered office change, LLP bank accounts, GST and more - preview it, then download an editable Word file.</p>
-  <div class="offer-grid">
-    <a href="{{ url_for('resolutions', rtype='special') }}" class="offer-card">
-      <div class="offer-icon">📜</div>
-      <h3>Special Resolutions</h3>
-      <p>Formats for matters needing 75% shareholder approval - registered office change, capital increase and more.</p>
-      <span class="offer-link">Browse &amp; Download {{ icon('arrow-right', 16) }}</span>
-    </a>
-    <a href="{{ url_for('resolutions', rtype='partner') }}" class="offer-card">
-      <div class="offer-icon">🤝</div>
-      <h3>LLP Partner Resolutions</h3>
-      <p>Resolutions passed by the partners of an LLP - bank accounts, GST, admitting a designated partner and more.</p>
-      <span class="offer-link">Browse &amp; Download {{ icon('arrow-right', 16) }}</span>
-    </a>
+  <span class="section-tag">Resolution Library</span>
+  <h2 class="section-title">Board Resolutions</h2>
+  <p class="section-sub">Ready-to-use board resolutions - pick the one you need, preview it, then download an editable Word file.</p>
+  <div class="templates-grid">
+    {% for r in board_resolutions %}
+    <div class="template-card">
+      <div class="template-icon">🗂️</div>
+      <h3>{{ r.title }}</h3>
+      <p>{{ r.desc }}</p>
+      <div class="template-tags">
+        {% for tag in r.tags %}<span class="template-tag">{{ tag }}</span>{% endfor %}
+      </div>
+      <div class="template-actions">
+        <button class="btn-read" onclick="previewResolution('board-{{ r.slug }}')">{{ icon('eye', 16) }} Preview</button>
+        <button class="btn-dl" data-dl-url="{{ url_for('resolution_download', rtype='board', slug=r.slug) }}" data-dl-name="{{ r.title }}" onclick="openDlModal(this.dataset.dlUrl, this.dataset.dlName)">{{ icon('download', 16) }} Download</button>
+      </div>
+      <div class="resolution-content" id="res-board-{{ r.slug }}" hidden
+           data-title="{{ r.title }}"
+           data-download="{{ url_for('resolution_download', rtype='board', slug=r.slug) }}">{{ r.html | safe }}</div>
+    </div>
+    {% endfor %}
   </div>
 </section>
+{% endif %}
 
 <!-- AD (bottom) -->
 <div class="ad-container">

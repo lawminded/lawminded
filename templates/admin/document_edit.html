@@ -1,8 +1,10 @@
 {% extends "admin/base_admin.html" %}
 {% block admin_title %}{% if doc %}Edit Document{% else %}New Document{% endif %}{% endblock %}
 {% block admin_content %}
+{% set back_ep = 'admin_resolutions' if (admin_section|default('')) == 'resolutions' else 'admin_documents' %}
+{% set back_lbl = 'Resolutions' if (admin_section|default('')) == 'resolutions' else 'Templates' %}
 
-<a href="{{ url_for('admin_documents') }}" style="display:inline-flex;align-items:center;gap:4px;font-family:var(--uf);font-size:.85rem;color:var(--gold);text-decoration:none;margin-bottom:1.5rem;">← Back to Documents</a>
+<a href="{{ url_for(back_ep) }}" style="display:inline-flex;align-items:center;gap:4px;font-family:var(--uf);font-size:.85rem;color:var(--gold);text-decoration:none;margin-bottom:1.5rem;">← Back to {{ back_lbl }}</a>
 
 <form method="POST" class="admin-form">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -12,7 +14,7 @@
       <label>Type <span style="color:var(--gold)">*</span></label>
       <select name="doc_type" required>
         {% for k, label in doc_types.items() %}
-        <option value="{{ k }}" {% if doc and doc['doc_type'] == k %}selected{% endif %}>{{ label }}</option>
+        <option value="{{ k }}" {% if (doc and doc['doc_type'] == k) or (not doc and (default_type|default('')) == k) %}selected{% endif %}>{{ label }}</option>
         {% endfor %}
       </select>
     </div>
@@ -53,7 +55,7 @@
 
   <div style="display:flex;gap:.75rem;margin-top:.5rem;">
     <button type="submit" class="btn-primary">{% if doc %}Save Changes{% else %}Create Document{% endif %}</button>
-    <a href="{{ url_for('admin_documents') }}" class="btn-secondary">Cancel</a>
+    <a href="{{ url_for(back_ep) }}" class="btn-secondary">Cancel</a>
   </div>
 </form>
 

@@ -302,10 +302,8 @@ def admin_required(f):
 
 
 # ─── Documents (DB-managed templates & resolutions) ──────────────────────────
-DOC_TYPES = {'template': 'Template', 'board': 'Board Resolution',
-             'special': 'Special Resolution', 'partner': 'Partner Resolution'}
-DOC_LIST_TITLE = {'board': 'Board Resolutions', 'special': 'Special Resolutions',
-                  'partner': 'LLP Partner Resolutions'}
+DOC_TYPES = {'template': 'Template', 'board': 'Board Resolution'}
+DOC_LIST_TITLE = {'board': 'Board Resolutions'}
 
 
 def get_documents(doc_type):
@@ -508,7 +506,9 @@ def article(slug):
 @app.route('/templates')
 def templates_page():
     rendered = [doc_to_view(d) for d in get_documents('template')]
+    board_resolutions = [doc_to_view(d) for d in get_documents('board')]
     return render_template('templates_page.html', templates=rendered,
+                           board_resolutions=board_resolutions,
                            format_categories=FORMAT_CATEGORIES,
                            formats_count=FORMATS_COUNT)
 
@@ -686,7 +686,7 @@ def search():
                 if d['doc_type'] == 'template':
                     results.append({'type': 'Template', 'title': f"{d['icon']} {d['title']}",
                                     'snippet': d['description'], 'url_kind': 'page', 'url_arg': 'templates_page'})
-                else:
+                elif d['doc_type'] in DOC_LIST_TITLE:
                     results.append({'type': DOC_TYPES.get(d['doc_type'], 'Document'), 'title': d['title'],
                                     'snippet': d['description'], 'url_kind': 'resolutions', 'url_arg': d['doc_type']})
     return render_template('search.html', query=query, results=results)
@@ -914,7 +914,7 @@ def sitemap_xml():
         urls.append((SITE_URL + url_for(endpoint), freq, prio, None))
 
     # Resolution library pages
-    for rtype in ('board', 'special', 'partner'):
+    for rtype in DOC_LIST_TITLE:
         urls.append((SITE_URL + url_for('resolutions', rtype=rtype), 'monthly', '0.6', None))
 
     # Landmark judgment briefs
@@ -1180,16 +1180,57 @@ def admin_messages():
 
 # ─── Admin: Documents (templates & resolutions) ──────────────────────────────
 
+RESOLUTION_TYPES = ('board',)
+
+
+def _doc_home(doc_type):
+    """Which admin listing a document belongs to, based on its type."""
+    return 'admin_resolutions' if doc_type in RESOLUTION_TYPES else 'admin_documents'
+
+
 @app.route('/admin/documents')
 @admin_required
 def admin_documents():
     db = get_db()
-    docs = db.execute('SELECT * FROM documents ORDER BY doc_type, sort_order, id').fetchall()
+    docs = db.execute(
+        "SELECT * FROM documents WHERE doc_type='template' ORDER BY sort_order, id"
+    ).fetchall()
     db.close()
-    grouped = {'template': [], 'board': [], 'special': [], 'partner': []}
+    return render_template(
+        'admin/documents.html',
+        grouped={'template': list(docs)},
+        doc_types={'template': DOC_TYPES['template']},
+        admin_section='templates',
+        page_title='Templates',
+        page_intro='Manage your downloadable document templates. Changes appear on the site instantly.',
+        new_label='+ New Template',
+        new_default_type='template',
+    )
+
+
+@app.route('/admin/resolutions')
+@admin_required
+def admin_resolutions():
+    db = get_db()
+    placeholders = ','.join('?' * len(RESOLUTION_TYPES))
+    docs = db.execute(
+        f"SELECT * FROM documents WHERE doc_type IN ({placeholders}) "
+        "ORDER BY doc_type, sort_order, id", RESOLUTION_TYPES
+    ).fetchall()
+    db.close()
+    grouped = {k: [] for k in RESOLUTION_TYPES}
     for d in docs:
-        grouped.get(d['doc_type'], grouped.setdefault(d['doc_type'], [])).append(d)
-    return render_template('admin/documents.html', grouped=grouped, doc_types=DOC_TYPES)
+        grouped.setdefault(d['doc_type'], []).append(d)
+    return render_template(
+        'admin/documents.html',
+        grouped=grouped,
+        doc_types={k: DOC_TYPES[k] for k in RESOLUTION_TYPES},
+        admin_section='resolutions',
+        page_title='Resolutions',
+        page_intro='Manage your Board resolutions. Changes appear on the site instantly.',
+        new_label='+ New Resolution',
+        new_default_type='board',
+    )
 
 
 def _save_document(form, doc_id=None):
@@ -1239,9 +1280,12 @@ def admin_document_new():
         ok, err = _save_document(request.form)
         if ok:
             flash('Document created.', 'success')
-            return redirect(url_for('admin_documents'))
+            return redirect(url_for(_doc_home(request.form.get('doc_type', ''))))
         flash(err, 'error')
-    return render_template('admin/document_edit.html', doc=None, doc_types=DOC_TYPES)
+    default_type = request.form.get('doc_type') or request.args.get('type') or 'template'
+    return render_template('admin/document_edit.html', doc=None, doc_types=DOC_TYPES,
+                           default_type=default_type,
+                           admin_section=('resolutions' if default_type in RESOLUTION_TYPES else 'templates'))
 
 
 @app.route('/admin/documents/<int:doc_id>/edit', methods=['GET', 'POST'])
@@ -1256,20 +1300,23 @@ def admin_document_edit(doc_id):
         ok, err = _save_document(request.form, doc_id=doc_id)
         if ok:
             flash('Document updated.', 'success')
-            return redirect(url_for('admin_documents'))
+            return redirect(url_for(_doc_home(request.form.get('doc_type', doc['doc_type']))))
         flash(err, 'error')
-    return render_template('admin/document_edit.html', doc=doc, doc_types=DOC_TYPES)
+    return render_template('admin/document_edit.html', doc=doc, doc_types=DOC_TYPES,
+                           default_type=doc['doc_type'],
+                           admin_section=('resolutions' if doc['doc_type'] in RESOLUTION_TYPES else 'templates'))
 
 
 @app.route('/admin/documents/<int:doc_id>/delete', methods=['POST'])
 @admin_required
 def admin_document_delete(doc_id):
     db = get_db()
+    row = db.execute('SELECT doc_type FROM documents WHERE id=?', (doc_id,)).fetchone()
     db.execute('DELETE FROM documents WHERE id=?', (doc_id,))
     db.commit()
     db.close()
     flash('Document deleted.', 'success')
-    return redirect(url_for('admin_documents'))
+    return redirect(url_for(_doc_home(row['doc_type']) if row else 'admin_documents'))
 
 
 # ─── App Init ────────────────────────────────────────────────────────────────

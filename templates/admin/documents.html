@@ -1,10 +1,10 @@
 {% extends "admin/base_admin.html" %}
-{% block admin_title %}Documents{% endblock %}
+{% block admin_title %}{{ page_title }}{% endblock %}
 {% block admin_content %}
 
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
-  <p style="font-family:var(--uf);font-size:.88rem;color:var(--mid);">Manage your templates and board / special resolutions. Changes appear on the site instantly.</p>
-  <a href="{{ url_for('admin_document_new') }}" class="btn-primary btn-sm">+ New Document</a>
+  <p style="font-family:var(--uf);font-size:.88rem;color:var(--mid);">{{ page_intro }}</p>
+  <a href="{{ url_for('admin_document_new', type=new_default_type) }}" class="btn-primary btn-sm">{{ new_label }}</a>
 </div>
 
 {% for type_key, label in doc_types.items() %}
@@ -31,7 +31,7 @@
   </tbody>
 </table>
 {% else %}
-<p style="font-family:var(--uf);font-size:.86rem;color:var(--muted);">No {{ label|lower }}s yet. <a href="{{ url_for('admin_document_new') }}" style="color:var(--gold);">Add one →</a></p>
+<p style="font-family:var(--uf);font-size:.86rem;color:var(--muted);">No {{ label|lower }}s yet. <a href="{{ url_for('admin_document_new', type=type_key) }}" style="color:var(--gold);">Add one →</a></p>
 {% endif %}
 {% endfor %}
 

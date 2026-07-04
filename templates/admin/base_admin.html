@@ -18,7 +18,8 @@
       <li><a href="{{ url_for('admin_dashboard') }}" {% if request.endpoint == 'admin_dashboard' %}class="active"{% endif %}>📊 Dashboard</a></li>
       <li><a href="{{ url_for('admin_articles') }}" {% if request.endpoint in ['admin_articles','admin_article_new','admin_article_edit'] %}class="active"{% endif %}>📝 Articles</a></li>
       <li><a href="{{ url_for('admin_article_new') }}">+ New Article</a></li>
-      <li><a href="{{ url_for('admin_documents') }}" {% if request.endpoint in ['admin_documents','admin_document_new','admin_document_edit'] %}class="active"{% endif %}>📄 Documents</a></li>
+      <li><a href="{{ url_for('admin_documents') }}" {% if (admin_section|default('')) == 'templates' %}class="active"{% endif %}>📄 Templates</a></li>
+      <li><a href="{{ url_for('admin_resolutions') }}" {% if (admin_section|default('')) == 'resolutions' %}class="active"{% endif %}>🗂️ Resolutions</a></li>
       <li><a href="{{ url_for('admin_subscribers') }}" {% if request.endpoint == 'admin_subscribers' %}class="active"{% endif %}>📧 Subscribers</a></li>
       <li><a href="{{ url_for('admin_messages') }}" {% if request.endpoint == 'admin_messages' %}class="active"{% endif %}>💬 Messages</a></li>
       <li><a href="{{ url_for('admin_password') }}" {% if request.endpoint == 'admin_password' %}class="active"{% endif %}>🔑 Change Password</a></li>

@@ -119,12 +119,8 @@ def seed_documents():
     for i, r in enumerate(C.BOARD_RESOLUTIONS):
         rows.append(('board', r['slug'], '🗂️', r['title'], r.get('desc', ''),
                      '', C.blocks_to_body(r['blocks']), i))
-    for i, r in enumerate(C.SPECIAL_RESOLUTIONS):
-        rows.append(('special', r['slug'], '📜', r['title'], r.get('desc', ''),
-                     '', C.blocks_to_body(r['blocks']), i))
-    for i, r in enumerate(C.PARTNER_RESOLUTIONS):
-        rows.append(('partner', r['slug'], '🤝', r['title'], r.get('desc', ''),
-                     '', C.blocks_to_body(r['blocks']), i))
+    # Special & LLP Partner resolutions were retired from the site (2026-07-04);
+    # only Board resolutions remain in the DB-managed Resolution Library.
     conn.executemany(
         'INSERT INTO documents (doc_type, slug, icon, title, description, tags, body, sort_order) '
         'VALUES (?,?,?,?,?,?,?,?)', rows
