@@ -550,9 +550,7 @@ def article(slug):
 @app.route('/templates')
 def templates_page():
     rendered = [doc_to_view(d) for d in get_documents('template')]
-    board_resolutions = [doc_to_view(d) for d in get_documents('board')]
     return render_template('templates_page.html', templates=rendered,
-                           board_resolutions=board_resolutions,
                            format_categories=get_formats_grouped(),
                            formats_count=formats_count())
 
