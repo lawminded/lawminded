@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% from '_icons.html' import icon %}
+{% block title %}Sitemap - Law Minded{% endblock %}
+{% block meta_desc %}A complete map of Law Minded - browse every section: articles by topic, free templates, board resolutions, landmark judgments, resources and more.{% endblock %}
+
+{% block content %}
+
+<div class="page-hero">
+  <span class="section-tag">Sitemap</span>
+  <h1>Map of the Site</h1>
+  <p>Everything on Law Minded in one place - jump straight to any section, topic or resource.</p>
+</div>
+
+<section>
+  <div class="sitemap-grid">
+
+    <div class="sitemap-group">
+      <div class="sitemap-group-head"><h2>Main Pages</h2></div>
+      <ul>
+        <li><a href="{{ url_for('index') }}">Home</a></li>
+        <li><a href="{{ url_for('about') }}">About Us</a></li>
+        <li><a href="{{ url_for('compare') }}">Compare Laws</a></li>
+        <li><a href="{{ url_for('resources') }}">Helpful Resources</a></li>
+        <li><a href="{{ url_for('faq') }}">FAQ</a></li>
+        <li><a href="{{ url_for('contact_page') }}">Contact Us</a></li>
+      </ul>
+    </div>
+
+    <div class="sitemap-group">
+      <div class="sitemap-group-head"><h2>Knowledge Hub</h2><a href="{{ url_for('blogs') }}">All articles →</a></div>
+      <ul>
+        {% for key, label in category_map.items() %}
+        <li><a href="{{ url_for('blogs') }}#tab-{{ key }}">{{ label }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="sitemap-group">
+      <div class="sitemap-group-head"><h2>Templates &amp; Resolutions</h2></div>
+      <ul>
+        <li><a href="{{ url_for('templates_page') }}">Free Document Templates</a></li>
+        <li><a href="{{ url_for('templates_page') }}#document-formats">Word Formats Library</a></li>
+        <li><a href="{{ url_for('resolutions', rtype='board') }}">Board Resolutions</a></li>
+      </ul>
+    </div>
+
+    <div class="sitemap-group">
+      <div class="sitemap-group-head"><h2>Landmark Judgments</h2><a href="{{ url_for('judgments') }}">All →</a></div>
+      <ul>
+        {% for j in judgments %}
+        <li><a href="{{ url_for('judgment', slug=j.slug) }}">{{ j.title }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="sitemap-group">
+      <div class="sitemap-group-head"><h2>Legal</h2></div>
+      <ul>
+        <li><a href="{{ url_for('terms') }}">Terms &amp; Conditions</a></li>
+        <li><a href="{{ url_for('terms') }}#responsibilities">User Responsibilities</a></li>
+        <li><a href="{{ url_for('privacy') }}">Privacy Policy</a></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <p class="sitemap-xml-note">Are you a search engine? An <a href="{{ url_for('sitemap_xml') }}">XML sitemap</a> is also available.</p>
+</section>
+
+{% endblock %}

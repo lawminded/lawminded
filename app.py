@@ -893,6 +893,13 @@ def robots_txt():
     return app.response_class('\n'.join(lines), mimetype='text/plain')
 
 
+@app.route('/sitemap')
+def sitemap_page():
+    # Human-readable HTML site map (this is what the footer "Sitemap" link opens).
+    # Distinct from the machine-readable /sitemap.xml below, which is for search engines.
+    return render_template('sitemap.html', judgments=C.JUDGMENTS)
+
+
 @app.route('/sitemap.xml')
 def sitemap_xml():
     # Static pages
@@ -908,6 +915,7 @@ def sitemap_xml():
         ('contact_page', 'yearly', '0.5'),
         ('terms', 'yearly', '0.3'),
         ('privacy', 'yearly', '0.3'),
+        ('sitemap_page', 'yearly', '0.3'),
     ]
     urls = []
     for endpoint, freq, prio in pages:

@@ -56,3 +56,20 @@
 </div>
 
 {% endblock %}
+
+{% block scripts %}
+<script>
+// Deep-link straight into a category tab from a URL hash, e.g. /blogs#tab-corp
+// (used by the Sitemap page's category links).
+(function () {
+  var h = location.hash || '';
+  if (h.indexOf('#tab-') !== 0) return;
+  var key = h.slice(5);
+  var content = document.getElementById('tab-' + key);
+  if (!content || typeof switchTab !== 'function') return;
+  var btn = Array.prototype.slice.call(document.querySelectorAll('.tab-btn'))
+    .find(function (b) { return (b.getAttribute('onclick') || '').indexOf("'" + key + "'") > -1; });
+  if (btn) { switchTab(key, btn); content.scrollIntoView({ block: 'start' }); }
+})();
+</script>
+{% endblock %}
