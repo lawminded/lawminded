@@ -11,6 +11,7 @@ from flask import (Flask, render_template, request, redirect, url_for,
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeSerializer, BadSignature
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_wtf import CSRFProtect
 from flask_wtf.csrf import CSRFError
@@ -24,9 +25,9 @@ from dotenv import load_dotenv
 # (If load_dotenv runs after that import, the custom DB path is silently ignored.)
 load_dotenv()
 
-from database import get_db, init_db, seed_articles, seed_documents
+from database import get_db, init_db, seed_articles, seed_documents, seed_formats
 import content as C
-from formats import FORMAT_CATEGORIES, FORMATS_BY_SLUG, FORMATS_COUNT
+import formats as F
 
 # Production flag: enables HTTPS enforcement, HSTS, and Secure cookies on the live
 # server. Stays off locally so http://localhost development still works.
@@ -45,7 +46,7 @@ if IS_PROD:
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['SESSION_COOKIE_SECURE'] = IS_PROD
-app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024  # 1 MB cap on request bodies
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB — room for admin Word (.docx) uploads
 app.config['WTF_CSRF_TIME_LIMIT'] = None            # token valid for the session
 
 # Mail configuration — provider-agnostic via env (defaults to Gmail SMTP).
@@ -324,6 +325,49 @@ def get_document(doc_type, slug):
     return row
 
 
+# ─── Document Formats (uploaded Word files, DB-managed) ──────────────────────
+FORMATS_DIR = os.path.join(app.static_folder, 'formats')
+
+
+def get_formats_grouped():
+    """Shape DB format rows into the {name, icon, docs:[{slug,file,title,desc}]}
+    structure the Templates page expects, preserving the known category order."""
+    db = get_db()
+    rows = db.execute('SELECT * FROM formats ORDER BY sort_order, id').fetchall()
+    db.close()
+    by_cat = {}
+    for r in rows:
+        by_cat.setdefault(r['category'], []).append(
+            {'slug': r['slug'], 'file': r['filename'], 'title': r['title'],
+             'desc': r['description'] or ''}
+        )
+    cats, seen = [], set()
+    for name in F.CATEGORY_NAMES:
+        if name in by_cat:
+            cats.append({'name': name, 'icon': F.CATEGORY_ICONS.get(name, F.DEFAULT_CATEGORY_ICON),
+                         'docs': by_cat[name]})
+            seen.add(name)
+    for name, docs in by_cat.items():
+        if name not in seen:
+            cats.append({'name': name, 'icon': F.CATEGORY_ICONS.get(name, F.DEFAULT_CATEGORY_ICON),
+                         'docs': docs})
+    return cats
+
+
+def get_format(slug):
+    db = get_db()
+    row = db.execute('SELECT * FROM formats WHERE slug=?', (slug,)).fetchone()
+    db.close()
+    return row
+
+
+def formats_count():
+    db = get_db()
+    n = db.execute('SELECT COUNT(*) FROM formats').fetchone()[0]
+    db.close()
+    return n
+
+
 def doc_to_view(d):
     """Shape a DB document row for the public templates/resolutions pages."""
     return dict(
@@ -509,8 +553,8 @@ def templates_page():
     board_resolutions = [doc_to_view(d) for d in get_documents('board')]
     return render_template('templates_page.html', templates=rendered,
                            board_resolutions=board_resolutions,
-                           format_categories=FORMAT_CATEGORIES,
-                           formats_count=FORMATS_COUNT)
+                           format_categories=get_formats_grouped(),
+                           formats_count=formats_count())
 
 
 @app.route('/template/<slug>/download')
@@ -531,12 +575,12 @@ def format_download(slug):
 
     The slug is looked up in FORMATS_BY_SLUG, so only known filenames are ever
     served (no path-traversal from user input)."""
-    item = FORMATS_BY_SLUG.get(slug)
+    item = get_format(slug)
     if not item:
         abort(404)
     folder = os.path.join(app.static_folder, 'formats')
     return send_from_directory(
-        folder, item['file'], as_attachment=True, download_name=item['file'],
+        folder, item['filename'], as_attachment=True, download_name=item['filename'],
         mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
     )
 
@@ -548,7 +592,7 @@ def _render_format_preview(slug):
     Returns an HTML fragment (headings, paragraphs, tables) built from our own
     trusted files, with all text escaped. Cached per slug so repeat previews
     don't re-parse the document."""
-    item = FORMATS_BY_SLUG.get(slug)
+    item = get_format(slug)
     if not item:
         return None
     from markupsafe import escape
@@ -557,7 +601,7 @@ def _render_format_preview(slug):
     from docx.table import Table as _Tbl
     from docx.text.paragraph import Paragraph as _Para
 
-    doc = Document(os.path.join(app.static_folder, 'formats', item['file']))
+    doc = Document(os.path.join(app.static_folder, 'formats', item['filename']))
 
     def runs_html(p):
         parts = []
@@ -1327,12 +1371,124 @@ def admin_document_delete(doc_id):
     return redirect(url_for(_doc_home(row['doc_type']) if row else 'admin_documents'))
 
 
+# ─── Admin: Document Formats (uploaded Word files) ───────────────────────────
+ALLOWED_FORMAT_EXTS = {'.docx'}
+
+
+@app.route('/admin/formats')
+@admin_required
+def admin_formats():
+    db = get_db()
+    rows = db.execute('SELECT * FROM formats ORDER BY sort_order, id').fetchall()
+    db.close()
+    by_cat = {}
+    for r in rows:
+        by_cat.setdefault(r['category'], []).append(r)
+    grouped = {}
+    for name in F.CATEGORY_NAMES:
+        if name in by_cat:
+            grouped[name] = by_cat[name]
+    for name, items in by_cat.items():
+        grouped.setdefault(name, items)
+    return render_template('admin/formats.html', grouped=grouped, categories=F.CATEGORY_NAMES)
+
+
+def _save_format(form, files, fmt_id=None, existing=None):
+    category = form.get('category', '').strip()
+    title = form.get('title', '').strip()
+    description = form.get('description', '').strip()
+    if not category or not title:
+        return None, 'Category and title are required.'
+    filename = existing['filename'] if existing else None
+    upload = files.get('docfile')
+    if upload and upload.filename:
+        if os.path.splitext(upload.filename)[1].lower() not in ALLOWED_FORMAT_EXTS:
+            return None, 'Only Word (.docx) files can be uploaded.'
+        base = secure_filename(os.path.splitext(upload.filename)[0]) or 'document'
+        fname = f'{base}.docx'
+        os.makedirs(FORMATS_DIR, exist_ok=True)
+        i = 1
+        while os.path.exists(os.path.join(FORMATS_DIR, fname)):
+            fname = f'{base}-{i}.docx'
+            i += 1
+        upload.save(os.path.join(FORMATS_DIR, fname))
+        filename = fname
+    if not filename:
+        return None, 'Please choose a Word (.docx) file to upload.'
+    db = get_db()
+    base_slug = slugify(title) or 'document'
+    slug = base_slug
+    i = 1
+    while db.execute('SELECT id FROM formats WHERE slug=? AND id IS NOT ?', (slug, fmt_id)).fetchone():
+        slug = f'{base_slug}-{i}'
+        i += 1
+    if fmt_id:
+        db.execute(
+            'UPDATE formats SET category=?, slug=?, title=?, description=?, filename=?, '
+            'updated_at=CURRENT_TIMESTAMP WHERE id=?',
+            (category, slug, title, description, filename, fmt_id)
+        )
+    else:
+        order = db.execute('SELECT COALESCE(MAX(sort_order),0)+1 FROM formats').fetchone()[0]
+        db.execute(
+            'INSERT INTO formats (category, slug, title, description, filename, sort_order) '
+            'VALUES (?,?,?,?,?,?)',
+            (category, slug, title, description, filename, order)
+        )
+    db.commit()
+    db.close()
+    _render_format_preview.cache_clear()
+    return True, None
+
+
+@app.route('/admin/formats/new', methods=['GET', 'POST'])
+@admin_required
+def admin_format_new():
+    if request.method == 'POST':
+        ok, err = _save_format(request.form, request.files)
+        if ok:
+            flash('Document uploaded.', 'success')
+            return redirect(url_for('admin_formats'))
+        flash(err, 'error')
+    return render_template('admin/format_edit.html', fmt=None, categories=F.CATEGORY_NAMES)
+
+
+@app.route('/admin/formats/<int:fmt_id>/edit', methods=['GET', 'POST'])
+@admin_required
+def admin_format_edit(fmt_id):
+    db = get_db()
+    fmt = db.execute('SELECT * FROM formats WHERE id=?', (fmt_id,)).fetchone()
+    db.close()
+    if not fmt:
+        abort(404)
+    if request.method == 'POST':
+        ok, err = _save_format(request.form, request.files, fmt_id=fmt_id, existing=fmt)
+        if ok:
+            flash('Document updated.', 'success')
+            return redirect(url_for('admin_formats'))
+        flash(err, 'error')
+    return render_template('admin/format_edit.html', fmt=fmt, categories=F.CATEGORY_NAMES)
+
+
+@app.route('/admin/formats/<int:fmt_id>/delete', methods=['POST'])
+@admin_required
+def admin_format_delete(fmt_id):
+    db = get_db()
+    db.execute('DELETE FROM formats WHERE id=?', (fmt_id,))
+    db.commit()
+    db.close()
+    _render_format_preview.cache_clear()
+    flash('Document deleted.', 'success')
+    return redirect(url_for('admin_formats'))
+
+
 # ─── App Init ────────────────────────────────────────────────────────────────
 
 with app.app_context():
     init_db()
     seed_articles()
     seed_documents()
+    seed_formats()
 
 if __name__ == '__main__':
     # PORT lets the dev preview pick a free port; defaults to 8000 locally.

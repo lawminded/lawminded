@@ -217,3 +217,8 @@ for _name, _icon, _items in _CATEGORIES:
     FORMAT_CATEGORIES.append(_cat)
 
 FORMATS_COUNT = len(FORMATS_BY_SLUG)
+
+# Category metadata used by the admin (upload form dropdown) and the public page.
+CATEGORY_ICONS = {name: icon for (name, icon, items) in _CATEGORIES}
+CATEGORY_NAMES = [name for (name, icon, items) in _CATEGORIES]
+DEFAULT_CATEGORY_ICON = "📄"

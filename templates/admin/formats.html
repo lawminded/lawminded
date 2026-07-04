@@ -1,0 +1,34 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_title %}Document Formats{% endblock %}
+{% block admin_content %}
+
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;gap:1rem;flex-wrap:wrap;">
+  <p style="font-family:var(--uf);font-size:.88rem;color:var(--mid);margin:0;max-width:60ch;">Upload and manage the Word (.docx) documents shown in the <strong>Formats Library</strong> on your Templates page — board resolutions, notices, reports and more. Changes appear on the site instantly.</p>
+  <a href="{{ url_for('admin_format_new') }}" class="btn-primary btn-sm">+ Upload Document</a>
+</div>
+
+{% for category, items in grouped.items() %}
+<h3 style="font-family:var(--hf);font-size:1.1rem;color:var(--dark);margin:1.75rem 0 .75rem;">{{ category }} <span style="font-family:var(--uf);font-size:.8rem;color:var(--muted);font-weight:400;">({{ items|length }})</span></h3>
+<table class="admin-table">
+  <thead><tr><th>Title</th><th>File</th><th>Actions</th></tr></thead>
+  <tbody>
+    {% for f in items %}
+    <tr>
+      <td style="font-weight:500;color:var(--dark);">{{ f['title'] }}</td>
+      <td style="font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.8rem;color:var(--muted);">{{ f['filename'] }}</td>
+      <td style="white-space:nowrap;">
+        <a href="{{ url_for('admin_format_edit', fmt_id=f['id']) }}" class="btn-secondary btn-sm" style="margin-right:.4rem;">Edit</a>
+        <form method="POST" action="{{ url_for('admin_format_delete', fmt_id=f['id']) }}" style="display:inline;" onsubmit="return confirm('Delete this document from your site? This removes the listing.');">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn-danger">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p style="font-family:var(--uf);font-size:.86rem;color:var(--muted);">No documents yet. <a href="{{ url_for('admin_format_new') }}" style="color:var(--gold);">Upload one →</a></p>
+{% endfor %}
+
+{% endblock %}

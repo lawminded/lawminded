@@ -81,6 +81,18 @@ def init_db():
             UNIQUE(doc_type, slug)
         );
 
+        CREATE TABLE IF NOT EXISTS formats (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            category TEXT NOT NULL,
+            slug TEXT NOT NULL UNIQUE,
+            title TEXT NOT NULL,
+            description TEXT DEFAULT '',
+            filename TEXT NOT NULL,
+            sort_order INTEGER DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+
         CREATE TABLE IF NOT EXISTS judgments (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             year TEXT,
@@ -124,6 +136,28 @@ def seed_documents():
     conn.executemany(
         'INSERT INTO documents (doc_type, slug, icon, title, description, tags, body, sort_order) '
         'VALUES (?,?,?,?,?,?,?,?)', rows
+    )
+    conn.commit()
+    conn.close()
+
+
+def seed_formats():
+    """Migrate the built-in Word document formats from formats.py into the DB once.
+    After this, the Document Formats Library is fully admin-managed (upload/edit/delete)."""
+    conn = get_db()
+    if conn.execute('SELECT COUNT(*) FROM formats').fetchone()[0] > 0:
+        conn.close()
+        return
+    import formats as F
+    rows = []
+    order = 0
+    for cat in F.FORMAT_CATEGORIES:
+        for doc in cat['docs']:
+            rows.append((cat['name'], doc['slug'], doc['title'], doc['desc'], doc['file'], order))
+            order += 1
+    conn.executemany(
+        'INSERT INTO formats (category, slug, title, description, filename, sort_order) '
+        'VALUES (?,?,?,?,?,?)', rows
     )
     conn.commit()
     conn.close()
