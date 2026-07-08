@@ -326,7 +326,7 @@ ins.adsbygoogle[data-ad-status="unfilled"]{display:none!important;}
 .masked-avatar{width:104px;height:104px;border-radius:50%;background:var(--gold-tint);border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;font-size:2.6rem;}
 .person-name{font-family:var(--hf);font-size:1.4rem;color:var(--dark);margin-bottom:.25rem;}
 .person-title{font-family:var(--uf);font-size:.8rem;color:var(--gold-ink);text-transform:uppercase;letter-spacing:.1em;margin-bottom:1rem;}
-.person-bio{font-family:var(--uf);font-size:.9rem;color:var(--mid);line-height:1.7;margin-bottom:1.25rem;}
+.person-bio{font-family:var(--uf);font-size:.9rem;color:var(--mid);line-height:1.7;margin-bottom:1.25rem;text-align:justify;}
 .person-link{display:inline-block;font-family:var(--uf);font-size:.84rem;color:var(--gold-ink);border:1px solid var(--gold);padding:9px 18px;border-radius:var(--r-sm);text-decoration:none;transition:all .2s;}
 .person-link:hover{background:var(--gold);color:var(--ink-on-gold);}
 .person-socials{display:flex;gap:.6rem;justify-content:center;margin-top:1rem;}
