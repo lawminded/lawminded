@@ -136,6 +136,11 @@ ADSENSE_SLOTS = {
     'article_bottom': os.getenv('ADSENSE_SLOT_ARTICLE_BOTTOM', ''),
 }
 
+# Google Search Console — paste the "content" value from the HTML-tag
+# verification method into GOOGLE_SITE_VERIFICATION in .env. When set, base.html
+# renders <meta name="google-site-verification" ...> so Google can verify the site.
+GOOGLE_SITE_VERIFICATION = os.getenv('GOOGLE_SITE_VERIFICATION', '')
+
 VALID_EMAIL_RE = re.compile(r'^[^\s@]+@[^\s@]+\.[^\s@]+$')
 
 # Public base URL of the live site (used for canonical tags, sitemap, OG, JSON-LD).
@@ -238,6 +243,7 @@ def inject_globals():
     return {
         'adsense_client': ADSENSE_CLIENT,
         'adsense_slots': ADSENSE_SLOTS,
+        'google_site_verification': GOOGLE_SITE_VERIFICATION,
         'category_map': CATEGORY_MAP,
         'current_year': date.today().year,
         'site_url': SITE_URL,

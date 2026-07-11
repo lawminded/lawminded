@@ -4,6 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% if google_site_verification %}<meta name="google-site-verification" content="{{ google_site_verification }}">{% endif %}
 <title>{% block title %}Law Minded · Where Complexity Meets Clarity{% endblock %}</title>
 <meta name="description" content="{% block meta_desc %}Law Minded is India's compliance and legal awareness platform covering corporate compliance, labour laws, consumer rights and fundamental rights, in plain English.{% endblock %}">
 <meta name="author" content="Law Minded">
@@ -28,7 +29,7 @@
 <!-- Organization + WebSite structured data -->
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
-{"@type":"Organization","@id":"{{ site_url }}/#org","name":"Law Minded","url":"{{ site_url }}/","logo":"{{ _social_img }}","description":"India's compliance and legal awareness platform covering corporate compliance, labour laws and consumer rights, in plain English."},
+{"@type":"Organization","@id":"{{ site_url }}/#org","name":"Law Minded","url":"{{ site_url }}/","logo":"{{ _social_img }}","description":"India's compliance and legal awareness platform covering corporate compliance, labour laws and consumer rights, in plain English.","sameAs":["https://www.linkedin.com/in/lawminded/","https://x.com/Lawminded_in","https://www.instagram.com/lawminded.in"]},
 {"@type":"WebSite","@id":"{{ site_url }}/#website","url":"{{ site_url }}/","name":"Law Minded","publisher":{"@id":"{{ site_url }}/#org"},"potentialAction":{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"{{ site_url }}/search?q={search_term_string}"},"query-input":"required name=search_term_string"}}
 ]}
 </script>
@@ -159,14 +160,11 @@
     <div class="footer-brand">
       <img src="{{ url_for('static', filename='img/logo-full-ondark.png') }}" alt="Law Minded" class="footer-logo">
       <p>India's compliance and legal awareness hub. Helping founders, HR professionals, CAs and citizens understand the law, in plain English.</p>
-      <!-- Social profiles launch soon; rendered as disabled chips until they go live. -->
-      <div class="footer-social" aria-label="Social media (coming soon)">
-        <span class="f-social-btn is-soon" title="LinkedIn — coming soon" aria-disabled="true">{{ icon('linkedin', 17) }}</span>
-        <span class="f-social-btn is-soon" title="X (Twitter) — coming soon" aria-disabled="true">{{ icon('x', 15) }}</span>
-        <span class="f-social-btn is-soon" title="Instagram — coming soon" aria-disabled="true">{{ icon('instagram', 17) }}</span>
-        <span class="f-social-btn is-soon" title="WhatsApp — coming soon" aria-disabled="true">{{ icon('whatsapp', 17) }}</span>
+      <div class="footer-social" aria-label="Law Minded on social media">
+        <a href="https://www.linkedin.com/in/lawminded/" class="f-social-btn" target="_blank" rel="noopener noreferrer" title="Law Minded on LinkedIn" aria-label="Law Minded on LinkedIn">{{ icon('linkedin', 17) }}</a>
+        <a href="https://x.com/Lawminded_in" class="f-social-btn" target="_blank" rel="noopener noreferrer" title="Law Minded on X" aria-label="Law Minded on X">{{ icon('x', 15) }}</a>
+        <a href="https://www.instagram.com/lawminded.in" class="f-social-btn" target="_blank" rel="noopener noreferrer" title="Law Minded on Instagram" aria-label="Law Minded on Instagram">{{ icon('instagram', 17) }}</a>
       </div>
-      <span class="footer-soon-note">Social channels launching soon</span>
     </div>
     <div class="footer-col">
       <h4>Explore</h4>
