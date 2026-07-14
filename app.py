@@ -865,15 +865,25 @@ def newsletter():
 @app.route('/unsubscribe', methods=['GET', 'POST'])
 @csrf.exempt
 def unsubscribe():
-    """Unsubscribe via a signed token. GET shows a confirmation page; POST is the
-    RFC 8058 one-click path that Gmail/Outlook call from the List-Unsubscribe header."""
+    """Unsubscribe via a signed token.
+
+    GET only shows a confirmation page with an "Unsubscribe" button — visiting the
+    link never removes anyone. The removal happens on POST: either the in-page
+    button, or the RFC 8058 one-click path that Gmail/Outlook fire automatically
+    from the List-Unsubscribe header (identified by the List-Unsubscribe=One-Click
+    body field, which the button submit does not send)."""
     token = request.values.get('token', '')
-    email = None
     try:
         email = _unsub_serializer.loads(token)
     except BadSignature:
         email = None
 
+    # A plain visit changes nothing — just ask the person to confirm.
+    if request.method == 'GET':
+        return render_template('unsubscribe.html', email=email, token=token,
+                               removed=False, confirm=bool(email), valid=bool(email))
+
+    # POST: actually remove them.
     removed = False
     if email:
         db = get_db()
@@ -882,10 +892,12 @@ def unsubscribe():
         removed = cur.rowcount > 0
         db.close()
 
-    if request.method == 'POST':       # one-click; mail clients expect a bare 2xx
+    # Mail-client one-click (RFC 8058) expects a bare 2xx with no page body.
+    if request.form.get('List-Unsubscribe') == 'One-Click':
         return ('', 204)
-    return render_template('unsubscribe.html', email=email, removed=removed,
-                           valid=bool(email))
+
+    return render_template('unsubscribe.html', email=email, token=token,
+                           removed=removed, confirm=False, valid=bool(email))
 
 
 @app.route('/download-request', methods=['POST'])

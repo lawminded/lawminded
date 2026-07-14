@@ -9,16 +9,32 @@
   {% if removed %}
     <h1>You've been unsubscribed</h1>
     <p>{{ email }} has been removed from the Law Minded mailing list. You won't receive any more emails from us. Changed your mind? You can re-subscribe from any page anytime.</p>
+    <div class="error-actions">
+      <a href="{{ url_for('index') }}" class="btn-primary">Back to Home</a>
+      <a href="{{ url_for('contact_page') }}" class="btn-secondary">Contact Us</a>
+    </div>
+  {% elif confirm %}
+    <h1>Unsubscribe from Law Minded?</h1>
+    <p>You're about to remove <strong>{{ email }}</strong> from the Law Minded mailing list. Click the button below to confirm — until you do, nothing changes and you stay subscribed.</p>
+    <form method="post" action="{{ url_for('unsubscribe') }}" class="error-actions">
+      <input type="hidden" name="token" value="{{ token }}">
+      <button type="submit" class="btn-primary">Unsubscribe</button>
+      <a href="{{ url_for('index') }}" class="btn-secondary">No, keep me subscribed</a>
+    </form>
   {% elif valid %}
     <h1>You're not on the list</h1>
     <p>We couldn't find {{ email }} among our subscribers — you may have already unsubscribed. No further action is needed.</p>
+    <div class="error-actions">
+      <a href="{{ url_for('index') }}" class="btn-primary">Back to Home</a>
+      <a href="{{ url_for('contact_page') }}" class="btn-secondary">Contact Us</a>
+    </div>
   {% else %}
     <h1>This link isn't valid</h1>
     <p>This unsubscribe link is invalid or has expired. Please use the link from a recent Law Minded email, or contact us and we'll remove you manually.</p>
+    <div class="error-actions">
+      <a href="{{ url_for('index') }}" class="btn-primary">Back to Home</a>
+      <a href="{{ url_for('contact_page') }}" class="btn-secondary">Contact Us</a>
+    </div>
   {% endif %}
-  <div class="error-actions">
-    <a href="{{ url_for('index') }}" class="btn-primary">Back to Home</a>
-    <a href="{{ url_for('contact_page') }}" class="btn-secondary">Contact Us</a>
-  </div>
 </div>
 {% endblock %}
