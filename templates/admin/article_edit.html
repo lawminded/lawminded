@@ -36,6 +36,16 @@
   </div>
 
   <div class="form-group">
+    <label>SEO title <span style="color:var(--muted);font-weight:400;">(optional — the &lt;title&gt; shown in Google)</span></label>
+    <input type="text" name="seo_title" maxlength="60"
+           value="{{ article['seo_title'] if article and article['seo_title'] else '' }}"
+           placeholder="Leave blank to auto-shorten the headline. Aim for ≤ 60 characters.">
+    <small style="color:var(--muted);display:block;margin-top:.35rem;">
+      Keep it under ~60 characters so it doesn't get cut off in search results. If blank, the title above is shortened automatically.
+    </small>
+  </div>
+
+  <div class="form-group">
     <label>Content <span style="color:var(--gold)">*</span></label>
     <div class="rte">
       <div class="rte-toolbar">

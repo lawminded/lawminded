@@ -146,6 +146,24 @@ VALID_EMAIL_RE = re.compile(r'^[^\s@]+@[^\s@]+\.[^\s@]+$')
 # Public base URL of the live site (used for canonical tags, sitemap, OG, JSON-LD).
 SITE_URL = os.getenv('SITE_URL', 'https://lawminded.in').rstrip('/')
 
+# ── Named author (E-E-A-T) ──────────────────────────────────────────────────
+# Legal content is YMYL, where Google weights demonstrable, *named* authorship
+# most heavily. This single block drives the article byline, the Person schema,
+# and the /author bio page. Fill CREDENTIAL and SAME_AS with real facts (a held
+# qualification such as 'Company Secretary'; the author's own LinkedIn/X) so the
+# expertise signal is genuine — never invent a credential.
+AUTHOR = {
+    'name': 'Piyush Kundnani',
+    'slug': 'piyush-kundnani',
+    'role': 'Founder & Editor',
+    'credential': '',   # e.g. 'Company Secretary' — shown in byline + schema jobTitle
+    'bio': ('Piyush Kundnani is the founder and editor of Law Minded, where he '
+            'leads its plain-English coverage of Indian corporate compliance, '
+            'labour law and consumer rights.'),
+    'same_as': [],      # the author\'s OWN professional profiles (personal LinkedIn/X)
+}
+AUTHOR['url'] = SITE_URL + '/author/' + AUTHOR['slug']
+
 CATEGORY_MAP = C.CATEGORY_MAP
 
 # Signed, tamper-proof tokens for one-click newsletter unsubscribe links.
@@ -238,6 +256,57 @@ def humandate(value):
         return s
 
 
+@app.template_filter('iso8601')
+def iso8601(value, offset='+05:30'):
+    """Render a stored timestamp as valid ISO-8601 for structured data,
+    e.g. '2026-06-27T15:26:32+05:30'. Google requires the 'T' separator and a
+    timezone designator; the raw SQLite 'YYYY-MM-DD HH:MM:SS' form is invalid.
+    The wall-clock value is kept as-is and tagged with the site offset (IST),
+    consistent with how humandate renders the same value."""
+    if not value:
+        return ''
+    from datetime import datetime as _dt
+    s = str(value).strip().replace('T', ' ')[:19]
+    for fmt in ('%Y-%m-%d %H:%M:%S', '%Y-%m-%d %H:%M', '%Y-%m-%d'):
+        try:
+            return _dt.strptime(s, fmt).strftime('%Y-%m-%dT%H:%M:%S') + offset
+        except ValueError:
+            continue
+    return str(value)
+
+
+@app.template_filter('seotitle')
+def seotitle(article, brand=' - Law Minded', maxlen=60):
+    """Build a search-friendly <title>. Uses the article's explicit seo_title
+    when set; otherwise shortens the long editorial headline (preferring the
+    lead before a colon, else trimming on a word boundary). The ' - Law Minded'
+    suffix is only appended when the whole thing still fits Google's ~60-char
+    display width, so titles stop truncating mid-phrase in search results."""
+    def _get(row, key):
+        try:
+            v = row[key]
+        except (KeyError, IndexError, TypeError):
+            v = None
+        return v.strip() if isinstance(v, str) else ''
+
+    title = _get(article, 'seo_title')
+    if not title:
+        raw = ' '.join(_get(article, 'title').split())
+        title = raw
+        if ':' in raw:
+            lead = raw.split(':', 1)[0].strip()
+            if 12 <= len(lead) <= maxlen:
+                title = lead
+        if len(title) > maxlen:
+            cut = title[:maxlen]
+            if ' ' in cut:
+                cut = cut[:cut.rindex(' ')]
+            title = cut.rstrip(' ,;:-–—')
+    if brand and len(title) + len(brand) <= maxlen:
+        return title + brand
+    return title
+
+
 @app.context_processor
 def inject_globals():
     return {
@@ -249,6 +318,7 @@ def inject_globals():
         'site_url': SITE_URL,
         'canonical_url': SITE_URL + request.path,
         'asset_v': asset_version,
+        'author': AUTHOR,
     }
 
 
@@ -522,6 +592,13 @@ def index():
 @app.route('/about')
 def about():
     return render_template('about.html')
+
+
+@app.route('/author/<slug>')
+def author_page(slug):
+    if slug != AUTHOR['slug']:
+        abort(404)
+    return render_template('author.html', profile=AUTHOR)
 
 
 @app.route('/blogs')
@@ -981,6 +1058,9 @@ def sitemap_xml():
     for endpoint, freq, prio in pages:
         urls.append((SITE_URL + url_for(endpoint), freq, prio, None))
 
+    # Author bio page (E-E-A-T)
+    urls.append((AUTHOR['url'], 'yearly', '0.4', None))
+
     # Resolution library pages
     for rtype in DOC_LIST_TITLE:
         urls.append((SITE_URL + url_for('resolutions', rtype=rtype), 'monthly', '0.6', None))
@@ -1099,6 +1179,7 @@ def admin_article_new():
         act = request.form.get('act', '').strip()
         read_time = request.form.get('read_time', '').strip()
         summary = request.form.get('summary', '').strip()
+        seo_title = request.form.get('seo_title', '').strip()
         content_html = sanitize_html(request.form.get('content', '').strip())
         published = 1 if request.form.get('published') else 0
         slug = slugify(title)
@@ -1110,8 +1191,8 @@ def admin_article_new():
             slug = f'{base_slug}-{i}'
             i += 1
         db.execute(
-            'INSERT INTO articles (title, slug, category, act, read_time, summary, content, published) VALUES (?,?,?,?,?,?,?,?)',
-            (title, slug, category, act, read_time, summary, content_html, published)
+            'INSERT INTO articles (title, slug, category, act, read_time, summary, seo_title, content, published) VALUES (?,?,?,?,?,?,?,?,?)',
+            (title, slug, category, act, read_time, summary, seo_title, content_html, published)
         )
         db.commit()
         db.close()
@@ -1136,12 +1217,13 @@ def admin_article_edit(article_id):
         act = request.form.get('act', '').strip()
         read_time = request.form.get('read_time', '').strip()
         summary = request.form.get('summary', '').strip()
+        seo_title = request.form.get('seo_title', '').strip()
         content_html = sanitize_html(request.form.get('content', '').strip())
         published = 1 if request.form.get('published') else 0
         db.execute(
             '''UPDATE articles SET title=?, category=?, act=?, read_time=?, summary=?,
-               content=?, published=?, updated_at=CURRENT_TIMESTAMP WHERE id=?''',
-            (title, category, act, read_time, summary, content_html, published, article_id)
+               seo_title=?, content=?, published=?, updated_at=CURRENT_TIMESTAMP WHERE id=?''',
+            (title, category, act, read_time, summary, seo_title, content_html, published, article_id)
         )
         db.commit()
         db.close()

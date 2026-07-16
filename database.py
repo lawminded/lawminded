@@ -33,6 +33,7 @@ def init_db():
             act TEXT,
             read_time TEXT,
             summary TEXT,
+            seo_title TEXT,
             content TEXT NOT NULL,
             published INTEGER DEFAULT 1,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -111,6 +112,14 @@ def init_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
     ''')
+
+    # Idempotent column migrations for databases created before a column existed.
+    # (CREATE TABLE IF NOT EXISTS never alters an existing table.)
+    def _ensure_column(table, col, decl):
+        cols = [r[1] for r in c.execute(f'PRAGMA table_info({table})').fetchall()]
+        if col not in cols:
+            c.execute(f'ALTER TABLE {table} ADD COLUMN {col} {decl}')
+    _ensure_column('articles', 'seo_title', 'TEXT')
 
     conn.commit()
     conn.close()
