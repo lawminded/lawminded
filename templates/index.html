@@ -31,8 +31,8 @@
       <span class="fx-motif fx-3">🏛️</span>
       <svg class="fx-motif fx-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M1 21h12v2H1zM5.24 8.07l2.83-2.83 14.14 14.14-2.83 2.83zM12.31 1l5.66 5.66-2.83 2.83-5.66-5.66zM3.83 9.48l5.66 5.66-2.83 2.83-5.66-5.66z"/></svg>
     </div>
-    <img src="{{ url_for('static', filename='img/logo-full.png') }}" alt="Law Minded" class="hero-logo logo-light" width="380" height="380">
-    <img src="{{ url_for('static', filename='img/logo-full-ondark.png') }}" alt="Law Minded" class="hero-logo logo-dark" width="380" height="380">
+    <picture><source srcset="{{ url_for('static', filename='img/logo-full.webp') }}" type="image/webp"><img src="{{ url_for('static', filename='img/logo-full.png') }}" alt="Law Minded" class="hero-logo logo-light" width="380" height="380"></picture>
+    <picture><source srcset="{{ url_for('static', filename='img/logo-full-ondark.webp') }}" type="image/webp"><img src="{{ url_for('static', filename='img/logo-full-ondark.png') }}" alt="Law Minded" class="hero-logo logo-dark" width="380" height="380" loading="lazy"></picture>
   </div>
 </section>
 

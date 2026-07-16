@@ -38,7 +38,8 @@
 <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/favicon-180.png') }}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500;600&display=swap"></noscript>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v={{ asset_v('css/style.css') }}">
 {% if adsense_client %}
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ adsense_client }}" crossorigin="anonymous"></script>
@@ -93,8 +94,8 @@
 <!-- NAV -->
 <nav id="mainNav">
   <a href="{{ url_for('index') }}" class="nav-logo" aria-label="Law Minded home">
-    <img src="{{ url_for('static', filename='img/logo-horizontal.png') }}" alt="Law Minded" class="logo-light">
-    <img src="{{ url_for('static', filename='img/logo-horizontal-ondark.png') }}" alt="Law Minded" class="logo-dark">
+    <picture><source srcset="{{ url_for('static', filename='img/logo-horizontal.webp') }}" type="image/webp"><img src="{{ url_for('static', filename='img/logo-horizontal.png') }}" alt="Law Minded" class="logo-light" width="360" height="130"></picture>
+    <picture><source srcset="{{ url_for('static', filename='img/logo-horizontal-ondark.webp') }}" type="image/webp"><img src="{{ url_for('static', filename='img/logo-horizontal-ondark.png') }}" alt="Law Minded" class="logo-dark" width="360" height="130"></picture>
   </a>
   <ul class="nav-links" id="navLinks">
     <li><a href="{{ url_for('index') }}" class="{{ 'active' if request.endpoint == 'index' }}">Home</a></li>
@@ -158,7 +159,7 @@
 <footer>
   <div class="footer-grid">
     <div class="footer-brand">
-      <img src="{{ url_for('static', filename='img/logo-full-ondark.png') }}" alt="Law Minded" class="footer-logo">
+      <picture><source srcset="{{ url_for('static', filename='img/logo-full-ondark.webp') }}" type="image/webp"><img src="{{ url_for('static', filename='img/logo-full-ondark.png') }}" alt="Law Minded" class="footer-logo" width="380" height="353" loading="lazy"></picture>
       <p>India's compliance and legal awareness hub. Helping founders, HR professionals, CAs and citizens understand the law, in plain English.</p>
       <div class="footer-social" aria-label="Law Minded on social media">
         <a href="https://www.linkedin.com/in/lawminded/" class="f-social-btn" target="_blank" rel="noopener noreferrer" title="Law Minded on LinkedIn" aria-label="Law Minded on LinkedIn">{{ icon('linkedin', 17) }}</a>
