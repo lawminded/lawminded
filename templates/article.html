@@ -29,6 +29,12 @@
  ]
 }
 </script>
+{% set faq_items = article['content']|faqs %}
+{% if faq_items %}
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{% for f in faq_items %}{"@type":"Question","name":{{ f.q|tojson }},"acceptedAnswer":{"@type":"Answer","text":{{ f.a|tojson }}}}{% if not loop.last %},{% endif %}{% endfor %}]}
+</script>
+{% endif %}
 {% endblock %}
 
 {% block content %}

@@ -307,6 +307,30 @@ def seotitle(article, brand=' - Law Minded', maxlen=60):
     return title
 
 
+@app.template_filter('faqs')
+def faqs(content, limit=10):
+    """Pull (question, answer) pairs from an article's 'Frequently asked
+    questions' section for FAQPage schema. Matches the seeded structure:
+    an <h2>FAQ</h2> heading followed by <p><strong>Q?</strong> A</p> pairs.
+    ponytail: naive regex parse of known-good seeded HTML; re-check if the
+    editor ever emits a different FAQ structure."""
+    if not content:
+        return []
+    import re
+    m = re.search(
+        r'<h2[^>]*>\s*(?:frequently asked questions|common questions|faqs?)\s*</h2>(.*?)(?:<h2|$)',
+        content, re.I | re.S)
+    if not m:
+        return []
+    out = []
+    for q, a in re.findall(r'<p>\s*<strong>(.*?)</strong>\s*(.*?)</p>', m.group(1), re.S):
+        q = re.sub(r'<[^>]+>', '', q).strip()
+        a = re.sub(r'<[^>]+>', '', a).strip()
+        if q.endswith('?') and a:
+            out.append({'q': q, 'a': a})
+    return out[:limit]
+
+
 @app.context_processor
 def inject_globals():
     return {
@@ -1091,6 +1115,41 @@ def sitemap_xml():
         xml.append('  </url>')
     xml.append('</urlset>')
     return app.response_class('\n'.join(xml), mimetype='application/xml')
+
+
+@app.route('/llms.txt')
+def llms_txt():
+    """AI-search discovery file (llmstxt.org): a clean, linked index of the
+    site's guides so ChatGPT/Perplexity/AI Overviews can find and cite them."""
+    from itertools import groupby
+    db = get_db()
+    rows = db.execute(
+        'SELECT slug,title,summary,category FROM articles WHERE published=1 '
+        'ORDER BY category,title'
+    ).fetchall()
+    db.close()
+    out = [
+        '# Law Minded',
+        '',
+        "> India's plain-English legal and compliance platform — corporate "
+        'compliance, labour law, consumer rights and constitutional law, '
+        'explained simply for founders, professionals and citizens.',
+        '',
+        '## Key pages',
+        f'- [Knowledge Hub]({SITE_URL}/blogs): every guide, by topic',
+        f'- [Free templates]({SITE_URL}/templates): ready-to-use legal document formats',
+        f'- [Landmark judgments]({SITE_URL}/judgments): plain-English case summaries',
+        f'- [FAQ]({SITE_URL}/faq)',
+        '',
+    ]
+    for cat, items in groupby(rows, key=lambda r: r['category']):
+        out.append(f'## {CATEGORY_MAP.get(cat, (cat or "Guides").title())}')
+        for r in items:
+            summ = ' '.join((r['summary'] or '').split())[:140]
+            out.append(f'- [{r["title"]}]({SITE_URL}/article/{r["slug"]})'
+                       + (f': {summ}' if summ else ''))
+        out.append('')
+    return app.response_class('\n'.join(out), mimetype='text/plain; charset=utf-8')
 
 
 @app.errorhandler(404)
