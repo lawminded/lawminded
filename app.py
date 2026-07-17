@@ -331,6 +331,17 @@ def faqs(content, limit=10):
     return out[:limit]
 
 
+def _article_image_url(slug):
+    """Static URL of an article's header image if the file exists, else None.
+    Used for the article hero, og:image, and the blog-listing card thumbnails."""
+    if slug and os.path.exists(os.path.join(app.static_folder, 'img', 'articles', f'{slug}.webp')):
+        return url_for('static', filename=f'img/articles/{slug}.webp')
+    return None
+
+
+app.jinja_env.globals['article_image'] = _article_image_url
+
+
 @app.context_processor
 def inject_globals():
     return {
@@ -651,10 +662,8 @@ def article(slug):
         ).fetchall()
         related = list(related) + [r for r in extra if r['id'] not in seen][:4 - len(related)]
     db.close()
-    hero_image = None
-    if os.path.exists(os.path.join(app.static_folder, 'img', 'articles', f'{slug}.webp')):
-        hero_image = url_for('static', filename=f'img/articles/{slug}.webp')
-    return render_template('article.html', article=row, related=related, hero_image=hero_image)
+    return render_template('article.html', article=row, related=related,
+                           hero_image=_article_image_url(slug))
 
 
 @app.route('/templates')

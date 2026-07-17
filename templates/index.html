@@ -91,6 +91,8 @@
   <div class="blog-grid">
     {% for art in featured %}
     <article class="blog-card">
+      {% set _thumb = article_image(art['slug']) %}
+      {% if _thumb %}<img class="blog-card-cover" src="{{ _thumb }}" alt="{{ art['title'] }}" width="1200" height="630" loading="lazy">{% endif %}
       <div class="blog-card-top">
         <span class="blog-tag">{{ art['act'] or category_map.get(art['category'], '') }}</span>
         <button class="wa-share" onclick="openShare('{{ art['title']|replace("'","") }}', '{{ url_for('article', slug=art['slug'], _external=True) }}')">{{ icon('share', 14) }} Share</button>
