@@ -15,7 +15,7 @@
  "author":{"@type":"Person","@id":"{{ site_url }}/author/{{ author.slug }}#person","name":{{ author.name|tojson }},"url":"{{ author.url }}"},
  "publisher":{"@type":"Organization","name":"Law Minded","logo":{"@type":"ImageObject","url":"{{ site_url }}{{ url_for('static', filename='img/logo-full.png') }}"}},
  "mainEntityOfPage":"{{ canonical_url }}",
- "image":"{{ site_url }}{{ url_for('static', filename='img/logo-full.png') }}"
+ "image":"{{ site_url }}{{ hero_image or url_for('static', filename='img/logo-full.png') }}"
 }
 </script>
 <script type="application/ld+json">
@@ -61,6 +61,12 @@
     {% endif %}
   </div>
 </div>
+
+{% if hero_image %}
+<figure class="article-hero-img">
+  <img src="{{ hero_image }}" alt="{{ article['title'] }}" width="1200" height="630" fetchpriority="high">
+</figure>
+{% endif %}
 
 <div class="article-body">
   <div class="article-main">

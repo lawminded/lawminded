@@ -380,6 +380,8 @@ ins.adsbygoogle[data-ad-status="unfilled"]{display:none!important;}
 .article-hero .section-tag{margin-bottom:.6rem;}
 .article-hero h1{font-family:var(--hf);font-size:clamp(1.9rem,3.6vw,2.7rem);color:var(--dark);line-height:1.15;letter-spacing:-.01em;margin-bottom:1.1rem;max-width:30ch;}
 .article-meta{font-family:var(--uf);font-size:.82rem;color:var(--muted);display:flex;gap:1.25rem;flex-wrap:wrap;}
+.article-hero-img{margin:0;padding:1.4rem var(--pad-x) 0;}
+.article-hero-img img{width:100%;height:auto;aspect-ratio:1200/630;object-fit:cover;border-radius:16px;box-shadow:0 12px 34px -20px rgba(40,32,16,.4);}
 .article-body{margin:2.5rem auto 0;padding:0 var(--pad-x);display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:3.5rem;align-items:start;}
 .article-main{min-width:0;}
 .toc-side{min-width:0;}

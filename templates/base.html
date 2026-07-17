@@ -12,7 +12,7 @@
 <meta name="theme-color" content="#E8A020">
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <link rel="canonical" href="{{ canonical_url }}">
-{% set _social_img = site_url ~ url_for('static', filename='img/logo-full.png') %}
+{% set _social_img = site_url ~ (hero_image if hero_image is defined and hero_image else url_for('static', filename='img/logo-full.png')) %}
 <!-- Open Graph -->
 <meta property="og:site_name" content="Law Minded">
 <meta property="og:title" content="{{ self.title() }}">

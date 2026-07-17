@@ -651,7 +651,10 @@ def article(slug):
         ).fetchall()
         related = list(related) + [r for r in extra if r['id'] not in seen][:4 - len(related)]
     db.close()
-    return render_template('article.html', article=row, related=related)
+    hero_image = None
+    if os.path.exists(os.path.join(app.static_folder, 'img', 'articles', f'{slug}.webp')):
+        hero_image = url_for('static', filename=f'img/articles/{slug}.webp')
+    return render_template('article.html', article=row, related=related, hero_image=hero_image)
 
 
 @app.route('/templates')
