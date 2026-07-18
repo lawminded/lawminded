@@ -125,14 +125,25 @@ img{max-width:100%;display:block;}
 .scroll-hint{display:none;} /* removed: scroll cues are clutter */
 
 /* Homepage media hero: full-bleed warm image + frosted-glass content panel */
-.hero--media{background:var(--dark);}
+.hero--media{background:#100b06;}
 .hero--media::before,.hero--media::after{display:none;} /* kill the base gold shapes */
-.hero--media .hero-visual{display:none;}
 .hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;}
-/* full-bleed frosted cream veil over the whole hero image; text sits on top */
-.hero-veil{position:absolute;inset:0;z-index:1;background:linear-gradient(105deg,rgba(255,250,242,.95),rgba(255,249,240,.9) 50%,rgba(254,247,236,.82));-webkit-backdrop-filter:blur(5px) saturate(1.05);backdrop-filter:blur(5px) saturate(1.05);}
-[data-theme=dark] .hero-veil{background:linear-gradient(105deg,rgba(19,16,10,.92),rgba(19,16,10,.86) 50%,rgba(19,16,10,.6));}
-.hero--media .hero-content{position:relative;z-index:2;background:none;-webkit-backdrop-filter:none;backdrop-filter:none;border:none;border-radius:0;padding:0;box-shadow:none;max-width:640px;}
+/* dark warm tint: image stays visible, lighter on the right; light text on top (Voyage-style) */
+.hero-veil{position:absolute;inset:0;z-index:1;background:linear-gradient(100deg,rgba(10,7,3,.66),rgba(10,7,3,.32) 55%,rgba(10,7,3,.12));}
+[data-theme=dark] .hero-veil{background:linear-gradient(100deg,rgba(6,4,2,.72),rgba(6,4,2,.36) 55%,rgba(6,4,2,.14));}
+.hero--media .hero-content{position:relative;z-index:2;max-width:600px;}
+.hero--media .hero-badge{background:rgba(255,255,255,.06);color:#F2B23E;border-color:rgba(232,160,32,.5);box-shadow:none;}
+.hero--media h1{color:#FBF7EF;}
+.hero--media h1 em{color:#F2B23E;}
+.hero--media .hero-sub{color:rgba(251,247,239,.82);}
+.hero--media .hero-tag{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.16);color:rgba(251,247,239,.9);}
+.hero--media .btn-secondary{color:#FBF7EF;border-color:rgba(255,255,255,.4);}
+.hero--media .btn-secondary:hover{border-color:var(--gold);color:#F2B23E;}
+/* brain logo returns as the right-side visual (light variant); particles off */
+.hero--media .hero-visual{z-index:2;}
+.hero--media .hero-fx{display:none;}
+.hero--media .hero-visual .logo-light{display:none;}
+.hero--media .hero-visual .logo-dark{display:block;}
 
 /* ─── BOOK INTRO: cover (your logo) opens INWARD like doors on scroll ──────── */
 /* Pulled up under the sticky nav so the cover fills the whole screen (no top gap). */
