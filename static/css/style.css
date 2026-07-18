@@ -84,8 +84,8 @@ img{max-width:100%;display:block;}
 .nav-mobile-only{display:none;}
 
 /* ─── SEARCH (desktop bar + mobile widget/modal) ──────────────────────── */
-.search-bar{max-height:0;overflow:hidden;background:var(--white);border-bottom:1px solid transparent;transition:max-height .3s ease,border-color .3s;position:sticky;top:74px;z-index:90;}
-.search-bar.open{max-height:96px;border-bottom:1px solid var(--hairline);}
+.search-bar{max-height:0;overflow:hidden;background:transparent;border-bottom:1px solid transparent;transition:max-height .3s ease,border-color .3s;position:sticky;top:74px;z-index:90;}
+.search-bar.open{max-height:96px;background:var(--white);border-bottom:1px solid var(--hairline);}
 .search-bar-inner{display:flex;align-items:center;gap:.6rem;padding:1rem var(--pad-x);max-width:760px;margin:0 auto;}
 .search-bar-icon{font-size:1rem;color:var(--muted);}
 .search-bar-inner input{flex:1;padding:11px 15px;border:1px solid var(--border);border-radius:var(--r-sm);background:var(--bg);color:var(--charcoal);font-family:var(--uf);font-size:.92rem;outline:none;transition:border-color .2s;}
@@ -126,7 +126,9 @@ img{max-width:100%;display:block;}
 
 /* Homepage media hero: full-bleed warm image + frosted-glass content panel */
 .hero--media{background:#100b06;}
-.hero--media::before,.hero--media::after{display:none;} /* kill the base gold shapes */
+.hero--media::before{display:none;} /* kill the base gold diagonal shape */
+/* soft bottom fade: the dark hero melts into the section below */
+.hero--media::after{content:'';position:absolute;left:0;right:0;top:auto;bottom:0;width:auto;height:160px;border-radius:0;filter:none;background:linear-gradient(to bottom,transparent,var(--band));z-index:1;pointer-events:none;}
 .hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;}
 /* dark warm tint: image stays visible, lighter on the right; light text on top (Voyage-style) */
 .hero-veil{position:absolute;inset:0;z-index:1;background:linear-gradient(100deg,rgba(10,7,3,.66),rgba(10,7,3,.32) 55%,rgba(10,7,3,.12));}
@@ -144,6 +146,48 @@ img{max-width:100%;display:block;}
 .hero--media .hero-fx{display:none;}
 .hero--media .hero-visual .logo-light{display:none;}
 .hero--media .hero-visual .logo-dark{display:block;}
+.hero--media .hero-visual{right:10%;}
+/* warm "knowledge shines" glow behind the brain (soft, feathered so it blends into the image) */
+.hero--media .hero-visual::before{content:'';position:absolute;left:50%;top:36%;transform:translate(-50%,-50%);width:70%;height:82%;background:radial-gradient(ellipse 44% 56% at 50% 50%,rgba(246,180,60,.5),rgba(234,162,34,.2) 46%,transparent 72%);filter:blur(36px);z-index:0;pointer-events:none;opacity:0;animation:heroFade 1s ease .3s both;}
+/* soft grounding shadow under the logo */
+.hero--media .hero-logo{position:relative;z-index:1;filter:drop-shadow(0 16px 24px rgba(0,0,0,.5));}
+
+/* Homepage: nav merges into the hero (transparent), turns solid once scrolled past it */
+.hero--media{margin-top:calc(-1 * var(--nav-h));}
+/* transparent state — merged into the dark hero (no border/shadow so it blends seamlessly) */
+#mainNav.nav-hero{background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;border-bottom:0;box-shadow:none;}
+/* auto-hide the homepage nav on scroll-down (all viewports) */
+#mainNav.nav-hero.nav-hidden{transform:translateY(-100%);}
+/* frosted-glass strip once scrolled over the hero (so the nav reads against the image) */
+#mainNav.nav-hero.nav-glass{background:rgba(20,14,8,.5);backdrop-filter:saturate(150%) blur(12px);-webkit-backdrop-filter:saturate(150%) blur(12px);border-bottom:1px solid rgba(255,255,255,.08);box-shadow:0 6px 24px -16px rgba(0,0,0,.6);}
+#mainNav.nav-hero .nav-links a{color:rgba(251,247,239,.82);}
+#mainNav.nav-hero .nav-links a:hover,#mainNav.nav-hero .nav-links a.active{color:#fff;}
+#mainNav.nav-hero .icon-btn,#mainNav.nav-hero .theme-btn{border-color:rgba(255,255,255,.28);color:rgba(251,247,239,.85);}
+#mainNav.nav-hero .icon-btn:hover,#mainNav.nav-hero .theme-btn:hover{border-color:var(--gold);color:#F2B23E;}
+#mainNav.nav-hero .hamburger{color:#fff;}
+#mainNav.nav-hero .nav-logo .logo-light{display:none;}
+#mainNav.nav-hero .nav-logo .logo-dark{display:block;}
+/* solid state — after scrolling past the hero (reverts to the normal light nav) */
+#mainNav.nav-hero.nav-solid{background:color-mix(in srgb,var(--white) 92%,transparent);backdrop-filter:saturate(140%) blur(10px);-webkit-backdrop-filter:saturate(140%) blur(10px);border-bottom:1px solid var(--hairline);}
+#mainNav.nav-hero.nav-solid .nav-links a{color:var(--mid);}
+#mainNav.nav-hero.nav-solid .nav-links a:hover,#mainNav.nav-hero.nav-solid .nav-links a.active{color:var(--dark);}
+#mainNav.nav-hero.nav-solid .icon-btn,#mainNav.nav-hero.nav-solid .theme-btn{border-color:var(--border);color:var(--mid);}
+#mainNav.nav-hero.nav-solid .hamburger{color:var(--charcoal);}
+#mainNav.nav-hero.nav-solid .nav-logo .logo-light{display:block;}
+#mainNav.nav-hero.nav-solid .nav-logo .logo-dark{display:none;}
+[data-theme=dark] #mainNav.nav-hero.nav-solid .nav-logo .logo-light{display:none;}
+[data-theme=dark] #mainNav.nav-hero.nav-solid .nav-logo .logo-dark{display:block;}
+
+/* gentle hero load-in (staggered) */
+@keyframes heroRise{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:none;}}
+@keyframes heroFade{from{opacity:0;}to{opacity:1;}}
+.hero--media .hero-badge{opacity:0;animation:heroRise .7s cubic-bezier(.2,.7,.2,1) both;}
+.hero--media h1{opacity:0;animation:heroRise .7s cubic-bezier(.2,.7,.2,1) .09s both;}
+.hero--media .hero-sub{opacity:0;animation:heroRise .7s cubic-bezier(.2,.7,.2,1) .17s both;}
+.hero--media .hero-tags{opacity:0;animation:heroRise .7s cubic-bezier(.2,.7,.2,1) .25s both;}
+.hero--media .hero-actions{opacity:0;animation:heroRise .7s cubic-bezier(.2,.7,.2,1) .33s both;}
+.hero--media .hero-logo{opacity:0;animation:heroFade 1s ease .3s both;}
+@media(prefers-reduced-motion:reduce){.hero--media .hero-badge,.hero--media h1,.hero--media .hero-sub,.hero--media .hero-tags,.hero--media .hero-actions,.hero--media .hero-logo{opacity:1;animation:none;}}
 
 /* ─── BOOK INTRO: cover (your logo) opens INWARD like doors on scroll ──────── */
 /* Pulled up under the sticky nav so the cover fills the whole screen (no top gap). */

@@ -92,7 +92,7 @@
 </div>
 
 <!-- NAV -->
-<nav id="mainNav">
+<nav id="mainNav" class="{{ 'nav-hero' if request.endpoint == 'index' }}">
   <a href="{{ url_for('index') }}" class="nav-logo" aria-label="Law Minded home">
     <picture><source srcset="{{ url_for('static', filename='img/logo-horizontal.webp') }}" type="image/webp"><img src="{{ url_for('static', filename='img/logo-horizontal.png') }}" alt="Law Minded" class="logo-light" width="360" height="130"></picture>
     <picture><source srcset="{{ url_for('static', filename='img/logo-horizontal-ondark.webp') }}" type="image/webp"><img src="{{ url_for('static', filename='img/logo-horizontal-ondark.png') }}" alt="Law Minded" class="logo-dark" width="360" height="130"></picture>

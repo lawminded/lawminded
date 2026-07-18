@@ -348,13 +348,26 @@ window.addEventListener('click', e => {
 (function () {
   var nav = document.getElementById('mainNav');
   if (!nav) return;
+  var isHero = nav.classList.contains('nav-hero');
+  var hero = document.querySelector('.hero--media');
   var lastY = window.scrollY;
-  window.addEventListener('scroll', function () {
+  function heroThreshold() {
+    return hero ? Math.max(80, hero.offsetHeight - nav.offsetHeight - 24) : 80;
+  }
+  function onScroll() {
     var y = window.scrollY;
-    if (y > lastY && y > 90) nav.classList.add('nav-hidden');   // scrolling down
-    else nav.classList.remove('nav-hidden');                    // scrolling up
+    if (isHero) {
+      var solid = y > heroThreshold();
+      nav.classList.toggle('nav-solid', solid);                 // solid white past the hero
+      nav.classList.toggle('nav-glass', !solid && y > 8);       // frosted over the hero (not at the very top)
+    }
+    // Auto-hide: slide up on scroll down, reveal on scroll up.
+    if (y > lastY && y > 90) nav.classList.add('nav-hidden');
+    else nav.classList.remove('nav-hidden');
     lastY = y;
-  }, { passive: true });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
 })();
 
 // ─── Floating search widget modal ──────────────────────────────────────────────
