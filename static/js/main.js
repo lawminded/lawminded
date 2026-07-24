@@ -18,12 +18,8 @@ function toggleTheme() {
     apply();
   }
 }
-(function () {
-  if (localStorage.getItem('lm_theme') === 'dark') {
-    document.body.setAttribute('data-theme', 'dark');
-    document.documentElement.setAttribute('data-theme', 'dark');
-  }
-})();
+// Initial theme is applied pre-paint by an inline script in base.html (default
+// dark; a saved 'light'/'dark' choice wins) — no flash, so nothing to do here.
 
 // ─── Nav ─────────────────────────────────────────────────────────────────────
 function toggleNav() {

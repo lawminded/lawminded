@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 {% from '_icons.html' import icon %}
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -46,7 +46,10 @@
 {% endif %}
 {% block head_extra %}{% endblock %}
 </head>
-<body data-theme="light">
+<body data-theme="dark">
+<script>/* Apply the visitor's saved theme before first paint so there's no flash.
+   Default (new visitors / no choice saved) is dark. */
+(function(){try{var t=localStorage.getItem('lm_theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);document.body.setAttribute('data-theme',t);}}catch(e){}})();</script>
 
 <!-- ACCESSIBILITY: skip straight to main content for keyboard / screen-reader users -->
 <a href="#main" class="skip-link">Skip to content</a>
