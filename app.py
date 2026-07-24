@@ -127,6 +127,10 @@ ENV_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env')
 
 # Google AdSense — set ADSENSE_CLIENT in .env to your publisher id (ca-pub-XXXX).
 # Ad slot ids are configured per-placement in ADSENSE_SLOTS below.
+# ADS_ENABLED is a site-wide kill-switch: while False, no ad script loads and every
+# ad zone renders nothing (zero visible space). Turned OFF while re-applying for
+# AdSense approval — flip back to True to restore ads (config below is preserved).
+ADS_ENABLED = False
 ADSENSE_CLIENT = os.getenv('ADSENSE_CLIENT', '')
 ADSENSE_SLOTS = {
     'top': os.getenv('ADSENSE_SLOT_TOP', ''),
@@ -345,7 +349,7 @@ app.jinja_env.globals['article_image'] = _article_image_url
 @app.context_processor
 def inject_globals():
     return {
-        'adsense_client': ADSENSE_CLIENT,
+        'adsense_client': ADSENSE_CLIENT if ADS_ENABLED else '',
         'adsense_slots': ADSENSE_SLOTS,
         'google_site_verification': GOOGLE_SITE_VERIFICATION,
         'category_map': CATEGORY_MAP,
@@ -668,8 +672,9 @@ def article(slug):
 
 @app.route('/templates')
 def templates_page():
-    rendered = [doc_to_view(d) for d in get_documents('template')]
-    return render_template('templates_page.html', templates=rendered,
+    # Old starter-draft templates retired; the real Word Formats Library is now
+    # the sole template offering on this page.
+    return render_template('templates_page.html',
                            format_categories=get_formats_grouped(),
                            formats_count=formats_count())
 
@@ -754,7 +759,7 @@ def _render_format_preview(slug):
                 for row in tbl.rows
             )
             if rows:
-                out.append(f'<table class="preview-table"><tbody>{rows}</tbody></table>')
+                out.append(f'<div class="preview-table-wrap"><table class="preview-table"><tbody>{rows}</tbody></table></div>')
     return '\n'.join(out)
 
 
@@ -845,9 +850,8 @@ def search():
             hay = ' '.join(str(d[k] or '') for k in ('title', 'description', 'tags', 'body')).lower()
             if q in hay:
                 if d['doc_type'] == 'template':
-                    results.append({'type': 'Template', 'title': f"{d['icon']} {d['title']}",
-                                    'snippet': d['description'], 'url_kind': 'page', 'url_arg': 'templates_page'})
-                elif d['doc_type'] in DOC_LIST_TITLE:
+                    continue  # retired starter templates — no longer surfaced
+                if d['doc_type'] in DOC_LIST_TITLE:
                     results.append({'type': DOC_TYPES.get(d['doc_type'], 'Document'), 'title': d['title'],
                                     'snippet': d['description'], 'url_kind': 'resolutions', 'url_arg': d['doc_type']})
     return render_template('search.html', query=query, results=results)
@@ -1075,6 +1079,13 @@ def sitemap_page():
 
 @app.route('/sitemap.xml')
 def sitemap_xml():
+    """Machine-readable sitemap, generated LIVE on every request.
+
+    Auto-updating: every published article is pulled from the DB below, so a new
+    blog (added via blog_seed*.py or the admin) appears here automatically after
+    deploy — no manual editing of this list is ever needed. A brand-new *category*
+    only needs adding to CATEGORY_MAP in content.py (it rides on the /blogs URL).
+    robots.txt advertises this file; the human-facing index is /sitemap."""
     # Static pages
     pages = [
         ('index', 'weekly', '1.0'),

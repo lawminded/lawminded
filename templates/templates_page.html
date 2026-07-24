@@ -21,28 +21,6 @@
   {% with ad_slot = adsense_slots['top'] %}{% include '_ad.html' %}{% endwith %}
 </div>
 
-<section>
-  <div class="templates-grid">
-    {% for t in templates %}
-    <div class="template-card">
-      <div class="template-icon">📄</div>
-      <h3>{{ t.title }}</h3>
-      <p>{{ t.desc }}</p>
-      <div class="template-tags">
-        {% for tag in t.tags %}<span class="template-tag">{{ tag }}</span>{% endfor %}
-      </div>
-      <div class="template-actions">
-        <button class="btn-read" onclick="previewResolution('{{ t.slug }}')">{{ icon('eye', 16) }} Preview</button>
-        <button class="btn-dl" data-dl-url="{{ url_for('template_download', slug=t.slug) }}" data-dl-name="{{ t.title }}" onclick="openDlModal(this.dataset.dlUrl, this.dataset.dlName)">{{ icon('download', 16) }} Download</button>
-      </div>
-      <div class="resolution-content" id="res-{{ t.slug }}" hidden
-           data-title="{{ t.title }}"
-           data-download="{{ url_for('template_download', slug=t.slug) }}">{{ t.html | safe }}</div>
-    </div>
-    {% endfor %}
-  </div>
-</section>
-
 <!-- READY-TO-USE DOCUMENT FORMATS (real .docx downloads) -->
 <section id="document-formats">
   <span class="section-tag">Document Formats Library</span>

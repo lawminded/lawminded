@@ -13,6 +13,9 @@ CATEGORY_MAP = {
     'consumer': 'Consumer & RTI',
     'acts': 'Legal Acts Explained',
     'updates': 'Updates & Amendments',
+    'sebi': 'SEBI & Securities Law',
+    'fema': 'FEMA & Foreign Investment',
+    'competition': 'Competition Law',
 }
 
 # ─── Free Legal Document Templates ───────────────────────────────────────────

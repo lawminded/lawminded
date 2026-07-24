@@ -4,9 +4,19 @@
 function toggleTheme() {
   const b = document.body;
   const next = b.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-  b.setAttribute('data-theme', next);
-  document.documentElement.setAttribute('data-theme', next);
-  localStorage.setItem('lm_theme', next);
+  const apply = () => {
+    b.setAttribute('data-theme', next);
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('lm_theme', next);
+  };
+  // Crossfade the whole page (logo, hero image and colours together) via the
+  // native View Transitions API; browsers without it just swap instantly.
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (document.startViewTransition && !reduce) {
+    document.startViewTransition(apply);
+  } else {
+    apply();
+  }
 }
 (function () {
   if (localStorage.getItem('lm_theme') === 'dark') {
