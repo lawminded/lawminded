@@ -12,7 +12,7 @@
  "description":{{ (article['summary'] or '')|tojson }},
  "datePublished":"{{ article['created_at']|iso8601 }}",
  "dateModified":"{{ (article['updated_at'] or article['created_at'])|iso8601 }}",
- "author":{"@type":"Person","@id":"{{ site_url }}/author/{{ author.slug }}#person","name":{{ author.name|tojson }},"url":"{{ author.url }}"},
+ "author":{"@type":"Person","@id":"{{ site_url }}/#author","name":{{ author.name|tojson }}{% if author.credential %},"hasCredential":{"@type":"EducationalOccupationalCredential","credentialCategory":"degree","name":{{ author.credential|tojson }}}{% endif %}},
  "publisher":{"@type":"Organization","name":"Law Minded","logo":{"@type":"ImageObject","url":"{{ site_url }}{{ url_for('static', filename='img/logo-full.png') }}"}},
  "mainEntityOfPage":"{{ canonical_url }}",
  "image":"{{ site_url }}{{ hero_image or url_for('static', filename='img/logo-full.png') }}"
@@ -61,7 +61,7 @@
   {% else %}<span class="section-tag">{{ category_map.get(article['category'], 'Article') }}</span>{% endif %}
   <h1>{{ article['title'] }}</h1>
   <div class="article-meta">
-    <span class="byline">By <a href="{{ url_for('author_page', slug=author.slug) }}" rel="author">{{ author.name }}</a>{% if author.credential %}, {{ author.credential }}{% endif %}</span>
+    <span class="byline">By {{ author.name }}{% if author.credential %}, {{ author.credential }}{% endif %}</span>
     <span>{{ icon('clock', 14) }} {{ article['read_time'] or '5 min read' }}</span>
     {% if article['act'] %}<span>{{ icon('bookmark', 14) }} {{ article['act'] }}</span>{% endif %}
     <span>{{ icon('calendar', 14) }} {{ article['created_at']|humandate }}</span>

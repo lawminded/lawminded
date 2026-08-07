@@ -1,6 +1,21 @@
 {% extends "base.html" %}
 {% from '_icons.html' import icon %}
-{% block title %}Law Minded · Where Complexity Meets Clarity{% endblock %}
+{% block title %}Law Minded — Indian Compliance & Legal Awareness in Plain English{% endblock %}
+
+{% block head_extra %}
+<script type="application/ld+json">
+{
+ "@context":"https://schema.org",
+ "@type":"ItemList",
+ "name":"Latest guides from Law Minded",
+ "itemListElement":[
+  {%- for art in featured %}
+  {"@type":"ListItem","position":{{ loop.index }},"name":{{ art['title']|tojson }},"url":"{{ site_url }}{{ url_for('article', slug=art['slug']) }}"}{{ "," if not loop.last }}
+  {%- endfor %}
+ ]
+}
+</script>
+{% endblock %}
 
 {% block content %}
 
@@ -13,12 +28,14 @@
     <span class="hero-badge">India's Legal Awareness Platform</span>
     <h1>Where <em>Complexity</em><br>Meets Clarity</h1>
     <p class="hero-sub">Corporate compliance, labour laws and consumer rights, explained simply for founders, CAs, HR professionals and every Indian citizen.</p>
+    {# Each chip goes to its topic hub. These were plain <span>s until Aug 2026,
+       which left all 11 hub pages unlinked from the site's strongest page. #}
     <div class="hero-tags">
-      <span class="hero-tag">Companies Act 2013</span>
-      <span class="hero-tag">LLP Compliance</span>
-      <span class="hero-tag">Labour Law</span>
-      <span class="hero-tag">Consumer Rights</span>
-      <span class="hero-tag">RTI</span>
+      <a class="hero-tag" href="{{ url_for('topic', slug='corporate-compliance') }}">Corporate Compliance</a>
+      <a class="hero-tag" href="{{ url_for('topic', slug='labour-and-employment') }}">Labour Law</a>
+      <a class="hero-tag" href="{{ url_for('topic', slug='consumer-rights-and-rti') }}">Consumer Rights &amp; RTI</a>
+      <a class="hero-tag" href="{{ url_for('topic', slug='sebi-and-securities-law') }}">SEBI &amp; Securities</a>
+      <a class="hero-tag" href="{{ url_for('topic', slug='tax-and-gst') }}">Tax &amp; GST</a>
     </div>
     <div class="hero-actions">
       <a href="{{ url_for('blogs') }}" class="btn-primary">Explore Knowledge Hub</a>
@@ -39,13 +56,28 @@
   </div>
 </section>
 
-<!-- STATS -->
+<!-- STATS — real values rendered server-side; JS animates up to them -->
 <div class="stats-bar" id="statsBar">
-  <div class="stat-item"><div class="stat-num" data-target="50" data-suffix="+">0+</div><div class="stat-label">Compliance Topics Covered</div></div>
-  <div class="stat-item"><div class="stat-num" data-target="10" data-suffix="+">0+</div><div class="stat-label">Document Templates</div></div>
-  <div class="stat-item"><div class="stat-num" data-target="100" data-suffix="+">0+</div><div class="stat-label">Rights &amp; Procedures Explained</div></div>
-  <div class="stat-item"><div class="stat-num" data-target="100" data-suffix="%">0%</div><div class="stat-label">Free, Forever</div></div>
+  <div class="stat-item"><div class="stat-num" data-target="{{ stats.articles }}" data-suffix="+">{{ stats.articles }}+</div><div class="stat-label">Guides Published</div></div>
+  <div class="stat-item"><div class="stat-num" data-target="{{ stats.formats }}" data-suffix="+">{{ stats.formats }}+</div><div class="stat-label">Free Document Formats</div></div>
+  <div class="stat-item"><div class="stat-num" data-target="{{ stats.topics }}" data-suffix="">{{ stats.topics }}</div><div class="stat-label">Practice Areas</div></div>
+  <div class="stat-item"><div class="stat-num" data-target="100" data-suffix="%">100%</div><div class="stat-label">Free, Forever</div></div>
 </div>
+
+<!-- WHAT THIS IS — the page's one self-contained, quotable passage -->
+<section class="intro-block">
+  <p>
+    <strong>Law Minded</strong> is a free legal awareness platform that explains Indian law in plain English.
+    It covers corporate compliance under the Companies Act 2013, labour and employment law, consumer rights
+    and the RTI Act, SEBI and securities regulation, FEMA, tax and GST, contracts, property, and the
+    fundamental rights every Indian citizen holds. The library runs to {{ stats.articles }} guides across
+    {{ stats.topics }} practice areas, {{ stats.formats }} downloadable document formats, and
+    {{ stats.judgments }} landmark Supreme Court judgments explained without jargon. Everything is free —
+    no login, no paywall, no trial. Law Minded is written and edited by
+    {{ author.name }}{% if author.credential %}, {{ author.credential }}{% endif %}.
+    It is not a law firm, and its guides are for legal awareness and education, not legal advice.
+  </p>
+</section>
 
 <!-- AD (top) -->
 <div class="ad-container">
@@ -85,6 +117,21 @@
   </div>
 </section>
 
+<!-- START WITH YOUR QUESTION — people arrive with a problem, not a category -->
+<section>
+  <span class="section-tag">Common Situations</span>
+  <h2 class="section-title">Start with your question</h2>
+  <p class="section-sub">The situations people most often land here for.</p>
+  <div class="quick-help">
+    <a href="{{ url_for('topic', slug='consumer-rights-and-rti') }}">A shop or seller refused my refund {{ icon('arrow-right', 14) }}</a>
+    <a href="{{ url_for('topic', slug='labour-and-employment') }}">I was let go without notice or dues {{ icon('arrow-right', 14) }}</a>
+    <a href="{{ url_for('compare_one', slug='private-limited-vs-llp') }}">Private Limited or LLP? {{ icon('arrow-right', 14) }}</a>
+    <a href="{{ url_for('topic', slug='corporate-compliance') }}">What must my company file this year? {{ icon('arrow-right', 14) }}</a>
+    <a href="{{ url_for('compare_one', slug='lease-vs-leave-and-license') }}">Is my rent agreement the right kind? {{ icon('arrow-right', 14) }}</a>
+    <a href="{{ url_for('compare_one', slug='rti-vs-pil') }}">How do I file an RTI? {{ icon('arrow-right', 14) }}</a>
+  </div>
+</section>
+
 <!-- FEATURED ARTICLES -->
 <section class="section-alt">
   <span class="section-tag">From the Knowledge Hub</span>
@@ -102,7 +149,11 @@
       <div class="blog-card-body">
         <h3><a href="{{ url_for('article', slug=art['slug']) }}" class="card-title-link">{{ art['title'] }}</a></h3>
         <div class="blog-card-foot">
-          <span class="blog-meta">{{ icon('clock', 13) }} {{ art['read_time'] or '5 min' }}</span>
+          <span class="blog-meta">
+            {% set _shown = art['updated_at'] if art['updated_at'] and art['updated_at'][:10] != art['created_at'][:10] else art['created_at'] %}
+            <time datetime="{{ _shown|iso8601 }}">{% if _shown != art['created_at'] %}Updated {% endif %}{{ _shown|humandate }}</time>
+            · {{ art['read_time'] or '5 min' }}
+          </span>
           <a href="{{ url_for('article', slug=art['slug']) }}" class="blog-link">Read {{ icon('arrow-right', 15) }}</a>
         </div>
       </div>

@@ -30,6 +30,8 @@
           <a href="{{ url_for('resolutions', rtype=r.url_arg) }}"><h3>{{ r.title }}</h3></a>
         {% elif r.url_kind == 'judgment' %}
           <a href="{{ url_for('judgment', slug=r.url_arg) }}"><h3>{{ r.title }}</h3></a>
+        {% elif r.url_kind == 'compare' %}
+          <a href="{{ url_for('compare_one', slug=r.url_arg) }}"><h3>{{ r.title }}</h3></a>
         {% else %}
           <a href="{{ url_for(r.url_arg) }}"><h3>{{ r.title }}</h3></a>
         {% endif %}

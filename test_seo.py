@@ -61,7 +61,15 @@ def main():
     bodies = {r['slug']: r['content'] or '' for r in rows}
     article_cat = {r['slug']: r['category'] for r in rows}
 
-    paths = (['/', '/blogs', '/judgments', '/about', '/faq', '/author/piyush-kundnani']
+    with app.app_context():
+        db = __import__('database').get_db()
+        format_slugs = [r['slug'] for r in
+                        db.execute('SELECT slug FROM formats ORDER BY sort_order, id')]
+        db.close()
+
+    paths = (['/', '/blogs', '/judgments', '/about', '/faq', '/templates', '/compare']
+             + [f'/compare/{c["slug"]}' for c in C.COMPARISON_TABLES]
+             + [f'/format/{s}' for s in format_slugs]
              + [f'/topic/{t["slug"]}' for t in C.TOPICS.values()]
              + [f'/judgment/{j["slug"]}' for j in C.JUDGMENTS]
              + [f'/article/{s}' for s in slugs])
@@ -103,15 +111,23 @@ def main():
         assert art['author']['name'], p
         assert 'BreadcrumbList' in _types(blocks), p
 
-    # Articles kept their Article schema; the author page states the credential
-    # as a degree, not as a job title.
+    # Articles carry Article schema whose author is the name + the held
+    # qualification and nothing else. The owner removed the author bio page and
+    # wants no bio, photo, job title or personal profile links anywhere, so
+    # assert the absence as well as the presence.
     p = f'/article/{slugs[0]}'
-    assert 'Article' in _types(_blocks(_page(client, p), p)), p
-
-    p = '/author/piyush-kundnani'
-    person = next(b for b in _blocks(_page(client, p), p) if b.get('@type') == 'Person')
-    assert person['jobTitle'] == 'Founder & Editor', person['jobTitle']
+    blocks = _blocks(_page(client, p), p)
+    assert 'Article' in _types(blocks), p
+    art = next(b for b in blocks if b.get('@type') == 'Article')
+    person = art['author']
+    assert person['name'] == 'Piyush Kundnani', person['name']
     assert person['hasCredential']['name'] == 'B.Com', person.get('hasCredential')
+    for field in ('jobTitle', 'description', 'sameAs', 'image', 'url'):
+        assert field not in person, f'{field} must stay off the author schema'
+
+    # The author bio page is gone and must stay gone (301 to /about, not 200).
+    assert client.get('/author/piyush-kundnani').status_code == 301
+    assert '/author/' not in _page(client, f'/article/{slugs[0]}'), 'byline must not link'
 
     # An article hero photo must never leak into the Organization logo.
     blocks = _blocks(_page(client, f'/article/{slugs[0]}'), 'org-logo')

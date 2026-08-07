@@ -517,14 +517,143 @@ FAQS = [
      'No. All content on Law Minded is for legal awareness and educational purposes only. It does not constitute legal advice. Always consult a qualified legal professional for advice specific to your situation.'),
 ]
 
-# ─── Act Comparisons (also used client-side; kept here for search) ────────────
-COMPARISONS = {
-    'pvt-llp': 'Private Limited Company vs LLP - governing law, ownership, compliance, audit, foreign investment',
-    'lease-ll': 'Lease Agreement vs Leave & License Agreement - legal nature, stamp duty, registration, eviction',
-    'partner-llp': 'Partnership Firm vs LLP - liability, registration, legal entity, compliance',
-    'forum-court': 'Consumer Forum vs Civil Court - jurisdiction, cost, speed, relief, online filing',
-    'rti-pil': 'RTI vs PIL - purpose, where filed, cost, timeline, governing law',
-}
+# ─── Act Comparisons ─────────────────────────────────────────────────────────
+# These tables lived only in static/js/main.js until Aug 2026 and were injected
+# client-side, which made every comparison invisible to anything that does not
+# run JavaScript — including AI crawlers, which is most of them. They now live
+# here and render server-side into real <table> markup, one URL per comparison.
+#
+# 'summary' is a self-contained answer paragraph placed above the table. Keep it
+# factually derived from the rows below — it is the block most likely to be
+# quoted by an AI answer, so a wrong number here travels further than usual.
+COMPARISON_TABLES = [
+    {
+        'slug': 'private-limited-vs-llp',
+        'title': 'Private Limited Company vs LLP',
+        'search': 'governing law, ownership, compliance, audit, foreign investment',
+        'meta': ('Private Limited Company vs LLP compared: governing law, audit '
+                 'thresholds, ROC filings, foreign investment and which suits '
+                 'a funded startup.'),
+        'summary': ('A Private Limited Company is governed by the Companies Act, 2013 '
+                    'and must be audited every year. An LLP is governed by the LLP Act, '
+                    '2008 and needs an audit only above ₹40 lakh turnover or ₹25 lakh '
+                    'contribution. The deciding factor is usually funding: a Private '
+                    'Limited Company can take foreign investment freely, while an LLP '
+                    'needs FEMA approval.'),
+        'headers': ['Aspect', 'Private Limited Company', 'LLP'],
+        'rows': [
+            ['Governing Law', 'Companies Act, 2013', 'LLP Act, 2008'],
+            ['Ownership', 'Shareholders + Directors', 'Partners (Designated Partners)'],
+            ['Minimum Members', '2 Directors, 2 Shareholders', '2 Designated Partners'],
+            ['Limited Liability', 'Yes', 'Yes'],
+            ['Audit Mandatory', 'Yes — always', 'Only if turnover > ₹40L or contribution > ₹25L'],
+            ['Annual ROC Filings', 'Form AOC-4 + MGT-7', 'Form 8 + Form 11'],
+            ['Compliance Burden', 'Higher', 'Lower'],
+            ['Foreign Investment', 'Allowed', 'Restricted (FEMA approval needed)'],
+            ['Suitable For', 'Startups seeking funding, scalable businesses', 'Professional services, small businesses'],
+        ],
+    },
+    {
+        'slug': 'lease-vs-leave-and-license',
+        'title': 'Lease Agreement vs Leave & License Agreement',
+        'search': 'legal nature, stamp duty, registration, eviction',
+        'meta': ('Lease vs Leave & License in India: what each transfers, stamp duty '
+                 'and registration, tenant protection and how eviction differs.'),
+        'summary': ('A lease transfers an interest in the property under the Transfer of '
+                    'Property Act, 1882. A leave and license grants only permission to '
+                    'use it, under the Indian Easements Act, 1882. A lease carries higher '
+                    'stamp duty and stronger tenant protection — ending it needs a court '
+                    'order — which is why most Indian residential rentals are written as '
+                    'leave and license instead.'),
+        'headers': ['Aspect', 'Lease Agreement', 'Leave & License Agreement'],
+        'rows': [
+            ['Legal Nature', 'Transfer of interest in property', 'Permission to use — no transfer of interest'],
+            ['Governing Law', 'Transfer of Property Act, 1882', 'Indian Easements Act, 1882'],
+            ['Duration', 'Usually 11+ months or long-term', 'Usually 11 months (renewable)'],
+            ['Stamp Duty', 'Higher — based on lease value', 'Lower'],
+            ['Registration', 'Mandatory above 12 months', 'Mandatory above 12 months (Maharashtra: all)'],
+            ['Tenant Protection', 'Higher — harder to evict', 'Lower — easier for licensor to terminate'],
+            ['Common Use', 'Commercial properties, long residential', 'Most residential rentals in India'],
+            ['Eviction Process', 'Court order required (slow)', 'Can terminate as per notice period'],
+        ],
+    },
+    {
+        'slug': 'partnership-firm-vs-llp',
+        'title': 'Partnership Firm vs LLP',
+        'search': 'liability, registration, legal entity, compliance',
+        'meta': ('Partnership Firm vs LLP: unlimited vs limited liability, separate '
+                 'legal entity, perpetual succession and annual MCA compliance.'),
+        'summary': ('A partnership firm under the Indian Partnership Act, 1932 carries '
+                    'unlimited liability, is not a separate legal entity, and dissolves '
+                    'when a partner dies or exits. An LLP under the LLP Act, 2008 limits '
+                    'each partner\'s liability to their contribution, is a separate legal '
+                    'entity with perpetual succession, and must file Form 8 and Form 11 '
+                    'with the MCA every year.'),
+        'headers': ['Aspect', 'Partnership Firm', 'LLP'],
+        'rows': [
+            ['Governing Law', 'Indian Partnership Act, 1932', 'LLP Act, 2008'],
+            ['Registration', 'Optional (but recommended)', 'Mandatory with MCA'],
+            ['Limited Liability', 'No — unlimited liability', 'Yes — limited to contribution'],
+            ['Legal Entity', 'Not a separate legal entity', 'Separate legal entity'],
+            ['Minimum Partners', '2', '2 Designated Partners'],
+            ['Annual Compliance', 'Minimal (IT return only)', 'Form 8 + Form 11 with MCA'],
+            ['Perpetual Succession', 'No — dissolves on death/exit', 'Yes'],
+            ['Suitable For', 'Very small, informal businesses', 'Professional firms, growing businesses'],
+        ],
+    },
+    {
+        'slug': 'consumer-forum-vs-civil-court',
+        'title': 'Consumer Forum vs Civil Court',
+        'search': 'jurisdiction, cost, speed, relief, online filing',
+        'meta': ('Consumer Forum vs Civil Court: claim limits, cost, how long each '
+                 'takes, what relief you can get and filing online via e-Jagriti.'),
+        'summary': ('A consumer forum hears consumer disputes only. It charges a nominal '
+                    'fee, needs no lawyer, targets 90 days, and the District Commission '
+                    'handles claims up to ₹50 lakh. A civil court hears any civil dispute '
+                    'with no claim limit, but takes years and carries court and lawyer '
+                    'costs. Consumer complaints can be filed online through the e-Jagriti '
+                    'portal.'),
+        'headers': ['Aspect', 'Consumer Forum', 'Civil Court'],
+        'rows': [
+            ['Jurisdiction', 'Consumer disputes only', 'All civil disputes'],
+            ['Cost', 'Low (nominal filing fee)', 'Higher (court fees, lawyer costs)'],
+            ['Lawyer Required', 'No — can self-represent', 'Strongly advisable'],
+            ['Speed', 'Faster (90 day target)', 'Slower (years)'],
+            ['District Level Limit', 'Up to ₹50 Lakh', 'No limit'],
+            ['Relief Available', 'Refund, replacement, compensation, punitive damages', 'Damages, injunctions, specific performance'],
+            ['Governing Law', 'Consumer Protection Act, 2019', 'CPC, 1908'],
+            ['Online Filing', 'Yes — e-Jagriti portal', 'Limited'],
+        ],
+    },
+    {
+        'slug': 'rti-vs-pil',
+        'title': 'RTI vs PIL',
+        'search': 'purpose, where filed, cost, timeline, governing law',
+        'meta': ('RTI vs PIL: when to ask for information and when to litigate — '
+                 'where each is filed, what it costs and how long it takes.'),
+        'summary': ('An RTI application under the RTI Act, 2005 costs ₹10, goes to a '
+                    'Public Information Officer, and must be answered within 30 days — '
+                    'use it to obtain specific government records. A PIL is filed in a '
+                    'High Court or the Supreme Court under Article 226 or 32 to challenge '
+                    'government action or inaction, and runs for months to years.'),
+        'headers': ['Aspect', 'RTI (Right to Information)', 'PIL (Public Interest Litigation)'],
+        'rows': [
+            ['Purpose', 'Obtain specific information from govt', 'Challenge govt action/inaction in public interest'],
+            ['Filed At', 'Public Information Officer (then CIC/SIC)', 'High Court or Supreme Court'],
+            ['Cost', '₹10 application fee', 'Court filing fees (minimal for PIL)'],
+            ['Lawyer Required', 'No', 'Advisable (or can file yourself)'],
+            ['Outcome', 'Information disclosure (or rejection)', 'Court orders, policy changes, systemic relief'],
+            ['Timeline', '30 days (or 48 hrs in urgent cases)', 'Months to years'],
+            ['Use When', 'You need specific documents or data', 'You want to challenge a systemic issue'],
+            ['Governing Law', 'RTI Act, 2005', 'Article 226/32 of the Constitution'],
+        ],
+    },
+]
+
+COMPARISON_BY_SLUG = {c['slug']: c for c in COMPARISON_TABLES}
+
+# Kept as the flat search index so search_all keeps working off one source.
+COMPARISONS = {c['slug']: f"{c['title']} - {c['search']}" for c in COMPARISON_TABLES}
 
 
 def search_all(query, articles):
@@ -587,15 +716,15 @@ def search_all(query, articles):
                 'url_arg': 'faq',
             })
 
-    # Comparisons
-    for key, text in COMPARISONS.items():
+    # Comparisons — deep-link to the individual comparison, not the index.
+    for slug, text in COMPARISONS.items():
         if q in text.lower():
             results.append({
                 'type': 'Comparison',
-                'title': text.split('-')[0].strip(),
-                'snippet': text,
-                'url_kind': 'page',
-                'url_arg': 'compare',
+                'title': COMPARISON_BY_SLUG[slug]['title'],
+                'snippet': COMPARISON_BY_SLUG[slug]['summary'],
+                'url_kind': 'compare',
+                'url_arg': slug,
             })
 
     return results

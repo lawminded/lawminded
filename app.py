@@ -25,7 +25,8 @@ from dotenv import load_dotenv
 # (If load_dotenv runs after that import, the custom DB path is silently ignored.)
 load_dotenv()
 
-from database import get_db, init_db, seed_articles, seed_documents, seed_formats
+from database import (get_db, init_db, seed_articles, seed_documents, seed_formats,
+                      apply_content_migrations)
 import content as C
 import formats as F
 from seo_meta import SEO_DESCRIPTIONS, INTERNAL_LINKS, RETIRED_ARTICLES
@@ -153,21 +154,19 @@ SITE_URL = os.getenv('SITE_URL', 'https://lawminded.in').rstrip('/')
 
 # ── Named author (E-E-A-T) ──────────────────────────────────────────────────
 # Legal content is YMYL, where Google weights demonstrable, *named* authorship
-# most heavily. This single block drives the article byline, the Person schema,
-# and the /author bio page. Fill CREDENTIAL and SAME_AS with real facts (a held
-# qualification such as 'Company Secretary'; the author's own LinkedIn/X) so the
-# expertise signal is genuine — never invent a credential.
+# most heavily. This block drives the article byline and the Person schema.
+#
+# Deliberately minimal by the owner's instruction: name and the held
+# qualification, nothing else. There is no author bio page — it was removed in
+# Aug 2026 and /author/<slug> now 301s to /about. Do NOT add a bio page, photo,
+# jobTitle, or sameAs links to personal profiles/sites, and do not make the
+# byline link anywhere. Their absence is a decision, not an oversight, and SEO
+# advice to "strengthen the author entity" does not override it.
 AUTHOR = {
     'name': 'Piyush Kundnani',
     'slug': 'piyush-kundnani',
-    'role': 'Founder & Editor',
     'credential': 'B.Com',   # genuinely held — byline + schema hasCredential
-    'bio': ('Piyush Kundnani is the founder and editor of Law Minded, where he '
-            'leads its plain-English coverage of Indian corporate compliance, '
-            'labour law and consumer rights.'),
-    'same_as': [],      # the author\'s OWN professional profiles (personal LinkedIn/X)
 }
-AUTHOR['url'] = SITE_URL + '/author/' + AUTHOR['slug']
 
 # The nine landmark-judgment briefs are hand-written editorial content that
 # shipped together in the initial commit. Articles carry per-row timestamps from
@@ -708,8 +707,17 @@ def build_resolution_docx(title, blocks):
 @app.route('/')
 def index():
     articles = get_all_articles()
-    featured = articles[:6]
-    return render_template('index.html', featured=featured)
+    # Counted live, never hand-typed. The homepage used to claim "50+ topics"
+    # and "10+ templates" against a real 131 and 55, and the numbers only
+    # appeared after JS ran — so crawlers that don't execute JS read "0+".
+    stats = {
+        'articles': len(articles),
+        'formats': formats_count(),
+        'topics': len(C.TOPICS),
+        'judgments': len(C.JUDGMENTS),
+    }
+    return render_template('index.html', featured=articles[:6], stats=stats,
+                           hero_image='/static/img/pages/home.webp')
 
 
 @app.route('/about')
@@ -719,9 +727,14 @@ def about():
 
 @app.route('/author/<slug>')
 def author_page(slug):
-    if slug != AUTHOR['slug']:
-        abort(404)
-    return render_template('author.html', profile=AUTHOR)
+    """Retired at the owner's request — the author bio page no longer exists.
+
+    Kept as a 301 rather than a 404 because the URL was in the sitemap and may
+    be indexed; /about is the nearest surviving page about who publishes this
+    site. The byline still names the author and the credential, it just does
+    not link anywhere.
+    """
+    return redirect(url_for('about'), code=301)
 
 
 @app.route('/blogs')
@@ -881,9 +894,54 @@ def format_preview(slug):
     return html_out
 
 
+@app.route('/format/<slug>')
+def format_page(slug):
+    """A crawlable page per document.
+
+    All 55 formats used to live behind buttons on the single /templates URL, so
+    nothing could rank for "board resolution format" or "share transfer deed" —
+    the queries people actually type. Each document now has its own URL with the
+    full text rendered into the page, not just a download link.
+    """
+    item = get_format(slug)
+    if not item:
+        abort(404)
+    db = get_db()
+    related = db.execute(
+        'SELECT slug, title, description FROM formats WHERE category=? AND slug!=? '
+        'ORDER BY sort_order, id LIMIT 6', (item['category'], slug)
+    ).fetchall()
+    total = db.execute('SELECT COUNT(*) FROM formats').fetchone()[0]
+    db.close()
+    return render_template('format.html', fmt=item, related=related,
+                           formats_total=total,
+                           preview=_render_format_preview(slug),
+                           hero_image='/static/img/pages/templates.webp')
+
+
 @app.route('/compare')
 def compare():
-    return render_template('compare.html')
+    """Index of every comparison, with the first one rendered in full.
+
+    The table markup is emitted server-side. Until Aug 2026 this page shipped
+    an empty <div> and let JS inject the table, so search engines and AI
+    crawlers saw five headings and no data.
+    """
+    return render_template('compare.html',
+                           comparisons=C.COMPARISON_TABLES,
+                           current=None,
+                           hero_image='/static/img/pages/compare.webp')
+
+
+@app.route('/compare/<slug>')
+def compare_one(slug):
+    current = C.COMPARISON_BY_SLUG.get(slug)
+    if current is None:
+        abort(404)
+    return render_template('compare.html',
+                           comparisons=C.COMPARISON_TABLES,
+                           current=current,
+                           hero_image='/static/img/pages/compare.webp')
 
 
 @app.route('/judgments')
@@ -1215,12 +1273,21 @@ def sitemap_xml():
     for endpoint, freq, prio in pages:
         urls.append((SITE_URL + url_for(endpoint), freq, prio, None))
 
-    # Author bio page (E-E-A-T)
-    urls.append((AUTHOR['url'], 'yearly', '0.4', None))
-
     # Topic hub pages — one per category, added automatically with the category
     for t in C.TOPICS.values():
         urls.append((SITE_URL + url_for('topic', slug=t['slug']), 'weekly', '0.8', None))
+
+    # One URL per act comparison — these are the pages that can actually rank
+    # for "x vs y" queries; /compare alone never could.
+    for c in C.COMPARISON_TABLES:
+        urls.append((SITE_URL + url_for('compare_one', slug=c['slug']), 'monthly', '0.7', None))
+
+    # One URL per document format, for the same reason: "board resolution
+    # format" is a real query and /templates alone could never answer it.
+    db = get_db()
+    for r in db.execute('SELECT slug FROM formats ORDER BY sort_order, id').fetchall():
+        urls.append((SITE_URL + url_for('format_page', slug=r['slug']), 'yearly', '0.6', None))
+    db.close()
 
     # Resolution library pages
     for rtype in DOC_LIST_TITLE:
@@ -1784,6 +1851,9 @@ with app.app_context():
     seed_articles()
     seed_documents()
     seed_formats()
+    # After the seeders, never before: the content fixes edit seeded rows, and
+    # running them against an empty table stamps them as applied for good.
+    apply_content_migrations()
 
 if __name__ == '__main__':
     # PORT lets the dev preview pick a free port; defaults to 8000 locally.

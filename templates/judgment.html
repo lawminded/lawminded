@@ -12,7 +12,7 @@
  "description":{{ j.summary|tojson }},
  "datePublished":"{{ published|iso8601 }}",
  "dateModified":"{{ published|iso8601 }}",
- "author":{"@type":"Person","@id":"{{ site_url }}/author/{{ author.slug }}#person","name":{{ author.name|tojson }},"url":"{{ author.url }}"},
+ "author":{"@type":"Person","@id":"{{ site_url }}/#author","name":{{ author.name|tojson }}{% if author.credential %},"hasCredential":{"@type":"EducationalOccupationalCredential","credentialCategory":"degree","name":{{ author.credential|tojson }}}{% endif %}},
  "publisher":{"@type":"Organization","name":"Law Minded","logo":{"@type":"ImageObject","url":"{{ site_url }}{{ url_for('static', filename='img/logo-full.png') }}"}},
  "mainEntityOfPage":"{{ canonical_url }}",
  "image":"{{ site_url }}{{ url_for('static', filename='img/pages/judgments.webp') }}",

@@ -34,7 +34,9 @@
       {% for f in cat.docs %}
       <div class="template-card">
         <div class="template-icon">📄</div>
-        <h3>{{ f.title }}</h3>
+        {# The title is a real link so each format is crawlable on its own URL;
+           the buttons keep the faster in-page preview/download flow. #}
+        <h3><a href="{{ url_for('format_page', slug=f.slug) }}" class="card-title-link">{{ f.title }}</a></h3>
         <p>{{ f.desc }}</p>
         <div class="template-actions">
           <button class="btn-read" data-prev-slug="{{ f.slug }}" data-prev-name="{{ f.title }}" data-prev-url="{{ url_for('format_download', slug=f.slug) }}" onclick="previewFormat(this.dataset.prevSlug, this.dataset.prevName, this.dataset.prevUrl)">{{ icon('eye', 16) }} Preview</button>

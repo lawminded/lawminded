@@ -230,97 +230,6 @@ function subscribeNewsletter() {
 }
 
 // ─── Act Comparison ──────────────────────────────────────────────────────────
-const comparisons = {
-  'pvt-llp': {
-    title: 'Private Limited Company vs LLP',
-    headers: ['Aspect', 'Private Limited Company', 'LLP'],
-    rows: [
-      ['Governing Law', 'Companies Act, 2013', 'LLP Act, 2008'],
-      ['Ownership', 'Shareholders + Directors', 'Partners (Designated Partners)'],
-      ['Minimum Members', '2 Directors, 2 Shareholders', '2 Designated Partners'],
-      ['Limited Liability', 'Yes', 'Yes'],
-      ['Audit Mandatory', 'Yes - always', 'Only if turnover > ₹40L or contribution > ₹25L'],
-      ['Annual ROC Filings', 'Form AOC-4 + MGT-7', 'Form 8 + Form 11'],
-      ['Compliance Burden', 'Higher', 'Lower'],
-      ['Foreign Investment', 'Allowed', 'Restricted (FEMA approval needed)'],
-      ['Suitable For', 'Startups seeking funding, scalable businesses', 'Professional services, small businesses'],
-    ]
-  },
-  'lease-ll': {
-    title: 'Lease Agreement vs Leave & License Agreement',
-    headers: ['Aspect', 'Lease Agreement', 'Leave & License Agreement'],
-    rows: [
-      ['Legal Nature', 'Transfer of interest in property', 'Permission to use - no transfer of interest'],
-      ['Governing Law', 'Transfer of Property Act, 1882', 'Indian Easements Act, 1882'],
-      ['Duration', 'Usually 11+ months or long-term', 'Usually 11 months (renewable)'],
-      ['Stamp Duty', 'Higher - based on lease value', 'Lower'],
-      ['Registration', 'Mandatory above 12 months', 'Mandatory above 12 months (Maharashtra: all)'],
-      ['Tenant Protection', 'Higher - harder to evict', 'Lower - easier for licensor to terminate'],
-      ['Common Use', 'Commercial properties, long residential', 'Most residential rentals in India'],
-      ['Eviction Process', 'Court order required (slow)', 'Can terminate as per notice period'],
-    ]
-  },
-  'partner-llp': {
-    title: 'Partnership Firm vs LLP',
-    headers: ['Aspect', 'Partnership Firm', 'LLP'],
-    rows: [
-      ['Governing Law', 'Indian Partnership Act, 1932', 'LLP Act, 2008'],
-      ['Registration', 'Optional (but recommended)', 'Mandatory with MCA'],
-      ['Limited Liability', 'No - unlimited liability', 'Yes - limited to contribution'],
-      ['Legal Entity', 'Not a separate legal entity', 'Separate legal entity'],
-      ['Minimum Partners', '2', '2 Designated Partners'],
-      ['Annual Compliance', 'Minimal (IT return only)', 'Form 8 + Form 11 with MCA'],
-      ['Perpetual Succession', 'No - dissolves on death/exit', 'Yes'],
-      ['Suitable For', 'Very small, informal businesses', 'Professional firms, growing businesses'],
-    ]
-  },
-  'forum-court': {
-    title: 'Consumer Forum vs Civil Court',
-    headers: ['Aspect', 'Consumer Forum', 'Civil Court'],
-    rows: [
-      ['Jurisdiction', 'Consumer disputes only', 'All civil disputes'],
-      ['Cost', 'Low (nominal filing fee)', 'Higher (court fees, lawyer costs)'],
-      ['Lawyer Required', 'No - can self-represent', 'Strongly advisable'],
-      ['Speed', 'Faster (90 day target)', 'Slower (years)'],
-      ['District Level Limit', 'Up to ₹50 Lakh', 'No limit'],
-      ['Relief Available', 'Refund, replacement, compensation, punitive damages', 'Damages, injunctions, specific performance'],
-      ['Governing Law', 'Consumer Protection Act, 2019', 'CPC, 1908'],
-      ['Online Filing', 'Yes - e-Jagriti portal', 'Limited'],
-    ]
-  },
-  'rti-pil': {
-    title: 'RTI vs PIL',
-    headers: ['Aspect', 'RTI (Right to Information)', 'PIL (Public Interest Litigation)'],
-    rows: [
-      ['Purpose', 'Obtain specific information from govt', 'Challenge govt action/inaction in public interest'],
-      ['Filed At', 'Public Information Officer (then CIC/SIC)', 'High Court or Supreme Court'],
-      ['Cost', '₹10 application fee', 'Court filing fees (minimal for PIL)'],
-      ['Lawyer Required', 'No', 'Advisable (or can file yourself)'],
-      ['Outcome', 'Information disclosure (or rejection)', 'Court orders, policy changes, systemic relief'],
-      ['Timeline', '30 days (or 48 hrs in urgent cases)', 'Months to years'],
-      ['Use When', 'You need specific documents or data', 'You want to challenge a systemic issue'],
-      ['Governing Law', 'RTI Act, 2005', 'Article 226/32 of the Constitution'],
-    ]
-  }
-};
-
-function loadComparison() {
-  const sel = document.getElementById('compareSelect');
-  if (!sel) return;
-  const data = comparisons[sel.value];
-  if (!data) return;
-  let html = '<table class="compare-table"><thead><tr>';
-  data.headers.forEach(h => html += `<th>${h}</th>`);
-  html += '</tr></thead><tbody>';
-  data.rows.forEach(row => {
-    html += '<tr>';
-    row.forEach(cell => html += `<td>${cell}</td>`);
-    html += '</tr>';
-  });
-  html += '</tbody></table>';
-  document.getElementById('compareResult').innerHTML = html;
-}
-
 // ─── Animated Counters ────────────────────────────────────────────────────────
 const statsObs = new IntersectionObserver(entries => {
   entries.forEach(e => {
@@ -338,7 +247,10 @@ const statsObs = new IntersectionObserver(entries => {
       statsObs.disconnect();
     }
   });
-}, { threshold: 0.5 });
+// Fires early (200px out) so the count-up finishes as the bar scrolls in. The
+// real numbers are now server-rendered, so a late trigger would visibly snap
+// them back to 0 before counting.
+}, { threshold: 0, rootMargin: '200px 0px' });
 const sb = document.getElementById('statsBar');
 if (sb) statsObs.observe(sb);
 

@@ -121,8 +121,23 @@ def init_db():
             c.execute(f'ALTER TABLE {table} ADD COLUMN {col} {decl}')
     _ensure_column('articles', 'seo_title', 'TEXT')
 
-    _apply_content_migrations(c)
+    conn.commit()
+    conn.close()
 
+
+def apply_content_migrations():
+    """Run the content fixes below. MUST be called after the seeders.
+
+    This used to run inside init_db(), which happens *before* seed_articles().
+    On an existing database that worked, because the articles were already
+    there. On a fresh one every block matched zero rows, then stamped
+    user_version as applied — so a rebuilt database silently came up with all
+    the corrections missing (stale MSME thresholds, retired duplicates live
+    again) and could never self-heal, because the version said "done".
+    """
+    conn = get_db()
+    c = conn.cursor()
+    _apply_content_migrations(c)
     conn.commit()
     conn.close()
 
@@ -132,6 +147,25 @@ def init_db():
 # user_version makes each block run exactly once, so an article the owner later
 # edits through the admin UI is never silently overwritten on the next restart.
 _SCHEMA_VERSION = 4
+
+
+def _touch(c, *slugs):
+    """Bump updated_at so an article's dateModified reflects a real edit.
+
+    SQLite does not maintain updated_at by itself, and until Aug 2026 nothing
+    outside the admin edit form ever set it — so every article's dateModified
+    sat frozen at insert time, identical to datePublished. Content fixes ship
+    as migrations here, which meant the site's freshness signal never moved no
+    matter how much the content changed.
+
+    Any block below that edits an article's *content* must call this with the
+    slugs it touched. Do not call it for unpublishing, re-categorising or other
+    metadata-only changes: an inflated dateModified is worse than a stale one,
+    and Google's helpful-content guidance names faked date freshness as a
+    warning sign.
+    """
+    c.executemany('UPDATE articles SET updated_at = CURRENT_TIMESTAMP WHERE slug = ?',
+                  [(s,) for s in slugs])
 
 
 def _apply_content_migrations(c):
@@ -162,6 +196,7 @@ def _apply_content_migrations(c):
              "within the limit, and crossing either one moves the enterprise up a "
              "category. These limits were revised with effect from 1 April 2025:",
              'msme-udyam-registration-guide'))
+        _touch(c, 'msme-udyam-registration-guide')
 
         # 1b. Two guides covered the same ground as a stronger twin, so search
         #     engines had to pick between them and readers landed on whichever
@@ -197,6 +232,7 @@ def _apply_content_migrations(c):
              "it to the exchanges within 2 trading days of receipt.</li></ul>"
              "<h2>A worked example</h2>",
              'sebi-pit-insider-trading-explained'))
+        _touch(c, 'sebi-pit-insider-trading-explained')
 
         c.execute('PRAGMA user_version = 2')
 
@@ -221,6 +257,7 @@ def _apply_content_migrations(c):
         c.execute('UPDATE articles SET title = ?, summary = ?, content = ? WHERE slug = ?',
                   (AR.PIT_MERGED_TITLE, AR.PIT_MERGED_SUMMARY, AR.PIT_MERGED_CONTENT,
                    'sebi-pit-insider-trading-explained'))
+        _touch(c, 'sebi-pit-insider-trading-explained')
         for slug in ('what-is-upsi-regulation-2-1-n', 'insider-trading-penalties-case-studies'):
             c.execute('UPDATE articles SET published = 0 WHERE slug = ?', (slug,))
 
@@ -234,6 +271,7 @@ def _apply_content_migrations(c):
             end = nxt if nxt != -1 else len(row[0])
             c.execute("UPDATE articles SET content = ? WHERE slug = 'dpdp-act-compliance-guide'",
                       (row[0][:start] + AR.DPDP_TIMELINE_NEW + row[0][end:],))
+            _touch(c, 'dpdp-act-compliance-guide')
 
         # 4c. The cheque-bounce guide carried a trailing block repeating two
         #     earlier sections, as though two drafts had been concatenated. The
@@ -263,6 +301,7 @@ def _apply_content_migrations(c):
                     'any stage, which is how a large share of these cases actually end.')
                 c.execute("UPDATE articles SET content = ? WHERE slug = 'cheque-bounce-section-138-ni-act'",
                           (body,))
+                _touch(c, 'cheque-bounce-section-138-ni-act')
 
         c.execute(f'PRAGMA user_version = {_SCHEMA_VERSION}')
 
