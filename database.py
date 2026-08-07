@@ -146,7 +146,152 @@ def apply_content_migrations():
 # `git push` + restart — there is no separate migration runner. PRAGMA
 # user_version makes each block run exactly once, so an article the owner later
 # edits through the admin UI is never silently overwritten on the next restart.
-_SCHEMA_VERSION = 4
+_SCHEMA_VERSION = 5
+
+
+# ─── Real publication dates ──────────────────────────────────────────────────
+# The owner published these 126 guides on a real schedule between 26 Jan and
+# 5 Aug 2026 (weekend-weighted), but the database never knew it: seed_articles()
+# stamps created_at at insert time, so production carried three batch
+# timestamps — 108 articles all claiming 27 Jun, 10 claiming 24 Jul, 8 claiming
+# 7 Aug. That is both wrong and the exact shape of a content dump, which is not
+# what actually happened.
+#
+# Keyed by slug rather than by row position so a rebuilt database, where the
+# ids may be reassigned, still lands each date on the right article. A slug
+# that is missing simply matches no rows.
+#
+# updated_at is set to match: we know when these were published, we do not have
+# a record of later edits, and inventing one would be the fake-freshness
+# pattern _touch() exists to avoid.
+PUBLISH_SCHEDULE = {
+    'consumer-complaint-guide': '2026-01-26',
+    'companies-act-2013-guide': '2026-01-28',
+    'bns-bnss-bsa-new-criminal-laws': '2026-01-30',
+    'din-allotment-kyc-disqualification': '2026-01-31',
+    'striking-off-company-stk-2': '2026-02-01',
+    'share-transfer-private-company-sh4': '2026-02-02',
+    'msme-udyam-registration-guide': '2026-02-04',
+    'convert-proprietorship-partnership-to-company': '2026-02-06',
+    'stamp-duty-agreements-estamping': '2026-02-07',
+    'cheque-bounce-section-138-ni-act': '2026-02-08',
+    'rera-homebuyer-rights-complaint': '2026-02-09',
+    'rte-act': '2026-02-11',
+    'fundamental-rights': '2026-02-13',
+    'cyber-crime-laws': '2026-02-14',
+    'online-fraud-remedies': '2026-02-15',
+    'rights-of-women': '2026-02-16',
+    'what-is-gst': '2026-02-18',
+    'gst-registration': '2026-02-20',
+    'llp-registration': '2026-02-21',
+    'company-registration': '2026-02-22',
+    'startup-india-registration': '2026-02-23',
+    'dematerialization-of-shares': '2026-02-25',
+    'trademark-registration': '2026-02-27',
+    'ipr-explained': '2026-02-28',
+    'annual-compliance-llps': '2026-03-01',
+    'annual-compliance-companies': '2026-03-02',
+    'director-duties': '2026-03-04',
+    'corporate-governance': '2026-03-06',
+    '50-percent-wage-rule': '2026-03-07',
+    'anticipatory-bail-section-482-bnss': '2026-03-08',
+    'bharatiya-nagarik-suraksha-sanhita-guide': '2026-03-09',
+    'bharatiya-sakshya-adhiniyam-guide': '2026-03-11',
+    'code-of-civil-procedure-guide': '2026-03-13',
+    'common-contract-mistakes': '2026-03-14',
+    'competition-act-2002-guide': '2026-03-15',
+    'constitution-of-india-guide': '2026-03-16',
+    'consumer-protection-act-2019-guide': '2026-03-18',
+    'dpdp-act-compliance-guide': '2026-03-20',
+    'dpdp-childrens-data-parental-consent': '2026-03-21',
+    'dpdp-consent-managers': '2026-03-22',
+    'dpdp-data-breach-notification': '2026-03-23',
+    'dpdp-privacy-policy': '2026-03-25',
+    'electronic-signatures-india': '2026-03-27',
+    'employee-rights-how-to-enforce': '2026-03-28',
+    'epf-esi-social-security-code': '2026-03-29',
+    'force-majeure-clause': '2026-03-30',
+    'gratuity-new-labour-codes': '2026-04-01',
+    'gst-returns-explained': '2026-04-03',
+    'how-to-file-fir-online': '2026-04-04',
+    'how-to-make-a-valid-will': '2026-04-05',
+    'how-to-send-legal-notice': '2026-04-06',
+    'how-to-terminate-a-contract': '2026-04-08',
+    'income-tax-freelancers': '2026-04-10',
+    'indemnity-vs-guarantee': '2026-04-11',
+    'indian-stamp-act-guide': '2026-04-12',
+    'influencer-disclosure-misleading-ads': '2026-04-13',
+    'input-tax-credit-gst': '2026-04-15',
+    'law-of-torts-india': '2026-04-17',
+    'lease-vs-leave-and-licence': '2026-04-18',
+    'limitation-act-1963-guide': '2026-04-19',
+    'msa-vs-sow': '2026-04-20',
+    'nda-key-clauses': '2026-04-22',
+    'new-labour-codes-explained': '2026-04-24',
+    'notice-period-termination-settlement': '2026-04-25',
+    'power-of-attorney-india': '2026-04-26',
+    'property-title-due-diligence': '2026-04-27',
+    'registration-act-guide': '2026-04-29',
+    'rent-agreement-registration': '2026-05-01',
+    'right-to-information-act-guide': '2026-05-02',
+    'service-agreement-guide': '2026-05-03',
+    'tds-compliance-guide': '2026-05-04',
+    'vendor-supplier-agreement': '2026-05-06',
+    'will-vs-gift-deed-vs-trust': '2026-05-08',
+    'alteration-of-moa-aoa-section-13-14': '2026-05-09',
+    'appointment-of-kmp-section-203': '2026-05-10',
+    'auditor-appointment-rotation-removal': '2026-05-11',
+    'board-committees-audit-nrc-stakeholders': '2026-05-13',
+    'bonus-issue-of-shares-section-63': '2026-05-15',
+    'buyback-of-shares-unlisted-section-68': '2026-05-16',
+    'change-of-registered-office-section-12': '2026-05-17',
+    'chg-1-registration-of-charges': '2026-05-18',
+    'conducting-a-valid-board-meeting-section-173': '2026-05-20',
+    'conducting-agm-egm-companies-act': '2026-05-23',
+    'conversion-private-public-company-section-18': '2026-05-24',
+    'csr-governance-section-135': '2026-05-25',
+    'dir-12-appointment-resignation-directors': '2026-05-27',
+    'dividend-declaration-iepf-compliance': '2026-05-30',
+    'dormant-company-section-455': '2026-05-31',
+    'drafting-maintaining-minutes-section-118': '2026-06-01',
+    'esops-sweat-equity-shares': '2026-06-03',
+    'increase-authorised-share-capital': '2026-06-06',
+    'independent-directors-companies-act': '2026-06-07',
+    'mergers-amalgamations-companies-act': '2026-06-08',
+    'msme-1-half-yearly-return': '2026-06-10',
+    'private-placement-section-42': '2026-06-13',
+    'reduction-of-share-capital-section-66': '2026-06-14',
+    'related-party-transactions-section-188': '2026-06-15',
+    'rights-issue-procedure-section-62': '2026-06-17',
+    'sebi-lodr-explained': '2026-06-20',
+    'sebi-pit-insider-trading-explained': '2026-06-21',
+    'secretarial-audit-mr-3-section-204': '2026-06-22',
+    'secretarial-standards-ss-1-ss-2': '2026-06-24',
+    'section-185-loan-to-directors': '2026-06-27',
+    'section-186-inter-corporate-loans': '2026-06-28',
+    'section-8-vs-producer-company': '2026-06-29',
+    'significant-beneficial-owner-ben-2': '2026-07-01',
+    'statutory-registers-and-records': '2026-07-04',
+    'vigil-mechanism-whistleblower-section-177': '2026-07-05',
+    'ipo-sebi-icdr-eligibility-process': '2026-07-06',
+    'fpo-further-public-offer-explained': '2026-07-08',
+    'fema-1999-explained-current-capital-account': '2026-07-11',
+    'fdi-routes-sectoral-caps-press-note-3': '2026-07-12',
+    'fema-penalties-violations-case-laws': '2026-07-13',
+    'fdi-reporting-fc-gpr-fc-trs-fla-compliance': '2026-07-15',
+    'sebi-pit-compliance-solutions-founders-kmp': '2026-07-18',
+    'sebi-sast-takeover-code-open-offer': '2026-07-19',
+    'competition-act-agreements-abuse-dominance': '2026-07-20',
+    'cci-merger-control-sun-pharma-ranbaxy': '2026-07-22',
+    'gig-platform-workers-rights-labour-codes': '2026-07-25',
+    'non-compete-clause-enforceability-india': '2026-07-26',
+    'fcra-vs-fema-foreign-funds-india': '2026-07-27',
+    'dpdp-rules-2025-compliance-timeline': '2026-07-29',
+    'posh-internal-committee-small-company': '2026-08-01',
+    'ccfs-2026-companies-compliance-facilitation-scheme': '2026-08-02',
+    'income-tax-act-2025-what-changed': '2026-08-03',
+    'perquisite-valuation-rules-2026-salaried': '2026-08-05',
+}
 
 
 def _touch(c, *slugs):
@@ -302,6 +447,20 @@ def _apply_content_migrations(c):
                 c.execute("UPDATE articles SET content = ? WHERE slug = 'cheque-bounce-section-138-ni-act'",
                           (body,))
                 _touch(c, 'cheque-bounce-section-138-ni-act')
+
+        c.execute('PRAGMA user_version = 4')
+
+    if version < 5:
+        # Restore the real publication dates (see PUBLISH_SCHEDULE above). The
+        # stored 09:30 is a nominal publishing slot, not a claim about the
+        # minute each guide went up — the date is the part that is real.
+        #
+        # Deliberately NOT wrapped in _touch(): this corrects when an article
+        # was published, it is not an edit to the article.
+        for slug, day in PUBLISH_SCHEDULE.items():
+            c.execute(
+                'UPDATE articles SET created_at = ?, updated_at = ? WHERE slug = ?',
+                (f'{day} 09:30:00', f'{day} 09:30:00', slug))
 
         c.execute(f'PRAGMA user_version = {_SCHEMA_VERSION}')
 
