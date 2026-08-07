@@ -956,3 +956,35 @@ button .ic,a .ic,.offer-link .ic,.blog-link .ic{vertical-align:middle;}
 .fx-3{font-size:44px;opacity:.92;}
 /* fx-4 is the custom gavel SVG (no gavel emoji exists) — sized + gold-tinted */
 .fx-4{top:auto;bottom:9%;right:5%;width:46px;height:46px;color:var(--gold);opacity:.95;animation:fxBob 7.5s ease-in-out -2.2s infinite;}
+
+/* ─── IN-BODY ARTICLE LINKS ───────────────────────────────────────────────
+   Contextual links the autolink filter adds inside the prose. Underlined
+   rather than colour-only so they stay distinguishable without relying on
+   hue (WCAG 1.4.1), and the underline sits clear of descenders. */
+.prose a{color:var(--gold-ink);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px;transition:color .18s,background .18s;border-radius:2px;}
+.prose a:hover{color:var(--gold-dark);background:var(--gold-tint);}
+[data-theme=dark] .prose a:hover{background:rgba(232,160,32,.12);}
+
+/* Card headlines are links now — the title is far better anchor text than the
+   "Read Article" line below it. They should not look any different. */
+.blog-card h3 .card-title-link{color:inherit;text-decoration:none;}
+.blog-card h3 .card-title-link:hover{color:var(--gold-ink);}
+
+/* ─── TOPIC HUB PAGES ─────────────────────────────────────────────────── */
+.topic-intro{margin-bottom:2.5rem;}
+.topic-intro p{margin-bottom:1rem;}
+.topic-grid{margin-top:0;}
+.topic-back{margin-top:2.5rem;text-align:center;}
+.section-tag-link{text-decoration:none;}
+.section-tag-link:hover{color:var(--gold-dark);}
+/* Sits inside the .blog-grid on /blogs, so it has to span every column. */
+.topic-cta{grid-column:1/-1;margin-bottom:.35rem;}
+.topic-cta a{display:inline-flex;align-items:center;gap:.45rem;font-family:var(--uf);font-size:.9rem;font-weight:600;color:var(--gold-ink);text-decoration:none;padding:.6rem .95rem;border:1px solid var(--hairline);border-radius:var(--r-sm);background:var(--gold-tint);transition:background .2s,border-color .2s;}
+.topic-cta a:hover{background:var(--gold-light);border-color:var(--gold);}
+[data-theme=dark] .topic-cta a{background:rgba(232,160,32,.08);}
+[data-theme=dark] .topic-cta a:hover{background:rgba(232,160,32,.15);}
+
+/* The author link has rendered as default browser blue since the byline was
+   added — it inherits nothing from .article-meta. */
+.byline a{color:inherit;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px;}
+.byline a:hover{color:var(--gold-ink);}

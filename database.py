@@ -121,8 +121,93 @@ def init_db():
             c.execute(f'ALTER TABLE {table} ADD COLUMN {col} {decl}')
     _ensure_column('articles', 'seo_title', 'TEXT')
 
+    _apply_content_migrations(c)
+
     conn.commit()
     conn.close()
+
+
+# Data fixes that must reach the production database, which only ever receives a
+# `git push` + restart — there is no separate migration runner. PRAGMA
+# user_version makes each block run exactly once, so an article the owner later
+# edits through the admin UI is never silently overwritten on the next restart.
+_SCHEMA_VERSION = 3
+
+
+def _apply_content_migrations(c):
+    version = c.execute('PRAGMA user_version').fetchone()[0]
+
+    if version < 1:
+        # A fresh production database runs every block below in order; a
+        # database already stamped at 1 picks up only what came after it.
+        # 1a. The MSME thresholds in the Udyam guide were the pre-2020 figures,
+        #     superseded on 1 April 2025. Wrong numbers on a compliance site are
+        #     worse than no numbers, so this is a correction first and a
+        #     deduplication second.
+        c.execute(
+            "UPDATE articles SET content = REPLACE(content, ?, ?) WHERE slug = ?",
+            ("<li><strong>Micro:</strong> investment up to Rs. 1 crore and turnover up to Rs. 5 crore.</li>"
+             "<li><strong>Small:</strong> investment up to Rs. 10 crore and turnover up to Rs. 50 crore.</li>"
+             "<li><strong>Medium:</strong> investment up to Rs. 50 crore and turnover up to Rs. 250 crore.</li>",
+             "<li><strong>Micro:</strong> investment up to Rs. 2.5 crore and turnover up to Rs. 10 crore.</li>"
+             "<li><strong>Small:</strong> investment up to Rs. 25 crore and turnover up to Rs. 100 crore.</li>"
+             "<li><strong>Medium:</strong> investment up to Rs. 125 crore and turnover up to Rs. 500 crore.</li>",
+             'msme-udyam-registration-guide'))
+        c.execute(
+            "UPDATE articles SET content = REPLACE(content, ?, ?) WHERE slug = ?",
+            ("Classification is based on two combined criteria - investment in plant "
+             "and machinery or equipment, and annual turnover:",
+             "Classification uses a composite criterion - <em>both</em> investment in "
+             "plant and machinery or equipment <em>and</em> annual turnover must be "
+             "within the limit, and crossing either one moves the enterprise up a "
+             "category. These limits were revised with effect from 1 April 2025:",
+             'msme-udyam-registration-guide'))
+
+        # 1b. Two guides covered the same ground as a stronger twin, so search
+        #     engines had to pick between them and readers landed on whichever
+        #     won. Unpublishing (rather than deleting) keeps the copy recoverable;
+        #     RETIRED_ARTICLES in seo_meta.py 301s the old URLs to the survivor.
+        for slug in ('udyam-registration', 'sebi-pit-regulations-2015-framework'):
+            c.execute('UPDATE articles SET published = 0 WHERE slug = ?', (slug,))
+
+        # 1c. Both were filed under Corporate Compliance, which put them on the
+        #     wrong topic hub and gave the SEBI hub an incomplete picture.
+        for slug in ('sebi-lodr-explained', 'sebi-pit-insider-trading-explained'):
+            c.execute("UPDATE articles SET category = 'sebi' WHERE slug = ?", (slug,))
+
+        c.execute('PRAGMA user_version = 1')
+
+    if version < 2:
+        # The PIT framework guide retired in v1 took its disclosure section with
+        # it — the one part the surviving guide covered only as a checklist line.
+        # Carry it across. Guarded so a re-run cannot duplicate the section.
+        c.execute(
+            "UPDATE articles SET content = REPLACE(content, ?, ?) WHERE slug = ? "
+            "AND content NOT LIKE '%Disclosure obligations%'",
+            ("<h2>A worked example</h2>",
+             "<h2>Disclosure obligations</h2>"
+             "<p><em>Governs this section: Regulations 6 &amp; 7, PIT Regulations, 2015</em></p>"
+             "<ul><li><strong>Initial disclosure:</strong> every promoter, member of the "
+             "promoter group, KMP and director discloses their holdings within 7 days of "
+             "appointment / becoming a promoter.</li>"
+             "<li><strong>Continual disclosure (Reg 7(2)):</strong> promoters, promoter "
+             "group, designated persons and directors must disclose to the company within "
+             "<strong>2 trading days</strong> every trade (or series of trades in a calendar "
+             "quarter) whose value exceeds <strong>₹10 lakh</strong>; the company passes "
+             "it to the exchanges within 2 trading days of receipt.</li></ul>"
+             "<h2>A worked example</h2>",
+             'sebi-pit-insider-trading-explained'))
+
+        c.execute('PRAGMA user_version = 2')
+
+    if version < 3:
+        # The DPT-3 guide was written around one filing season and led with a
+        # deadline (31 July 2026) that has now passed, so it reads as current
+        # guidance while being out of date. Retired at the owner's instruction.
+        # DPT-3 itself recurs annually, so the content is unpublished rather than
+        # deleted and can go back up with fresh dates next season.
+        c.execute("UPDATE articles SET published = 0 WHERE slug = 'dpt-3-fy-2025-26'")
+        c.execute(f'PRAGMA user_version = {_SCHEMA_VERSION}')
 
 
 def seed_documents():
@@ -958,6 +1043,20 @@ def seed_articles():
     try:
         from blog_seed4 import BLOG_ARTICLES_4
         articles = articles + list(BLOG_ARTICLES_4)
+    except Exception:
+        pass
+
+    # Append the 5 content-gap blogs (into blog_seed5.py).
+    try:
+        from blog_seed5 import BLOG_ARTICLES_5
+        articles = articles + list(BLOG_ARTICLES_5)
+    except Exception:
+        pass
+
+    # Append the 3 news-driven blogs, Aug 2026 (into blog_seed6.py).
+    try:
+        from blog_seed6 import BLOG_ARTICLES_6
+        articles = articles + list(BLOG_ARTICLES_6)
     except Exception:
         pass
 

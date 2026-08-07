@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% from '_icons.html' import icon %}
+{% block title %}{{ topic.h1 }} - Law Minded{% endblock %}
+{% block meta_desc %}{{ topic.desc }}{% endblock %}
+{% block head_extra %}
+<script type="application/ld+json">
+{
+ "@context":"https://schema.org",
+ "@type":"CollectionPage",
+ "name":{{ topic.h1|tojson }},
+ "description":{{ topic.desc|tojson }},
+ "url":"{{ canonical_url }}",
+ "isPartOf":{"@id":"{{ site_url }}/#website"},
+ "mainEntity":{
+   "@type":"ItemList",
+   "numberOfItems":{{ articles|length }},
+   "itemListElement":[{% for a in articles %}{"@type":"ListItem","position":{{ loop.index }},"url":"{{ site_url }}{{ url_for('article', slug=a['slug']) }}","name":{{ a['title']|tojson }}}{% if not loop.last %},{% endif %}{% endfor %}]
+ }
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context":"https://schema.org",
+ "@type":"BreadcrumbList",
+ "itemListElement":[
+  {"@type":"ListItem","position":1,"name":"Home","item":"{{ site_url }}{{ url_for('index') }}"},
+  {"@type":"ListItem","position":2,"name":"Knowledge Hub","item":"{{ site_url }}{{ url_for('blogs') }}"},
+  {"@type":"ListItem","position":3,"name":{{ topic.h1|tojson }},"item":"{{ canonical_url }}"}
+ ]
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="{{ url_for('index') }}">Home</a>
+    <span class="bc-sep">//</span>
+    <a href="{{ url_for('blogs') }}">Knowledge Hub</a>
+    <span class="bc-sep">//</span>
+    <span class="bc-current">{{ category_map[cat] }}</span>
+  </nav>
+  <span class="section-tag">{{ articles|length }} guide{{ '' if articles|length == 1 else 's' }}</span>
+  <h1>{{ topic.h1 }}</h1>
+</div>
+
+<section>
+  <div class="about-idea about-story topic-intro">
+    {% for para in topic.intro %}<p>{{ para }}</p>{% endfor %}
+  </div>
+
+  <div class="blog-grid topic-grid">
+    {% for art in articles %}
+    <article class="blog-card">
+      <div class="blog-card-body">
+        <div class="blog-meta">{{ icon('clock', 13) }} {{ art['read_time'] or '5 min' }}</div>
+        <h3><a href="{{ url_for('article', slug=art['slug']) }}" class="card-title-link">{{ art['title'] }}</a></h3>
+        <p>{{ art['summary'][:110] }}…</p>
+        <a href="{{ url_for('article', slug=art['slug']) }}" class="blog-link">Read {{ icon('arrow-right', 15) }}</a>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+
+  <p class="topic-back">
+    <a href="{{ url_for('blogs') }}" class="back-link">{{ icon('arrow-left', 15) }} All topics in the Knowledge Hub</a>
+  </p>
+</section>
+{% endblock %}

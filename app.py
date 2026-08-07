@@ -28,6 +28,7 @@ load_dotenv()
 from database import get_db, init_db, seed_articles, seed_documents, seed_formats
 import content as C
 import formats as F
+from seo_meta import SEO_DESCRIPTIONS, INTERNAL_LINKS, RETIRED_ARTICLES
 
 # Production flag: enables HTTPS enforcement, HSTS, and Secure cookies on the live
 # server. Stays off locally so http://localhost development still works.
@@ -160,13 +161,19 @@ AUTHOR = {
     'name': 'Piyush Kundnani',
     'slug': 'piyush-kundnani',
     'role': 'Founder & Editor',
-    'credential': '',   # e.g. 'Company Secretary' — shown in byline + schema jobTitle
+    'credential': 'B.Com',   # genuinely held — byline + schema hasCredential
     'bio': ('Piyush Kundnani is the founder and editor of Law Minded, where he '
             'leads its plain-English coverage of Indian corporate compliance, '
             'labour law and consumer rights.'),
     'same_as': [],      # the author\'s OWN professional profiles (personal LinkedIn/X)
 }
 AUTHOR['url'] = SITE_URL + '/author/' + AUTHOR['slug']
+
+# The nine landmark-judgment briefs are hand-written editorial content that
+# shipped together in the initial commit. Articles carry per-row timestamps from
+# the database; these are static, so one honest publication date drives their
+# Article schema and sitemap lastmod. Bump it if the briefs are ever rewritten.
+JUDGMENTS_PUBLISHED = '2026-06-21'
 
 CATEGORY_MAP = C.CATEGORY_MAP
 
@@ -311,6 +318,79 @@ def seotitle(article, brand=' - Law Minded', maxlen=60):
     return title
 
 
+@app.template_filter('metadesc')
+def metadesc(value, maxlen=155):
+    """Trim a description to the width Google and Bing actually render in a
+    search snippet (~155 chars). Anything longer is cut off mid-word by the
+    search engine itself, so we cut it first — on a word boundary, dropping any
+    dangling punctuation — and the snippet reads as a finished phrase. Applied
+    once in base.html, so it covers every page's description, og:description
+    and twitter:description."""
+    s = ' '.join(str(value or '').split())
+    if len(s) <= maxlen:
+        return s
+    cut = s[:maxlen]
+    if ' ' in cut:
+        cut = cut[:cut.rindex(' ')]
+    return cut.rstrip(' ,;:-–—')
+
+
+# One alternation over every linkable phrase, longest first so "GST registration"
+# wins over "GST". The lookarounds do the job of \b but also refuse to fire mid-URL
+# or inside a hyphenated token, so "section 185" never matches "sub-section 185a".
+_LINK_RE = re.compile(
+    r'(?<![\w\-/])(' + '|'.join(
+        re.escape(p) for p in sorted(INTERNAL_LINKS, key=len, reverse=True)
+    ) + r')(?![\w\-])', re.I)
+
+# Headings stay unlinked (they are the page's own outline, not a route out), and
+# nesting an <a> inside an <a> is invalid HTML that browsers silently mangle.
+_NO_LINK_ZONE = re.compile(r'</?(a|h[1-6])\b', re.I)
+
+
+@app.template_filter('autolink')
+def autolink(content, current_slug='', limit=8):
+    """Turn key phrases in an article body into links to the article that
+    explains them.
+
+    Editors write the guides as standalone pieces, so nothing cross-references
+    anything — 123 articles between them held 7 links, all pointing off-site.
+    That leaves every guide an island: readers hit a dead end, and crawlers get
+    no path between pages or any anchor text describing them.
+
+    Linking here rather than in the stored HTML means new articles are covered
+    the moment they publish, and a slug rename never leaves a dead link behind.
+    Only the first mention of each target is linked, capped at `limit` per page,
+    so the result reads like an editor added it rather than a machine."""
+    if not content:
+        return content
+    used = set()
+
+    def _link_text(text):
+        def repl(m):
+            phrase = m.group(0)
+            slug = INTERNAL_LINKS.get(phrase.lower())
+            if not slug or slug == current_slug or slug in used or len(used) >= limit:
+                return phrase
+            used.add(slug)
+            return f'<a href="{url_for("article", slug=slug)}">{phrase}</a>'
+        return _LINK_RE.sub(repl, text)
+
+    out, pos, depth = [], 0, 0
+    for m in re.finditer(r'<[^>]+>', content):
+        chunk = content[pos:m.start()]
+        out.append(_link_text(chunk) if depth == 0 else chunk)
+        tag = m.group(0)
+        out.append(tag)
+        if _NO_LINK_ZONE.match(tag):
+            depth += 1 if tag[1] != '/' else -1
+            depth = max(depth, 0)
+        pos = m.end()
+    tail = content[pos:]
+    out.append(_link_text(tail) if depth == 0 else tail)
+    return ''.join(out)
+
+
 @app.template_filter('faqs')
 def faqs(content, limit=10):
     """Pull (question, answer) pairs from an article's 'Frequently asked
@@ -344,6 +424,7 @@ def _article_image_url(slug):
 
 
 app.jinja_env.globals['article_image'] = _article_image_url
+app.jinja_env.globals['seo_descriptions'] = SEO_DESCRIPTIONS
 
 
 @app.context_processor
@@ -353,6 +434,7 @@ def inject_globals():
         'adsense_slots': ADSENSE_SLOTS,
         'google_site_verification': GOOGLE_SITE_VERIFICATION,
         'category_map': CATEGORY_MAP,
+        'topics': C.TOPICS,
         'current_year': date.today().year,
         'site_url': SITE_URL,
         'canonical_url': SITE_URL + request.path,
@@ -645,8 +727,34 @@ def blogs():
     return render_template('blogs.html', articles_by_cat=get_articles_by_cat())
 
 
+@app.route('/topic/<slug>')
+def topic(slug):
+    """Landing page for one category — the hub half of the hub-and-spoke.
+
+    /blogs lists all 123 guides on a single page, so no URL ever targeted a
+    topic as a phrase and the guides within a topic had no shared parent. This
+    gives each category a page of its own that links to every article under it;
+    the article breadcrumb links back."""
+    cat = C.TOPIC_BY_SLUG.get(slug)
+    if not cat:
+        abort(404)
+    db = get_db()
+    articles = db.execute(
+        'SELECT * FROM articles WHERE category=? AND published=1 '
+        'ORDER BY created_at DESC', (cat,)
+    ).fetchall()
+    db.close()
+    return render_template('topic.html', topic=C.TOPICS[cat], cat=cat,
+                           articles=articles)
+
+
 @app.route('/article/<slug>')
 def article(slug):
+    # A retired duplicate keeps its URL working: 301 to the guide that replaced
+    # it so any existing link or index entry lands on the survivor rather than
+    # a 404. Checked before the query — the row is still there, just unpublished.
+    if slug in RETIRED_ARTICLES:
+        return redirect(url_for('article', slug=RETIRED_ARTICLES[slug]), code=301)
     db = get_db()
     row = db.execute(
         'SELECT * FROM articles WHERE slug=? AND published=1', (slug,)
@@ -786,7 +894,7 @@ def judgment(slug):
     j = next((x for x in C.JUDGMENTS if x['slug'] == slug), None)
     if not j:
         abort(404)
-    return render_template('judgment.html', j=j)
+    return render_template('judgment.html', j=j, published=JUDGMENTS_PUBLISHED)
 
 
 @app.route('/resolutions/<rtype>')
@@ -1108,13 +1216,18 @@ def sitemap_xml():
     # Author bio page (E-E-A-T)
     urls.append((AUTHOR['url'], 'yearly', '0.4', None))
 
+    # Topic hub pages — one per category, added automatically with the category
+    for t in C.TOPICS.values():
+        urls.append((SITE_URL + url_for('topic', slug=t['slug']), 'weekly', '0.8', None))
+
     # Resolution library pages
     for rtype in DOC_LIST_TITLE:
         urls.append((SITE_URL + url_for('resolutions', rtype=rtype), 'monthly', '0.6', None))
 
     # Landmark judgment briefs
     for jd in C.JUDGMENTS:
-        urls.append((SITE_URL + url_for('judgment', slug=jd['slug']), 'monthly', '0.6', None))
+        urls.append((SITE_URL + url_for('judgment', slug=jd['slug']), 'monthly', '0.6',
+                     JUDGMENTS_PUBLISHED))
 
     # Published articles (with last-modified)
     db = get_db()

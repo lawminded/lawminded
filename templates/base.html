@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 {% if google_site_verification %}<meta name="google-site-verification" content="{{ google_site_verification }}">{% endif %}
 <title>{% block title %}Law Minded · Where Complexity Meets Clarity{% endblock %}</title>
-<meta name="description" content="{% block meta_desc %}Law Minded is India's compliance and legal awareness platform covering corporate compliance, labour laws, consumer rights and fundamental rights, in plain English.{% endblock %}">
+<meta name="description" content="{% filter metadesc %}{% block meta_desc %}India's legal awareness platform: plain-English guides to corporate compliance, labour law, consumer rights and fundamental rights.{% endblock %}{% endfilter %}">
 <meta name="author" content="Law Minded">
 <meta name="robots" content="index, follow">
 <meta name="theme-color" content="#E8A020">
@@ -16,7 +16,7 @@
 <!-- Open Graph -->
 <meta property="og:site_name" content="Law Minded">
 <meta property="og:title" content="{{ self.title() }}">
-<meta property="og:description" content="{{ self.meta_desc() }}">
+<meta property="og:description" content="{{ self.meta_desc()|metadesc }}">
 <meta property="og:type" content="{% block og_type %}website{% endblock %}">
 <meta property="og:url" content="{{ canonical_url }}">
 <meta property="og:image" content="{{ _social_img }}">
@@ -24,12 +24,12 @@
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{{ self.title() }}">
-<meta name="twitter:description" content="{{ self.meta_desc() }}">
+<meta name="twitter:description" content="{{ self.meta_desc()|metadesc }}">
 <meta name="twitter:image" content="{{ _social_img }}">
 <!-- Organization + WebSite structured data -->
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
-{"@type":"Organization","@id":"{{ site_url }}/#org","name":"Law Minded","url":"{{ site_url }}/","logo":"{{ _social_img }}","description":"India's compliance and legal awareness platform covering corporate compliance, labour laws and consumer rights, in plain English.","sameAs":["https://www.linkedin.com/in/lawminded/","https://x.com/Lawminded_in","https://www.instagram.com/lawminded.in"]},
+{"@type":"Organization","@id":"{{ site_url }}/#org","name":"Law Minded","url":"{{ site_url }}/","logo":"{{ site_url }}{{ url_for('static', filename='img/logo-full.png') }}","description":"India's compliance and legal awareness platform covering corporate compliance, labour laws and consumer rights, in plain English.","sameAs":["https://www.linkedin.com/in/lawminded/","https://x.com/Lawminded_in","https://www.instagram.com/lawminded.in"]},
 {"@type":"WebSite","@id":"{{ site_url }}/#website","url":"{{ site_url }}/","name":"Law Minded","publisher":{"@id":"{{ site_url }}/#org"},"potentialAction":{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"{{ site_url }}/search?q={search_term_string}"},"query-input":"required name=search_term_string"}}
 ]}
 </script>

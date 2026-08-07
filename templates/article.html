@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% from '_icons.html' import icon %}
 {% block title %}{{ article|seotitle }}{% endblock %}
-{% block meta_desc %}{{ article['summary'] }}{% endblock %}
+{% block meta_desc %}{{ seo_descriptions.get(article['slug']) or article['summary'] }}{% endblock %}
 {% block og_type %}article{% endblock %}
 {% block head_extra %}
 <script type="application/ld+json">
@@ -25,7 +25,13 @@
  "itemListElement":[
   {"@type":"ListItem","position":1,"name":"Home","item":"{{ site_url }}{{ url_for('index') }}"},
   {"@type":"ListItem","position":2,"name":"Knowledge Hub","item":"{{ site_url }}{{ url_for('blogs') }}"},
-  {"@type":"ListItem","position":3,"name":"{{ (category_map.get(article['category'],'Article'))|replace('"','') }}","item":"{{ canonical_url }}"}
+  {%- set _t = topics.get(article['category']) %}
+  {%- if _t %}
+  {"@type":"ListItem","position":3,"name":{{ category_map[article['category']]|tojson }},"item":"{{ site_url }}{{ url_for('topic', slug=_t.slug) }}"},
+  {"@type":"ListItem","position":4,"name":{{ article['title']|tojson }},"item":"{{ canonical_url }}"}
+  {%- else %}
+  {"@type":"ListItem","position":3,"name":{{ article['title']|tojson }},"item":"{{ canonical_url }}"}
+  {%- endif %}
  ]
 }
 </script>
@@ -47,9 +53,12 @@
     <span class="bc-sep">//</span>
     <a href="{{ url_for('blogs') }}">Knowledge Hub</a>
     <span class="bc-sep">//</span>
-    <span class="bc-current">{{ category_map.get(article['category'], 'Article') }}</span>
+    {% set _topic = topics.get(article['category']) %}
+    {% if _topic %}<a href="{{ url_for('topic', slug=_topic.slug) }}">{{ category_map[article['category']] }}</a>
+    {% else %}<span class="bc-current">{{ category_map.get(article['category'], 'Article') }}</span>{% endif %}
   </nav>
-  <span class="section-tag">{{ category_map.get(article['category'], 'Article') }}</span>
+  {% if _topic %}<a class="section-tag section-tag-link" href="{{ url_for('topic', slug=_topic.slug) }}">{{ category_map[article['category']] }}</a>
+  {% else %}<span class="section-tag">{{ category_map.get(article['category'], 'Article') }}</span>{% endif %}
   <h1>{{ article['title'] }}</h1>
   <div class="article-meta">
     <span class="byline">By <a href="{{ url_for('author_page', slug=author.slug) }}" rel="author">{{ author.name }}</a>{% if author.credential %}, {{ author.credential }}{% endif %}</span>
@@ -72,7 +81,7 @@
   <div class="article-main">
   <a href="{{ url_for('blogs') }}" class="back-link">{{ icon('arrow-left', 15) }} Back to Knowledge Hub</a>
 
-  <div class="prose" id="articleProse">{{ article['content'] | safe }}</div>
+  <div class="prose" id="articleProse">{{ article['content'] | autolink(article['slug']) | safe }}</div>
   </div><!-- /.article-main -->
 
   <aside class="toc-side">
@@ -108,7 +117,7 @@
       <article class="blog-card">
         <div class="blog-card-body">
           <div class="blog-meta">{{ icon('clock', 13) }} {{ art['read_time'] or '5 min' }}</div>
-          <h3>{{ art['title'] }}</h3>
+          <h3><a href="{{ url_for('article', slug=art['slug']) }}" class="card-title-link">{{ art['title'] }}</a></h3>
           <p>{{ art['summary'][:90] }}…</p>
           <a href="{{ url_for('article', slug=art['slug']) }}" class="blog-link">Read Article {{ icon('arrow-right', 15) }}</a>
         </div>

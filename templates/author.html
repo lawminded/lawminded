@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% from '_icons.html' import icon %}
 {% block title %}{{ profile.name }}{% if profile.credential %}, {{ profile.credential }}{% endif %} - Law Minded{% endblock %}
-{% block meta_desc %}{{ profile.bio }}{% endblock %}
+{# The bio reads as a full paragraph on the page; the snippet has ~155 chars. #}
+{% block meta_desc %}{{ profile.name }}, {{ profile.role }} at Law Minded — plain-English coverage of Indian corporate compliance, labour law and consumer rights.{% endblock %}
 {% block head_extra %}
 <script type="application/ld+json">
 {
@@ -10,9 +11,12 @@
  "@id":"{{ site_url }}/author/{{ profile.slug }}#person",
  "name":{{ profile.name|tojson }},
  "url":{{ profile.url|tojson }},
- "jobTitle":{{ (profile.credential or profile.role)|tojson }},
+ "jobTitle":{{ profile.role|tojson }},
  "description":{{ profile.bio|tojson }},
  "worksFor":{"@type":"Organization","@id":"{{ site_url }}/#org","name":"Law Minded"}
+ {%- if profile.credential %},
+ "hasCredential":{"@type":"EducationalOccupationalCredential","credentialCategory":"degree","name":{{ profile.credential|tojson }}}
+ {%- endif %}
  {%- if profile.same_as %},
  "sameAs":{{ profile.same_as|tojson }}
  {%- endif %}

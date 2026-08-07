@@ -27,6 +27,13 @@
   <div class="tab-content {{ 'active' if loop.first }}" id="tab-{{ cat_key }}">
     {% set arts = articles_by_cat.get(cat_key, []) %}
     {% if arts %}
+      {# Crawl path from the Hub to each topic page — the tabs are JS-driven, so
+         without this the hubs would only be reachable from article breadcrumbs. #}
+      {% if topics.get(cat_key) %}
+      <div class="topic-cta">
+        <a href="{{ url_for('topic', slug=topics[cat_key].slug) }}">{{ topics[cat_key].h1 }}: read the full topic guide {{ icon('arrow-right', 15) }}</a>
+      </div>
+      {% endif %}
       {% for art in arts %}
       <article class="blog-card">
         {% set _thumb = article_image(art['slug']) %}
@@ -35,7 +42,7 @@
           <span class="blog-tag">{{ art['act'] or label }}</span>
         </div>
         <div class="blog-card-body">
-          <h3>{{ art['title'] }}</h3>
+          <h3><a href="{{ url_for('article', slug=art['slug']) }}" class="card-title-link">{{ art['title'] }}</a></h3>
           <div class="blog-card-foot">
             <span class="blog-meta">{{ icon('clock', 13) }} {{ art['read_time'] or '5 min' }}</span>
             <a href="{{ url_for('article', slug=art['slug']) }}" class="blog-link">Read {{ icon('arrow-right', 15) }}</a>

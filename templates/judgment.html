@@ -7,6 +7,23 @@
 <script type="application/ld+json">
 {
  "@context":"https://schema.org",
+ "@type":"Article",
+ "headline":{{ (j.title ~ ' (' ~ j.year ~ ')')|tojson }},
+ "description":{{ j.summary|tojson }},
+ "datePublished":"{{ published|iso8601 }}",
+ "dateModified":"{{ published|iso8601 }}",
+ "author":{"@type":"Person","@id":"{{ site_url }}/author/{{ author.slug }}#person","name":{{ author.name|tojson }},"url":"{{ author.url }}"},
+ "publisher":{"@type":"Organization","name":"Law Minded","logo":{"@type":"ImageObject","url":"{{ site_url }}{{ url_for('static', filename='img/logo-full.png') }}"}},
+ "mainEntityOfPage":"{{ canonical_url }}",
+ "image":"{{ site_url }}{{ url_for('static', filename='img/pages/judgments.webp') }}",
+ "articleSection":{{ j.area|tojson }},
+ "about":{"@type":"Thing","name":{{ j.title|tojson }}},
+ "isAccessibleForFree":true
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context":"https://schema.org",
  "@type":"BreadcrumbList",
  "itemListElement":[
   {"@type":"ListItem","position":1,"name":"Home","item":"{{ site_url }}{{ url_for('index') }}"},

@@ -19,3 +19,6 @@ instance/
 .idea/
 .vscode/
 .claude/
+
+# Local SEO audit artefacts (large, not part of the site)
+SEO Audit/

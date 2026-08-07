@@ -18,6 +18,192 @@ CATEGORY_MAP = {
     'competition': 'Competition Law',
 }
 
+# Topic hub pages — one indexable landing page per category.
+#
+# The Knowledge Hub lists all 123 guides on a single /blogs page, which leaves
+# each topic with no page of its own: nothing targets "corporate compliance
+# India" as a phrase, and the 52 guides under that heading share no parent to
+# pass authority between them. Each hub below links down to every article in
+# its category and every article links back up through its breadcrumb, which is
+# the ordinary hub-and-spoke shape search engines expect of a topic library.
+#
+# `intro` is what makes these worth indexing — a bare list of links reads as a
+# thin directory page and gets ignored. Keep it substantive if you add one.
+TOPICS = {
+    'corp': {
+        'slug': 'corporate-compliance',
+        'h1': 'Corporate Compliance in India',
+        'desc': 'ROC filings, board meetings, share capital, directors and every '
+                'Companies Act obligation a private limited company carries.',
+        'intro': [
+            "Running a company in India means carrying a calendar of obligations that "
+            "never really stops. Some are annual — the AOC-4 and MGT-7 filings, the "
+            "audit, the AGM. Others are triggered by an event and come with a clock "
+            "attached: a charge registered within 30 days, a director change filed in "
+            "DIR-12, a resolution reaching the ROC in MGT-14.",
+            "Almost none of it is difficult. What catches founders out is that the "
+            "penalties are automatic and rarely capped — Rs 100 a day, running from the "
+            "day you missed, with no notice and no reminder. A filing forgotten for a "
+            "year quietly becomes a bill for tens of thousands of rupees.",
+            "These guides walk through each obligation the way it actually arises: what "
+            "triggers it, which form it needs, how long you have, and what happens if "
+            "you miss the date.",
+        ],
+    },
+    'acts': {
+        'slug': 'legal-acts-explained',
+        'h1': 'Indian Legal Acts, Explained in Plain English',
+        'desc': 'The Constitution, Companies Act, CPC, the new criminal codes and more '
+                '— what each statute actually says, without the legalese.',
+        'intro': [
+            "Indian statutes are written to be precise, not readable. A single section "
+            "can run four hundred words, refer to three other sections, and carve out "
+            "exceptions in a proviso that reverses everything before it.",
+            "Each guide here takes one Act and rebuilds it around the questions people "
+            "actually arrive with: what does this law cover, who does it apply to, what "
+            "rights does it give me, and what do I do next. The legal accuracy stays; "
+            "the density goes.",
+        ],
+    },
+    'contracts': {
+        'slug': 'contracts-and-agreements',
+        'h1': 'Contracts & Agreements in India',
+        'desc': 'How to draft, sign, enforce and safely exit Indian commercial '
+                'contracts — NDAs, service agreements, MSAs and termination.',
+        'intro': [
+            "A contract can look complete — signed, stamped, full of clauses — and still "
+            "collapse the moment it is tested. Usually it fails on something ordinary: "
+            "no clear scope, a termination clause nobody read, a signature the law does "
+            "not recognise, or stamp duty never paid.",
+            "These guides cover the agreements Indian businesses sign most often, clause "
+            "by clause: what each one must contain, what quietly makes it unenforceable, "
+            "and how to end one without becoming the party in breach.",
+        ],
+    },
+    'property': {
+        'slug': 'property-and-estate',
+        'h1': 'Property, Wills & Estate Law in India',
+        'desc': 'Buying, renting, registering and inheriting property in India — title '
+                'checks, stamp duty, rent agreements, wills and gift deeds.',
+        'intro': [
+            "Property is where India's paperwork bites hardest. The difference between "
+            "owning an asset and owning a lawsuit is often a document that was never "
+            "registered, a title never traced back far enough, or stamp duty paid at the "
+            "wrong rate.",
+            "These guides cover the transactions that matter most — buying, letting, "
+            "gifting and inheriting — including why almost every rent agreement in India "
+            "runs for exactly eleven months, and what a will has to contain to survive a "
+            "challenge.",
+        ],
+    },
+    'consumer': {
+        'slug': 'consumer-rights-and-rti',
+        'h1': 'Consumer Rights & RTI in India',
+        'desc': 'Complaints, refunds, cheque bounce, online fraud, RERA and the Right '
+                'to Information — the remedies you can actually use.',
+        'intro': [
+            "Consumer law in India is unusually favourable to the individual: the forums "
+            "are cheap, you do not need a lawyer, and you can file online from home. Most "
+            "people never use any of it, because nobody explains where to start.",
+            "These guides give you the actual route — which forum, which form, what "
+            "evidence, how long it takes — for defective goods, bounced cheques, online "
+            "fraud, builder delays, and information a public authority is refusing to "
+            "hand over.",
+        ],
+    },
+    'labour': {
+        'slug': 'labour-and-employment',
+        'h1': 'Labour & Employment Law in India',
+        'desc': 'The new Labour Codes, wages, PF, ESI, gratuity, notice periods and '
+                'settlement — for both employers and employees.',
+        'intro': [
+            "India's four Labour Codes replaced a tangle of older statutes and changed "
+            "how wages are defined — which quietly changes provident fund, gratuity and "
+            "take-home pay for almost everyone in formal employment.",
+            "These guides explain what actually shifted, what an employer now has to do, "
+            "and what an employee is owed on the way out: notice period, full-and-final "
+            "settlement, gratuity, and how to enforce any of it when it is withheld.",
+        ],
+    },
+    'tax': {
+        'slug': 'tax-and-gst',
+        'h1': 'Tax & GST in India',
+        'desc': 'GST registration and returns, input tax credit, TDS and income tax '
+                'for freelancers — thresholds, deadlines and penalties.',
+        'intro': [
+            "Most tax trouble in India is not evasion. It is a threshold crossed without "
+            "noticing, a return filed late, or credit claimed on something that was "
+            "blocked all along.",
+            "These guides set out the numbers that decide your obligations — turnover "
+            "limits, deduction rates, filing dates — and the mistakes that cost the most, "
+            "from reversed input tax credit to TDS deposited a day late.",
+        ],
+    },
+    'sebi': {
+        'slug': 'sebi-and-securities-law',
+        'h1': 'SEBI & Securities Law',
+        'desc': 'Insider trading, UPSI, LODR disclosures, IPOs, FPOs and the Takeover '
+                'Code — the rules listed companies and their KMPs live under.',
+        'intro': [
+            "SEBI regulation punishes process failures as hard as bad intent. A board "
+            "decision announced tomorrow instead of within thirty minutes, a trading "
+            "window left open, a database that was never maintained — each is a breach on "
+            "its own, whatever anyone meant to do.",
+            "These guides cover what counts as unpublished price sensitive information, "
+            "what a listed company must disclose and how fast, the mechanics of raising "
+            "capital under the ICDR Regulations, and the penalties when a system is "
+            "missing rather than merely misused.",
+        ],
+    },
+    'fema': {
+        'slug': 'fema-and-foreign-investment',
+        'h1': 'FEMA & Foreign Investment in India',
+        'desc': 'FDI routes and sectoral caps, FC-GPR, FC-TRS, FLA and APR deadlines, '
+                'and the penalties for getting cross-border filings wrong.',
+        'intro': [
+            "FEMA runs on one distinction: current account transactions are free unless "
+            "restricted, capital account transactions are prohibited unless permitted. "
+            "Which side your transaction falls on decides everything that follows.",
+            "These guides cover the routes foreign money can take into India, the caps "
+            "that apply by sector, and the reporting that follows every transaction — "
+            "along with the Late Submission Fee that can still cure a missed filing, and "
+            "the point at which it no longer can.",
+        ],
+    },
+    'competition': {
+        'slug': 'competition-law',
+        'h1': 'Competition Law in India',
+        'desc': 'Cartels, anti-competitive agreements, abuse of dominance and CCI '
+                'merger control — thresholds, penalties and landmark cases.',
+        'intro': [
+            "The Competition Act treats some agreements as presumed harmful and others "
+            "on their effects, and it reaches conduct that never looks like wrongdoing "
+            "from the inside — a pricing conversation between competitors, a distribution "
+            "term, a deal closed before approval came through.",
+            "These guides cover what the CCI can act against, the thresholds that force "
+            "you to notify a transaction, and penalties that now reach ten per cent of "
+            "global turnover.",
+        ],
+    },
+    'updates': {
+        'slug': 'updates-and-amendments',
+        'h1': 'Legal Updates & Amendments',
+        'desc': 'New Indian laws and what changed — the DPDP Act, the BNS/BNSS/BSA '
+                'criminal codes, and the deadlines attached to each.',
+        'intro': [
+            "India has replaced or rewritten a remarkable amount of law in a short "
+            "period: the criminal codes, the data protection regime, the labour statutes. "
+            "Each came with transition deadlines that are easy to miss.",
+            "These guides track what actually changed, when each obligation starts to "
+            "bite, and what you have to do differently — not the press release version, "
+            "the compliance version.",
+        ],
+    },
+}
+
+# Reverse lookup for the /topic/<slug> route.
+TOPIC_BY_SLUG = {t['slug']: cat for cat, t in TOPICS.items()}
+
 # ─── Free Legal Document Templates ───────────────────────────────────────────
 # Each template: slug, icon, title, desc, [tags], blocks.
 # Blocks are (kind, text) - kind ∈ {heading, subheading, para, bullet, spacer}.

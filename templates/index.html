@@ -100,7 +100,7 @@
         <span class="blog-tag">{{ art['act'] or category_map.get(art['category'], '') }}</span>
       </div>
       <div class="blog-card-body">
-        <h3>{{ art['title'] }}</h3>
+        <h3><a href="{{ url_for('article', slug=art['slug']) }}" class="card-title-link">{{ art['title'] }}</a></h3>
         <div class="blog-card-foot">
           <span class="blog-meta">{{ icon('clock', 13) }} {{ art['read_time'] or '5 min' }}</span>
           <a href="{{ url_for('article', slug=art['slug']) }}" class="blog-link">Read {{ icon('arrow-right', 15) }}</a>
