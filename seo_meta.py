@@ -169,9 +169,6 @@ SEO_DESCRIPTIONS = {
     'input-tax-credit-gst':
         "Input tax credit under GST: the conditions you must meet, the blocked credits "
         "you cannot claim, and the mistakes that get ITC reversed.",
-    'insider-trading-penalties-case-studies':
-        "Insider trading penalties in India: Section 15G fines up to Rs 25 crore, "
-        "Section 24 imprisonment, disgorgement, and the landmark cases.",
     'ipo-sebi-icdr-eligibility-process':
         "IPO under SEBI ICDR 2018: the Reg 6(1) and 6(2) eligibility tests, promoter "
         "lock-in, investor quotas and the T+3 listing timeline.",
@@ -280,9 +277,6 @@ SEO_DESCRIPTIONS = {
     'what-is-gst':
         "What GST is and how it replaced excise, VAT, service tax and octroi. CGST, SGST "
         "and IGST explained simply, with what you actually end up paying.",
-    'what-is-upsi-regulation-2-1-n':
-        "What counts as UPSI under Regulation 2(1)(n), the 2025 amendment that expanded "
-        "the list from 5 items to 16, and the structured digital database.",
     'gig-platform-workers-rights-labour-codes':
         "Gig and platform workers are recognised in law from 21 November 2025. The "
         "aggregator levy, what benefits it funds, and why you must register yourself.",
@@ -518,15 +512,15 @@ INTERNAL_LINKS = {
 
     # ─── SEBI ───────────────────────────────────────────────────────────
     'further public offer': 'fpo-further-public-offer-explained',
-    'disgorgement': 'insider-trading-penalties-case-studies',
-    'section 15g': 'insider-trading-penalties-case-studies',
+    'disgorgement': 'sebi-pit-insider-trading-explained',
+    'section 15g': 'sebi-pit-insider-trading-explained',
     'icdr': 'ipo-sebi-icdr-eligibility-process',
     'regulation 9a': 'sebi-pit-compliance-solutions-founders-kmp',
     'pit regulations': 'sebi-pit-insider-trading-explained',
     'connected person': 'sebi-pit-insider-trading-explained',
     'takeover code': 'sebi-sast-takeover-code-open-offer',
     'open offer': 'sebi-sast-takeover-code-open-offer',
-    'upsi': 'what-is-upsi-regulation-2-1-n',
+    'upsi': 'sebi-pit-insider-trading-explained',
 
     # ─── Tax ────────────────────────────────────────────────────────────
     'gstr-1': 'gst-returns-explained',
@@ -631,6 +625,11 @@ RETIRED_ARTICLES = {
     # deletes the row outright) left these seven URLs returning 404. Any link or
     # index entry pointing at them has been dropped on the floor ever since;
     # sending them to their replacement recovers it.
+    # Merged Aug 2026 into the PIT pillar: all three covered the same ground,
+    # and the pillar was going to win every query the spokes targeted.
+    'what-is-upsi-regulation-2-1-n': 'sebi-pit-insider-trading-explained',
+    'insider-trading-penalties-case-studies': 'sebi-pit-insider-trading-explained',
+
     # Retired Aug 2026: led with a filing deadline that has since passed.
     # DPT-3 recurs annually, so the content is kept for a refreshed version.
     'dpt-3-fy-2025-26': 'annual-compliance-companies',

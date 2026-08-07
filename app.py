@@ -364,7 +364,9 @@ def autolink(content, current_slug='', limit=8):
     so the result reads like an editor added it rather than a machine."""
     if not content:
         return content
-    used = set()
+    # Targets an editor already linked by hand count against the budget, so a
+    # manually-linked article never picks up a second link to the same page.
+    used = set(re.findall(r'href="/article/([a-z0-9\-]+)"', content))
 
     def _link_text(text):
         def repl(m):

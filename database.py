@@ -131,7 +131,7 @@ def init_db():
 # `git push` + restart — there is no separate migration runner. PRAGMA
 # user_version makes each block run exactly once, so an article the owner later
 # edits through the admin UI is never silently overwritten on the next restart.
-_SCHEMA_VERSION = 3
+_SCHEMA_VERSION = 4
 
 
 def _apply_content_migrations(c):
@@ -207,6 +207,63 @@ def _apply_content_migrations(c):
         # DPT-3 itself recurs annually, so the content is unpublished rather than
         # deleted and can go back up with fresh dates next season.
         c.execute("UPDATE articles SET published = 0 WHERE slug = 'dpt-3-fy-2025-26'")
+        c.execute('PRAGMA user_version = 3')
+
+    if version < 4:
+        # Duplication found by crawling production, not by reading the source.
+        import re as _re
+        import article_rewrites as AR
+
+        # 4a. Three SEBI insider-trading articles competed for the same queries:
+        #     the pillar carried a UPSI section and a penalties section that were
+        #     the whole subject of two spokes (~40% term overlap each). Merged
+        #     into one authoritative page; the spokes 301 via RETIRED_ARTICLES.
+        c.execute('UPDATE articles SET title = ?, summary = ?, content = ? WHERE slug = ?',
+                  (AR.PIT_MERGED_TITLE, AR.PIT_MERGED_SUMMARY, AR.PIT_MERGED_CONTENT,
+                   'sebi-pit-insider-trading-explained'))
+        for slug in ('what-is-upsi-regulation-2-1-n', 'insider-trading-penalties-case-studies'):
+            c.execute('UPDATE articles SET published = 0 WHERE slug = ?', (slug,))
+
+        # 4b. The DPDP guide's timeline section and the dedicated timeline
+        #     article said the same thing with the same dates — the highest
+        #     overlap on the site. The guide now orients and links onward.
+        row = c.execute("SELECT content FROM articles WHERE slug = 'dpdp-act-compliance-guide'").fetchone()
+        if row and AR.DPDP_TIMELINE_OLD_MARKER in row[0]:
+            start = row[0].index(AR.DPDP_TIMELINE_OLD_MARKER)
+            nxt = row[0].find('<h2', start + len(AR.DPDP_TIMELINE_OLD_MARKER))
+            end = nxt if nxt != -1 else len(row[0])
+            c.execute("UPDATE articles SET content = ? WHERE slug = 'dpdp-act-compliance-guide'",
+                      (row[0][:start] + AR.DPDP_TIMELINE_NEW + row[0][end:],))
+
+        # 4c. The cheque-bounce guide carried a trailing block repeating two
+        #     earlier sections, as though two drafts had been concatenated. The
+        #     later wording was legally fuller, so it is folded into the section
+        #     that sits in the right place, and the trailing block is dropped.
+        row = c.execute("SELECT content FROM articles WHERE slug = 'cheque-bounce-section-138-ni-act'").fetchone()
+        if row:
+            body = row[0]
+            heading = '<h2>What the complainant must prove</h2>'
+            first = body.find(heading)
+            second = body.find(heading, first + 1)
+            if first != -1 and second != -1:
+                # Keep the fuller later wording, in the earlier position.
+                better = _re.search(
+                    _re.escape(heading) + r'(.*?)(?=<h2)', body[second:], _re.S).group(1)
+                f_end = body.find('<h2', first + len(heading))
+                # The offence being compoundable appears only in the trailing block.
+                body = (body[:first] + heading + better + body[f_end:])
+                second = body.find(heading, body.find(heading) + 1)
+                tail_end = body.find('<h2>Key takeaways</h2>', second)
+                if second != -1 and tail_end != -1:
+                    body = body[:second] + body[tail_end:]
+                body = body.replace(
+                    'or a fine up to <strong>twice the cheque amount</strong>, or both.',
+                    'or a fine up to <strong>twice the cheque amount</strong>, or both. '
+                    'The offence is <strong>compoundable</strong> — the parties can settle at '
+                    'any stage, which is how a large share of these cases actually end.')
+                c.execute("UPDATE articles SET content = ? WHERE slug = 'cheque-bounce-section-138-ni-act'",
+                          (body,))
+
         c.execute(f'PRAGMA user_version = {_SCHEMA_VERSION}')
 
 
