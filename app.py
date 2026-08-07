@@ -3,13 +3,14 @@ import re
 import sqlite3
 import base64
 import hmac
+import time
 from io import BytesIO
 from datetime import date
 from functools import wraps, lru_cache
 from flask import (Flask, render_template, request, redirect, url_for,
                    session, flash, jsonify, send_from_directory, send_file, abort)
 from flask_mail import Mail, Message
-from itsdangerous import URLSafeSerializer, BadSignature
+from itsdangerous import URLSafeSerializer, URLSafeTimedSerializer, BadSignature, SignatureExpired
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -185,6 +186,79 @@ def unsubscribe_url(email):
     """Absolute, signed unsubscribe link for inclusion in outgoing emails."""
     token = _unsub_serializer.dumps(email)
     return f'{SITE_URL}{url_for("unsubscribe")}?token={token}'
+
+
+# ─── Public-form abuse defence ───────────────────────────────────────────────
+# A form-spam campaign ("RobertMom" — short "what is your price" messages in
+# rotating languages) put 3,300 entries through /contact over nine days in Aug
+# 2026 from two IPs in 80.94.95.0/24. It beat the honeypot and CSRF by loading
+# the real page first and filling only the visible fields, and never tripped
+# the old "6 per minute" cap because it paced itself at about one a minute.
+#
+# The damage was not the noise: every message also sent an acknowledgement
+# email to the attacker-supplied address, so the site emitted ~3,300 unsolicited
+# emails to ~390 harvested third-party addresses. That is backscatter, and it
+# puts the sending domain's reputation (and the newsletter) at risk.
+#
+# Three independent layers below, because any one of them can be worked around:
+#   1. a dwell-time token — the form must have been open for a few seconds,
+#   2. a hard per-IP rate limit on the route itself,
+#   3. content heuristics for the payloads bots actually send.
+_form_serializer = URLSafeTimedSerializer(app.secret_key, salt='lm-form')
+
+MIN_FORM_SECONDS = 3        # humans never submit faster than this
+MAX_FORM_SECONDS = 60 * 60 * 6   # a stale tab shouldn't hard-fail either
+
+
+def form_token():
+    """Signed 'this form was rendered now' token, exposed to templates."""
+    return _form_serializer.dumps('f')
+
+
+def form_token_ok(token):
+    """True when the token is ours and the form was open long enough."""
+    if not token:
+        return False
+    try:
+        _form_serializer.loads(token, max_age=MAX_FORM_SECONDS)
+    except (BadSignature, SignatureExpired):
+        return False
+    try:
+        age = time.time() - _form_serializer.loads(token, max_age=MAX_FORM_SECONDS,
+                                                  return_timestamp=True)[1].timestamp()
+    except Exception:
+        return False
+    return age >= MIN_FORM_SECONDS
+
+
+_SPAM_MARKERS = (
+    'know your price', 'knew your price', 'wanted to know your price',
+    'vestri pretium', 'tuo prezzo', 'kumukūʻai', 'din pris', 'su precio',
+    'ihren preis', 'votre prix', 'вашу цену',
+)
+_URL_RE = re.compile(r'(https?://|www\.|\[url|<a\s+href)', re.I)
+
+
+def looks_like_spam(name, email, query):
+    """Cheap content heuristics for the payloads bots actually send.
+
+    Deliberately narrow — a false positive here silently drops a real person's
+    message, which is far worse than letting one spam entry through.
+    """
+    blob = f'{name} {query}'.lower()
+    if _URL_RE.search(query or ''):
+        return True                      # contact form has no reason to carry links
+    if any(m in blob for m in _SPAM_MARKERS):
+        return True
+    # Deliberately NOT matching run-together capitalised names ("RobertMom").
+    # It looks like a clean signature until you remember McDonald, MacLeod,
+    # DeSouza and D'Souza are real surnames — that rule silently binned real
+    # enquiries. The dwell-time token and the per-IP cap already cover the
+    # generic case; this function only needs to catch obvious payloads.
+    return False
+
+
+app.jinja_env.globals['form_token'] = form_token
 
 
 # ─── Branded transactional email ─────────────────────────────────────────────
@@ -1028,15 +1102,27 @@ def search():
 # ─── Form / API Endpoints ─────────────────────────────────────────────────────
 
 @app.route('/contact', methods=['POST'])
-@limiter.limit('6 per minute')
+@limiter.limit('3 per hour; 10 per day')
 def contact():
+    # Every rejection below returns the same success payload a real submission
+    # gets. Telling a bot which check caught it just helps it adapt.
+    ok = jsonify({'success': True, 'message': 'Your query has been submitted successfully!'})
+
     # Honeypot: real users never fill the hidden "website" field; bots do.
     if request.form.get('website', '').strip():
-        return jsonify({'success': True, 'message': 'Your query has been submitted successfully!'})
+        return ok
+
+    # Dwell time: the form must have been rendered a few seconds ago. Scripted
+    # posts either omit the token or replay one far too fast.
+    if not form_token_ok(request.form.get('ft', '')):
+        return ok
 
     name = request.form.get('name', '').strip()
     email = request.form.get('email', '').strip()
     query = request.form.get('query', '').strip()
+
+    if looks_like_spam(name, email, query):
+        return ok
 
     errors = {}
     if not name:

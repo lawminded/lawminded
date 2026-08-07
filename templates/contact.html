@@ -42,6 +42,9 @@
     <form class="contact-form" id="contactForm" action="{{ url_for('contact') }}" method="post" onsubmit="submitForm();return false;" novalidate>
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <input type="text" id="fhp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" class="hp-field">
+      {# Signed render-time stamp; the POST handler rejects submissions that come
+         back faster than a human could type. See looks_like_spam in app.py. #}
+      <input type="hidden" name="ft" value="{{ form_token() }}">
       <div class="form-group">
         <label for="fname">Full Name <span class="req">*</span></label>
         <input type="text" id="fname" name="name" placeholder="Your full name" autocomplete="name">

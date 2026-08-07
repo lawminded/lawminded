@@ -177,11 +177,13 @@ function submitForm() {
   if (errorEl) errorEl.classList.remove('show');
 
   const hp = document.getElementById('fhp');
+  const ft = document.querySelector('#contactForm input[name="ft"]');
   const fd = new FormData();
   fd.append('name', n.value.trim());
   fd.append('email', e.value.trim());
   fd.append('query', q.value.trim());
   fd.append('website', hp ? hp.value : '');
+  fd.append('ft', ft ? ft.value : '');   // dwell-time token; server rejects without it
 
   fetch('/contact', { method: 'POST', body: fd, headers: csrfHeaders() })
     .then(r => r.json())
