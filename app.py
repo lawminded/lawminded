@@ -377,15 +377,29 @@ def seotitle(article, brand=' - Law Minded', maxlen=60):
     if not title:
         raw = ' '.join(_get(article, 'title').split())
         title = raw
-        if ':' in raw:
-            lead = raw.split(':', 1)[0].strip()
-            if 12 <= len(lead) <= maxlen:
-                title = lead
+        # Do NOT reduce the title to the text before the colon. That rule used
+        # to fire on 113 of 126 articles, and on this site the part after the
+        # colon is where the statute reference lives — "Appointment of KMP:
+        # Section 203 Thresholds" rendered as just "Appointment of KMP".
+        # Search Console for Aug 2026 shows the section numbers are precisely
+        # what people search ("section 203 of companies act 2013", "section 68",
+        # "62(1)(a)"), so dropping them removed the strongest on-page signal
+        # from the one tag that carries the most weight. Trim on a word
+        # boundary instead and keep as much of the reference as fits.
         if len(title) > maxlen:
             cut = title[:maxlen]
             if ' ' in cut:
                 cut = cut[:cut.rindex(' ')]
-            title = cut.rstrip(' ,;:-–—')
+            title = cut.rstrip(' ,;:-–—&')
+            # Drop a dangling connector so the title doesn't read as cut off
+            # mid-phrase ("… Section 63 Sources, Conditions &").
+            while True:
+                head, _, last = title.rpartition(' ')
+                if head and last.lower() in ('and', 'the', 'a', 'an', 'of', 'for',
+                                             'in', 'on', 'to', 'with', '&'):
+                    title = head.rstrip(' ,;:-–—&')
+                    continue
+                break
     if brand and len(title) + len(brand) <= maxlen:
         return title + brand
     return title
