@@ -323,6 +323,26 @@ SEO_DESCRIPTIONS = {
 #   * longer phrases win over shorter overlapping ones ("GST registration"
 #     beats "GST"), so both can coexist.
 INTERNAL_LINKS = {
+    # Added Aug 2026 after the Search Console page report: these five guides
+    # were earning impressions (how-to-terminate-a-contract at position 9.9,
+    # how-to-make-a-valid-will at 20.9) while receiving zero in-body links from
+    # anywhere on the site. They already had entries here, but the phrases were
+    # ones no other article happens to use, so autolink never fired for them.
+    # Each phrase below was checked to occur in at least one other guide.
+    #
+    # Deliberately excluded: 'will' (appears in 47 articles, almost always the
+    # auxiliary verb — linking "the company will file" to a will-drafting guide
+    # would be worse than no link) and 'dividend' (too generic, and the only
+    # phrase that actually occurs for the IEPF guide; a forced link there would
+    # be link-building for its own sake).
+    'breach of contract': 'how-to-terminate-a-contract',
+    'probate': 'how-to-make-a-valid-will',
+    'legal heir': 'how-to-make-a-valid-will',
+    'tenancy': 'lease-vs-leave-and-licence',
+    'licence agreement': 'lease-vs-leave-and-licence',
+    'wrongful termination': 'employee-rights-how-to-enforce',
+    'industrial dispute': 'employee-rights-how-to-enforce',
+
     # ─── Corporate compliance ───────────────────────────────────────────
     'alteration of moa': 'alteration-of-moa-aoa-section-13-14',
     'moa and aoa': 'alteration-of-moa-aoa-section-13-14',
