@@ -390,7 +390,8 @@ INTERNAL_LINKS = {
     'unpaid dividend': 'dividend-declaration-iepf-compliance',
     'dormant company': 'dormant-company-section-455',
     'section 455': 'dormant-company-section-455',
-    'dpt-3': 'annual-compliance-companies',
+    'dpt-3': 'dpt-3-return-filing',
+    'return of deposits': 'dpt-3-return-filing',
     'minute book': 'drafting-maintaining-minutes-section-118',
     'section 118': 'drafting-maintaining-minutes-section-118',
     'esop': 'esops-sweat-equity-shares',
@@ -650,9 +651,11 @@ RETIRED_ARTICLES = {
     'what-is-upsi-regulation-2-1-n': 'sebi-pit-insider-trading-explained',
     'insider-trading-penalties-case-studies': 'sebi-pit-insider-trading-explained',
 
-    # Retired Aug 2026: led with a filing deadline that has since passed.
-    # DPT-3 recurs annually, so the content is kept for a refreshed version.
-    'dpt-3-fy-2025-26': 'annual-compliance-companies',
+    # Was retired Aug 2026 when its 31 July deadline passed, then rewritten as
+    # the evergreen annual guide and republished at a slug that is not locked to
+    # one financial year. The old URL points at the successor, not at the
+    # generic compliance page it was parked on.
+    'dpt-3-fy-2025-26': 'dpt-3-return-filing',
 
     'rti-act': 'right-to-information-act-guide',
     'rti-complete-guide': 'right-to-information-act-guide',

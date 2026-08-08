@@ -146,7 +146,7 @@ def apply_content_migrations():
 # `git push` + restart — there is no separate migration runner. PRAGMA
 # user_version makes each block run exactly once, so an article the owner later
 # edits through the admin UI is never silently overwritten on the next restart.
-_SCHEMA_VERSION = 5
+_SCHEMA_VERSION = 6
 
 
 # ─── Real publication dates ──────────────────────────────────────────────────
@@ -308,6 +308,13 @@ def _touch(c, *slugs):
     metadata-only changes: an inflated dateModified is worse than a stale one,
     and Google's helpful-content guidance names faked date freshness as a
     warning sign.
+
+    CAUTION: CURRENT_TIMESTAMP is UTC, while every other date in this table is
+    IST wall-clock (see PUBLISH_SCHEDULE, which stores 09:30 local). For an
+    article published earlier that gap is invisible, but if you touch a row
+    whose created_at you are also setting in the same migration, write both
+    dates explicitly instead — otherwise updated_at can land before created_at
+    and the Article schema ends up with dateModified < datePublished.
     """
     c.executemany('UPDATE articles SET updated_at = CURRENT_TIMESTAMP WHERE slug = ?',
                   [(s,) for s in slugs])
@@ -461,6 +468,27 @@ def _apply_content_migrations(c):
             c.execute(
                 'UPDATE articles SET created_at = ?, updated_at = ? WHERE slug = ?',
                 (f'{day} 09:30:00', f'{day} 09:30:00', slug))
+
+        c.execute('PRAGMA user_version = 5')
+
+    if version < 6:
+        # DPT-3 back in print as an evergreen guide (see article_rewrites).
+        # Migration 3 unpublished it when the 31 July 2026 deadline passed, but
+        # the filing recurs annually and the page was ranking at position 8.8 —
+        # the content just needed to stop being written around one season.
+        import article_rewrites as _AR
+        c.execute(
+            'UPDATE articles SET slug=?, title=?, summary=?, content=?, published=1, '
+            'read_time=? WHERE slug=?',
+            (_AR.DPT3_SLUG, _AR.DPT3_TITLE, _AR.DPT3_SUMMARY, _AR.DPT3_CONTENT,
+             '12 min read', 'dpt-3-fy-2025-26'))
+        # Republished today. Both dates are set explicitly rather than via
+        # _touch(): _touch uses SQLite CURRENT_TIMESTAMP, which is UTC, while
+        # every other date in this table is IST wall-clock. Mixing them here
+        # produced an updated_at 60 minutes *before* created_at, i.e. a
+        # dateModified earlier than datePublished in the Article schema.
+        c.execute('UPDATE articles SET created_at = ?, updated_at = ? WHERE slug = ?',
+                  ('2026-08-08 09:30:00', '2026-08-08 09:30:00', _AR.DPT3_SLUG))
 
         c.execute(f'PRAGMA user_version = {_SCHEMA_VERSION}')
 
