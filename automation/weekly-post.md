@@ -78,6 +78,24 @@ or procedure with no article yet — and say in your summary that this is what y
 
 ## 4. Write it
 
+**Invoke the `anthropic-skills:humanizer` skill before you draft, and follow it.**
+This is not optional and it is not a polish pass at the end. Everything on this
+site is published under a named human author, and prose carrying the usual LLM
+tells damages the site's credibility and its standing with search engines far more
+than a missed week would. Draft inside the skill's constraints, then revise
+against them again once the article is complete.
+
+The tells that show up most in this subject matter, so watch for them by name:
+
+- "It's important to note that", "It's worth noting", "plays a crucial role"
+- Sentences that close on trailing "-ing" analysis — "…, ensuring compliance",
+  "…, highlighting the need for vigilance", "…, underscoring the importance"
+- Rule-of-three lists where two items would do
+- "Not only… but also", "In today's fast-paced regulatory environment"
+- Every paragraph the same length; every section the same shape
+- Hedging that says nothing: "may potentially", "could possibly", "generally tends to"
+- A concluding paragraph that restates the article instead of ending it
+
 Match the newer articles (`blog_seed4.py` onward), not the oldest ones.
 
 - 1,200–1,800 words. Plain English. Explain the thing, don't perform expertise.
@@ -88,15 +106,28 @@ Match the newer articles (`blog_seed4.py` onward), not the oldest ones.
 - `<h2>` sections. Real examples with real numbers. A "Common mistakes" list where
   it fits. **Close on the FAQ** — no "Key takeaways" section; that pattern was
   dropped.
-- Vary sentence length. No filler about significance. Do not end paragraphs with
-  trailing "-ing" analysis ("…, highlighting the importance of compliance"). Do not
-  use em dashes as a tic. Write the way the existing articles read.
+
+- Vary sentence length. No filler about significance. Do not use em dashes as a
+  tic. Write the way the existing articles read.
 - Where the reader's next question is answered by an existing article, link to it
   in the body with a normal `<a href="/article/other-slug">`.
 
 Categories: `corp`, `labour`, `contracts`, `tax`, `property`, `consumer`, `acts`,
 `updates`. `corp` is heavily over-represented — prefer a thinner category when the
 subject honestly fits one.
+
+**The FAQ has one exact shape**, because `faqs()` in app.py parses it with a regex
+to build the FAQPage schema. Deviate and the schema silently emits nothing:
+
+```html
+<h2>Frequently asked questions</h2>
+<p><strong>Does a dormant company still have to file?</strong> Yes. The duty…</p>
+<p><strong>What happens if the DIN is deactivated?</strong> Reactivation costs…</p>
+```
+
+The heading must be "Frequently asked questions" (or "Common questions" / "FAQs"),
+each question must sit in `<strong>` inside a `<p>` and end in a question mark, and
+the answer must follow in the same `<p>`. No `<h3>` questions, no `<dl>`.
 
 ## 5. Wire it in
 
@@ -121,15 +152,41 @@ yours to fix in this run: report it in your summary and carry on. (Known one, if
 still unfixed: `/article/dpt-3-fy-2025-26 -> 301`, a retired slug that the seeder
 resurrects on restart. It is unrelated to any new article.)
 
-## 6. Hero image
+## 6. Review it for SEO and structured data
 
-1200×630 WebP at `static/img/articles/<slug>.webp`, via Gemini `gemini-2.5-flash-image`
-using `GEMINI_API_KEY` from `.env`, then Pillow `ImageOps.fit` → WebP q82. Match the
-existing article images: warm, editorial, no text baked in, no fake logos or seals.
-If the key is missing or the call fails, carry on without one — the site falls back
-gracefully — and mention it in your summary.
+Two skills, on the finished draft, before you push anything:
 
-## 7. Branch, push, stage
+**`seo-content`** — E-E-A-T, depth, readability, thin-content and AI-citation
+readiness. Act on what it finds. If it says the article is thin, the answer is a
+better article, not a longer one.
+
+**`seo-schema`** — verify the structured data the page will actually emit. The
+templates generate Article, BreadcrumbList and FAQPage automatically, so the job
+is confirming they come out valid and populated — in particular that FAQPage has
+real questions in it and did not silently come back empty because the FAQ markup
+drifted from the shape above.
+
+Google retired FAQ rich results in May 2026, so this is not about star ratings in
+the SERP. The markup still drives AI parsing and entity resolution, which is what
+now brings traffic. Keep emitting it.
+
+## 7. Hero image
+
+```
+python3 automation/gen_image.py <slug> "<what the photo shows>"
+```
+
+That script is the whole image step — Gemini `gemini-2.5-flash-image`, 16:9, then
+centre-cropped to the 1200×630 WebP the site expects. It carries the house style
+already, so your prompt argument only needs to describe the subject: a concrete
+scene tied to the article, no text or logos in the frame. Verified working against
+the live API.
+
+`GEMINI_API_KEY` comes from the main checkout's `.env`. If the call fails, carry on
+without an image — `_article_image_url` returns None and the page falls back
+gracefully — and say so in your summary.
+
+## 8. Branch, push, stage
 
 ```
 git checkout -b post/<slug>
@@ -155,7 +212,7 @@ and `sources` — the list of primary-source URLs you actually verified against.
 The script inserts it as `published=0`, so it stays invisible until approved, and
 returns the signed preview link.
 
-## 8. Leave a record
+## 9. Leave a record
 
 Append to `REVIEW-BEFORE-PUBLISH.md` on the branch: the article, each claim you
 verified, and the source you verified it against. When someone asks in two years

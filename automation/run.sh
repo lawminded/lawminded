@@ -31,9 +31,11 @@ export PATH="/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin"
   git checkout main
   git pull --ff-only
 
+  # Skill must be in the list or the humanizer / seo-content / seo-schema steps
+  # in the prompt silently do nothing.
   claude -p "$(cat "$PROMPT")" \
     --permission-mode acceptEdits \
-    --allowedTools 'Read,Write,Edit,Glob,Grep,WebSearch,WebFetch,Bash'
+    --allowedTools 'Read,Write,Edit,Glob,Grep,WebSearch,WebFetch,Bash,Skill'
 
   echo "=== exit $? at $(date '+%H:%M:%S') ==="
 } >>"$LOG" 2>&1
