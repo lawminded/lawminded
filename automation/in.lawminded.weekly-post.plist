@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Law Minded weekly post. Install with:
+
+    cp automation/in.lawminded.weekly-post.plist ~/Library/LaunchAgents/
+    launchctl load ~/Library/LaunchAgents/in.lawminded.weekly-post.plist
+
+  Fires Friday, Saturday and Sunday at 07:20. launchd runs a missed job when the
+  Mac next wakes, so a closed laptop delays a draft rather than losing one.
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>in.lawminded.weekly-post</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>/Users/piyush_kundnani/LAW Minded-Claude/lawminded-v3/automation/run.sh</string>
+  </array>
+
+  <key>StartCalendarInterval</key>
+  <array>
+    <dict><key>Weekday</key><integer>5</integer><key>Hour</key><integer>7</integer><key>Minute</key><integer>20</integer></dict>
+    <dict><key>Weekday</key><integer>6</integer><key>Hour</key><integer>7</integer><key>Minute</key><integer>20</integer></dict>
+    <dict><key>Weekday</key><integer>0</integer><key>Hour</key><integer>7</integer><key>Minute</key><integer>20</integer></dict>
+  </array>
+
+  <key>RunAtLoad</key>
+  <false/>
+
+  <key>StandardErrorPath</key>
+  <string>/Users/piyush_kundnani/LAW Minded-Claude/lawminded-v3/automation/logs/launchd.err</string>
+</dict>
+</plist>

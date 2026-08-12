@@ -8,7 +8,7 @@
 <title>{% block title %}Law Minded · Where Complexity Meets Clarity{% endblock %}</title>
 <meta name="description" content="{% filter metadesc %}{% block meta_desc %}India's legal awareness platform: plain-English guides to corporate compliance, labour law, consumer rights and fundamental rights.{% endblock %}{% endfilter %}">
 <meta name="author" content="Law Minded">
-<meta name="robots" content="index, follow">
+<meta name="robots" content="{% block robots %}index, follow{% endblock %}">
 <meta name="theme-color" content="#E8A020">
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <link rel="canonical" href="{{ canonical_url }}">

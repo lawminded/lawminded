@@ -11,7 +11,17 @@ APP_DIR="$(dirname "$SCRIPT_DIR")"
 cd "$APP_DIR"
 
 echo "==> Pulling latest code…"
+BEFORE="$(git rev-parse HEAD)"
 git pull --ff-only
+
+# Safe to run on a schedule: with nothing new pulled there is nothing to restart.
+# An hourly cron entry means approved posts reach the server without anyone
+# SSHing in (the article itself is already live — this brings the seed file and
+# image that keep it alive across a database reset).
+if [ "$BEFORE" = "$(git rev-parse HEAD)" ] && [ "${1:-}" != "--force" ]; then
+  echo "✅ Already up to date — nothing to restart."
+  exit 0
+fi
 
 echo "==> Updating dependencies…"
 ./venv/bin/pip install -r requirements.txt

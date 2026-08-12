@@ -188,6 +188,17 @@ def unsubscribe_url(email):
     return f'{SITE_URL}{url_for("unsubscribe")}?token={token}'
 
 
+# Same idea for the weekly draft-approval links sent to Telegram. The scheduled
+# writer inserts an article as published=0 (already invisible to /article) and
+# messages a signed preview link; approving it is a POST from that page.
+_draft_serializer = URLSafeSerializer(app.secret_key, salt='lm-draft')
+
+
+def draft_url(slug):
+    """Absolute, signed preview link for an unpublished draft."""
+    return f'{SITE_URL}/draft/{slug}?t={_draft_serializer.dumps(slug)}'
+
+
 # ─── Public-form abuse defence ───────────────────────────────────────────────
 # A form-spam campaign ("RobertMom" — short "what is your price" messages in
 # rotating languages) put 3,300 entries through /contact over nine days in Aug
@@ -879,6 +890,62 @@ def article(slug):
     db.close()
     return render_template('article.html', article=row, related=related,
                            hero_image=_article_image_url(slug))
+
+
+# ─── Weekly draft: preview on a phone, publish with one tap ──────────────────
+# The scheduled writer (see automation/) inserts its article with
+# published=0, so /article already 404s it, then sends a signed link here. The
+# signature is the only credential: a leaked link can publish a draft we wrote
+# ourselves, which is a smaller risk than making the owner log into /admin on a
+# phone at 7am. Approval is a POST — Telegram fetches links to build previews,
+# and a GET that publishes would fire the moment the message rendered.
+def _load_draft(slug, token):
+    try:
+        if _draft_serializer.loads(token or '') != slug:
+            abort(404)
+    except BadSignature:
+        abort(404)
+    db = get_db()
+    row = db.execute(
+        'SELECT * FROM articles WHERE slug=? AND published=0', (slug,)
+    ).fetchone()
+    db.close()
+    if not row:
+        abort(404)
+    return row
+
+
+@app.route('/draft/<slug>')
+def draft_preview(slug):
+    token = request.args.get('t')
+    row = _load_draft(slug, token)
+    return render_template('article.html', article=row, related=[],
+                           hero_image=_article_image_url(slug),
+                           draft_token=token)
+
+
+@app.route('/draft/<slug>/publish', methods=['POST'])
+def draft_publish(slug):
+    row = _load_draft(slug, request.form.get('t'))
+    db = get_db()
+    # Stamp the publication date at approval time, not at draft time, so the
+    # date on the page is the date it actually went live.
+    db.execute('UPDATE articles SET published=1, created_at=CURRENT_TIMESTAMP, '
+               'updated_at=CURRENT_TIMESTAMP WHERE id=?', (row['id'],))
+    db.commit()
+    db.close()
+    return redirect(url_for('article', slug=slug))
+
+
+@app.route('/draft/<slug>/reject', methods=['POST'])
+def draft_reject(slug):
+    row = _load_draft(slug, request.form.get('t'))
+    db = get_db()
+    db.execute('DELETE FROM articles WHERE id=?', (row['id'],))
+    db.commit()
+    db.close()
+    flash('Draft rejected and removed.', 'success')
+    return redirect(url_for('index'))
 
 
 @app.route('/templates')

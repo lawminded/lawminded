@@ -3,6 +3,7 @@
 {% block title %}{{ article|seotitle }}{% endblock %}
 {% block meta_desc %}{{ seo_descriptions.get(article['slug']) or article['summary'] }}{% endblock %}
 {% block og_type %}article{% endblock %}
+{% block robots %}{% if draft_token %}noindex, nofollow{% else %}index, follow{% endif %}{% endblock %}
 {% block head_extra %}
 <script type="application/ld+json">
 {
@@ -44,6 +45,24 @@
 {% endblock %}
 
 {% block content %}
+{% if draft_token %}
+<div class="draft-bar">
+  <p><strong>Draft — not published.</strong> Read it through, then choose.</p>
+  <div class="draft-bar__actions">
+    <form method="POST" action="{{ url_for('draft_publish', slug=article['slug']) }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="t" value="{{ draft_token }}">
+      <button type="submit" class="btn-primary">Publish</button>
+    </form>
+    <form method="POST" action="{{ url_for('draft_reject', slug=article['slug']) }}"
+          onsubmit="return confirm('Delete this draft?');">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="t" value="{{ draft_token }}">
+      <button type="submit" class="btn-secondary">Reject</button>
+    </form>
+  </div>
+</div>
+{% endif %}
 <!-- Reading progress -->
 <div class="reading-progress" aria-hidden="true"><span id="readBar"></span></div>
 

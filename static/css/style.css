@@ -1031,3 +1031,23 @@ button .ic,a .ic,.offer-link .ic,.blog-link .ic{vertical-align:middle;}
    added — it inherits nothing from .article-meta. */
 .byline a{color:inherit;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px;}
 .byline a:hover{color:var(--gold-ink);}
+
+/* Draft approval bar — only ever rendered on /draft/<slug>, the signed preview
+   the weekly writer sends to Telegram. Sticky so the decision is one thumb
+   away from wherever you stopped reading on a phone. */
+.draft-bar{position:sticky;top:0;z-index:60;display:flex;flex-wrap:wrap;gap:12px;
+  align-items:center;justify-content:space-between;
+  background:var(--gold);color:var(--ink-on-gold);
+  padding:12px 18px;border-radius:var(--r-sm);margin-bottom:22px;
+  box-shadow:var(--shadow);}
+.draft-bar p{margin:0;font-family:var(--uf);font-size:.9rem;}
+.draft-bar__actions{display:flex;gap:10px;}
+.draft-bar__actions form{margin:0;}
+/* The bar stays gold in both themes, so its buttons must not follow the theme —
+   var(--charcoal) inverts to a light grey in dark mode and Publish disappears
+   into its own background. Fixed values here on purpose. */
+.draft-bar .btn-primary{background:#1a1a1a;color:#fff;padding:9px 20px;box-shadow:none;}
+.draft-bar .btn-primary:hover{background:#000;}
+.draft-bar .btn-secondary{background:transparent;color:#1a1a1a;
+  border-color:#1a1a1a;padding:9px 18px;}
+.draft-bar .btn-secondary:hover{background:rgba(0,0,0,.1);color:#1a1a1a;}
