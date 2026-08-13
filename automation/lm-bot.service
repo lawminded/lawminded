@@ -1,0 +1,25 @@
+# Telegram control channel for Law Minded.
+#
+#   sudo cp automation/lm-bot.service /etc/systemd/system/
+#   sudo systemctl enable --now lm-bot
+#   journalctl -u lm-bot -f
+#
+[Unit]
+Description=Law Minded Telegram control channel
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/lawminded
+ExecStart=/usr/bin/python3 /home/ubuntu/lawminded/automation/telegram_bot.py
+# npm's global bin holds `claude`; systemd's default PATH does not include it.
+Environment=PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+Restart=always
+RestartSec=15
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
