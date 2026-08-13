@@ -12,6 +12,26 @@ cd "$APP_DIR"
 
 echo "==> Pulling latest code…"
 BEFORE="$(git rev-parse HEAD)"
+
+# Staging a draft scp's its hero image here as an untracked file so the preview
+# looks like the real page. When the approved branch later merges, git refuses to
+# pull because that same path arrives tracked. Drop our copy first, but only when
+# it is byte-identical to the incoming one — a difference means something we did
+# not expect, and it should stop the deploy rather than be quietly overwritten.
+git fetch -q origin
+for f in $(git diff --name-only HEAD origin/main -- static/img/articles/ 2>/dev/null); do
+  [ -f "$f" ] || continue
+  git ls-files --error-unmatch "$f" >/dev/null 2>&1 && continue   # already tracked
+  if [ "$(sha256sum < "$f")" = "$(git show "origin/main:$f" | sha256sum)" ]; then
+    echo "    dropping identical untracked $f"
+    rm -f "$f"
+  else
+    echo "    ⚠ untracked $f differs from the incoming version — not touching it."
+    echo "      Resolve by hand, then re-run."
+    exit 1
+  fi
+done
+
 git pull --ff-only
 
 # Safe to run on a schedule: with nothing new pulled there is nothing to restart.
