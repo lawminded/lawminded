@@ -16,8 +16,10 @@ Server: `ssh -i ~/Downloads/ssh-key-2026-06-27.key ubuntu@161.118.176.94`
 Each pending draft has a branch `post/<slug>`. The live database is the record of
 what the owner decided, so ask it rather than keeping state:
 
+The server has no `sqlite3` command — query it through Python instead:
+
 ```
-ssh … "sqlite3 ~/lawminded-data/lawminded.db \"SELECT slug, published FROM articles WHERE slug='<slug>'\""
+ssh … "python3 -c \"import sqlite3; print(sqlite3.connect('/home/ubuntu/lawminded-data/lawminded.db').execute('SELECT slug, published FROM articles WHERE slug=?', ('<slug>',)).fetchall())\""
 ```
 
 For every `post/*` branch:
