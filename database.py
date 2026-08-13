@@ -550,6 +550,7 @@ RETIRED_SLUGS = {
     'gst-registration-thresholds-composition',        # -> gst-registration
     'trademark-registration-india-guide',             # -> trademark-registration
     'llp-compliance-calendar',                        # -> annual-compliance-llps
+    'dpt-3-fy-2025-26',                               # -> dpt-3-return-filing
 }
 
 
@@ -1340,6 +1341,21 @@ def seed_articles():
     try:
         from blog_seed6 import BLOG_ARTICLES_6
         articles = articles + list(BLOG_ARTICLES_6)
+    except Exception:
+        pass
+
+    # DPT-3 is seeded from article_rewrites rather than blog_seed3, because the
+    # evergreen rewrite (migration 6) is the current text and the old seed tuple
+    # was a stale copy under the retired slug. Keeping one source stops the two
+    # drifting, and stops the retired slug reappearing: seed_articles runs on
+    # every boot, migrations only once, so a slug the migration renamed away
+    # left a gap here that got refilled on the next restart.
+    try:
+        import article_rewrites as _AR
+        articles = articles + [
+            (_AR.DPT3_TITLE, _AR.DPT3_SLUG, 'corp', 'Companies Act 2013',
+             '12 min read', _AR.DPT3_SUMMARY, _AR.DPT3_CONTENT)
+        ]
     except Exception:
         pass
 
