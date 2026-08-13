@@ -1344,7 +1344,8 @@ def seed_articles():
     except Exception:
         pass
 
-    # Weekly news-driven article, 13 Aug 2026 (into blog_seed7.py).
+    # Weekly news-driven article plus one owner-requested gap-fill, 13 Aug 2026
+    # (into blog_seed7.py).
     try:
         from blog_seed7 import BLOG_ARTICLES_7
         articles = articles + list(BLOG_ARTICLES_7)
