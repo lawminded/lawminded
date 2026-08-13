@@ -82,8 +82,10 @@ or procedure with no article yet — and say in your summary that this is what y
 
 ## 4. Write it
 
-**Invoke the `anthropic-skills:humanizer` skill before you draft, and follow it.**
-This is not optional and it is not a polish pass at the end. Everything on this
+**Invoke the `humanizer` skill before you draft, and follow it.**
+This is not optional and it is not a polish pass at the end. If the skill does
+not load, stop and say so in your summary rather than approximating it from the
+list below — the first run did exactly that and the article had to be redone. Everything on this
 site is published under a named human author, and prose carrying the usual LLM
 tells damages the site's credibility and its standing with search engines far more
 than a missed week would. Draft inside the skill's constraints, then revise
