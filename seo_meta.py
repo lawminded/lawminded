@@ -121,6 +121,9 @@ SEO_DESCRIPTIONS = {
     'esops-sweat-equity-shares':
         "ESOPs under Section 62(1)(b) and sweat equity under Section 54: the special "
         "resolution, one-year vesting, who is eligible, and the limits.",
+    'eway-bill-ship-to-gstin-mandatory-2026':
+        "Ship-to GSTIN is now mandatory on e-way bills for Bill-to/Ship-to transactions "
+        "from 1 August 2026, and what gets your e-way bill rejected.",
     'fdi-reporting-fc-gpr-fc-trs-fla-compliance':
         "FDI reporting deadlines: FC-GPR in 30 days, FC-TRS in 60, FLA by 15 July, APR "
         "by 31 December, and the Late Submission Fee that cures a miss.",
@@ -550,6 +553,8 @@ INTERNAL_LINKS = {
     'presumptive taxation': 'income-tax-freelancers',
     'input tax credit': 'input-tax-credit-gst',
     'tds': 'tds-compliance-guide',
+    'e-way bill': 'eway-bill-ship-to-gstin-mandatory-2026',
+    'ship-to gstin': 'eway-bill-ship-to-gstin-mandatory-2026',
 
     # ─── Updates ────────────────────────────────────────────────────────
     'new criminal laws': 'bns-bnss-bsa-new-criminal-laws',

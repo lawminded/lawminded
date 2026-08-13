@@ -58,3 +58,26 @@ Revisit once it is actually notified.
 None of the eight has a hero image, so each falls back to the logo for `og:image`
 while every older article has a 1200x630 WebP. Generating them costs a few rupees
 through the Gemini key in the local `.env`.
+
+## blog_seed7.py — one news article, 13 August 2026
+
+The site had no e-way bill article at all before this one, so nothing needed
+checking against existing content beyond confirming the gap.
+
+| Claim verified | Source | Result |
+|---|---|---|
+| Ship-to GSTIN mandatory for Bill-to/Ship-to e-way bills | GSTN Advisory dated **20.05.2026** (referenced and superseded by the 17.06 advisory below) | Confirmed via secondary corroboration (TaxGuru, CAclubindia, LiveLaw) — the 20 May PDF itself was not directly fetched, but its content is quoted and dated inside the 17 June advisory, which was fetched directly |
+| Requirement extended to e-Invoice API, e-Way Bill by IRN API and a new EWB Closure API | **GSTN Advisory dated 17.06.2026**, "Advisory on e-Invoice API and e-Way Bill by IRN API changes for mandatory capture of Ship-to GSTIN and Voluntary Closure of eWay Bill" | Confirmed — fetched the actual PDF directly from `tutorial.gst.gov.in/downloads/news/advisory_einvoice_api_ewb_by_irn_approved.pdf` and read it page by page |
+| Production implementation date **1 August 2026** | Same GSTN PDF, Section 17 | Confirmed, stated verbatim in the source |
+| ShipDtls.Gstin conditionally mandatory (IRN+EWB together); Gstin field mandatory under ExpShipDtls (EWB by IRN) | Same GSTN PDF, Sections 3–4 | Confirmed, quoted field names verbatim |
+| URP used where Ship-to GSTIN unavailable | Same GSTN PDF, Section 6 | Confirmed |
+| Validation rules: valid GSTIN, Bill-to ≠ Ship-to, state code match, PIN code match; error codes 5001/5002/2323/2324/2325/4074/3039 | Same GSTN PDF, Sections 5, 7 | Confirmed, error codes quoted verbatim from the advisory's own tables |
+| Export EWB treatment (Ship details replaceable, URP allowed) and B2B/SEZ treatment (Ship details locked at IRN stage) | Same GSTN PDF, Sections 8–9 | Confirmed |
+| Voluntary EWB closure: who may close, EWB-wise/date-wise, portal + API (EWB number, closure date, remarks), no separate "Closed" status yet during the stabilisation period | Same GSTN PDF, Sections 10–15 | Confirmed |
+
+Not used: Section 129/130 CGST Act penalty figures (detention, ₹10,000 or tax
+amount, up to 200% of tax) were researched as background but left out of the
+final draft — they are unrelated to this specific advisory (they predate it and
+apply to e-way bill non-generation generally, not to this Ship-to GSTIN field),
+and including them risked implying a penalty consequence the advisory itself
+does not state.
