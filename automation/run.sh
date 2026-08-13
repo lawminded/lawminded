@@ -2,16 +2,15 @@
 # ============================================================================
 # Law Minded — write one article and stage it for approval.
 #
-# Fired by launchd on Friday, Saturday and Sunday morning; also runnable by
-# hand any time:   ./automation/run.sh
+# Runs on the OCI writer box (Ubuntu ARM) from cron, Fri/Sat/Sun; also runnable
+# by hand any time:   ./automation/run.sh
 #
-# Runs from the main checkout, not a worktree, because that is where .env with
-# GEMINI_API_KEY lives. Output goes to automation/logs/ so a failed
-# Friday can be read on Saturday.
+# Works on the Mac too — the repo path comes from wherever this script lives,
+# so nothing is hardcoded to one machine.
 # ============================================================================
 set -euo pipefail
 
-REPO="/Users/piyush_kundnani/LAW Minded-Claude/lawminded-v3"
+REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 LOGS="$REPO/automation/logs"
 PROMPT="$REPO/automation/weekly-post.md"
 
@@ -20,11 +19,19 @@ LOG="$LOGS/$(date +%Y-%m-%d-%H%M).log"
 
 cd "$REPO"
 
-# launchd hands over a near-empty PATH, so /usr/local/bin is not on it.
-export PATH="/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+# cron and launchd both hand over a near-empty PATH, so npm's global bin and
+# Homebrew are missing unless named explicitly.
+export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin:${HOME}/.local/bin"
+
+# The Claude auth token lives outside the repo so it never risks being commited.
+# Written by hand once with `claude setup-token`; absent on the Mac, which uses
+# its own interactive login instead.
+if [ -f "$HOME/.claude-writer.env" ]; then
+  set -a; . "$HOME/.claude-writer.env"; set +a
+fi
 
 {
-  echo "=== $(date '+%Y-%m-%d %H:%M:%S') — weekly post run ==="
+  echo "=== $(date '+%Y-%m-%d %H:%M:%S') — weekly post run on $(hostname) ==="
 
   # Start from current main. A leftover checkout on last week's branch would
   # otherwise have the run branching off a branch.

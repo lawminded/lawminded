@@ -7,7 +7,9 @@ Work in the repo you were started in. Never commit to `main` except in step 0.
 Never set `published=1` anywhere. Never edit the live database except through
 `deploy/stage_draft.py`.
 
-Server: `ssh -i ~/Downloads/ssh-key-2026-06-27.key ubuntu@161.118.176.94`
+Web server: `ssh ubuntu@161.118.176.94` — this box's key is already authorised
+there, so no `-i` flag is needed. That server runs the live site; it is not where
+you are.
 
 ---
 
@@ -198,7 +200,7 @@ git add -A && git commit && git push -u origin post/<slug>
 Copy the image to the server so the preview looks like the real page:
 
 ```
-scp -i ~/Downloads/ssh-key-2026-06-27.key static/img/articles/<slug>.webp \
+scp static/img/articles/<slug>.webp \
     ubuntu@161.118.176.94:~/lawminded/static/img/articles/
 ```
 
