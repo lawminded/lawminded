@@ -151,7 +151,17 @@ GOOGLE_SITE_VERIFICATION = os.getenv('GOOGLE_SITE_VERIFICATION', '')
 VALID_EMAIL_RE = re.compile(r'^[^\s@]+@[^\s@]+\.[^\s@]+$')
 
 # Public base URL of the live site (used for canonical tags, sitemap, OG, JSON-LD).
-SITE_URL = os.getenv('SITE_URL', 'https://lawminded.in').rstrip('/')
+#
+# This one constant decides the whole domain question. _force_canonical_host()
+# below derives CANONICAL_HOST from it and 301s every other lawminded hostname
+# here, so changing it flips the redirect direction, the canonical tags, the
+# sitemap URLs, OG and JSON-LD together — there is no second place to update.
+#
+# Moved to lawminded.co.in at the owner's instruction; lawminded.in now 301s
+# here. The TLS certificate already covers all four names (lawminded.in,
+# www.lawminded.in, lawminded.co.in, www.lawminded.co.in) and nginx already
+# serves them, so no certbot run is needed for the switch.
+SITE_URL = os.getenv('SITE_URL', 'https://lawminded.co.in').rstrip('/')
 
 # ── Named author (E-E-A-T) ──────────────────────────────────────────────────
 # Legal content is YMYL, where Google weights demonstrable, *named* authorship
