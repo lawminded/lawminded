@@ -181,6 +181,9 @@ SEO_DESCRIPTIONS = {
     'lease-vs-leave-and-licence':
         "Lease vs leave and licence: how the two differ in law, which to use, and why "
         "the wrong choice changes your rights over the property.",
+    'llp-capital-contribution-increase-reduction':
+        "Increase or reduce an LLP's capital contribution: the Form 3 filing, fees, and "
+        "the tax a payout to a partner can trigger.",
     'llp-registration':
         "Register an LLP in India step by step: DSC and DPIN, name reservation, FiLLiP, "
         "the LLP agreement, timelines, costs and annual compliance.",
@@ -410,6 +413,7 @@ INTERNAL_LINKS = {
     'independent directors': 'independent-directors-companies-act',
     'llp registration': 'llp-registration',
     'limited liability partnership': 'llp-registration',
+    'form 3': 'llp-capital-contribution-increase-reduction',
     'amalgamation': 'mergers-amalgamations-companies-act',
     'fast-track merger': 'mergers-amalgamations-companies-act',
     'msme-1': 'msme-1-half-yearly-return',
