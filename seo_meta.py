@@ -193,6 +193,9 @@ SEO_DESCRIPTIONS = {
     'msme-1-half-yearly-return':
         "MSME Form 1 reports payments to micro and small suppliers delayed past 45 days. "
         "Due 31 Oct and 30 Apr, with penalties up to Rs 3 lakh.",
+    'msme-development-amendment-bill-2026':
+        "Parliament passed the MSME Amendment Bill, 2026: a 50% payout guarantee, 90-day "
+        "dispute deadlines, mandatory TReDS for CPSEs. Not yet in force.",
     'msme-udyam-registration-guide':
         "Who qualifies as an MSME, how free Udyam registration works, and the real "
         "benefits: delayed-payment protection and collateral-free loans.",
@@ -413,6 +416,8 @@ INTERNAL_LINKS = {
     'msme form 1': 'msme-1-half-yearly-return',
     'msme registration': 'msme-udyam-registration-guide',
     'udyam registration': 'msme-udyam-registration-guide',
+    'msefc': 'msme-development-amendment-bill-2026',
+    'facilitation council': 'msme-development-amendment-bill-2026',
     'private placement': 'private-placement-section-42',
     'section 42': 'private-placement-section-42',
     'pas-4': 'private-placement-section-42',
