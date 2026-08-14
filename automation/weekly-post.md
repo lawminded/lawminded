@@ -35,6 +35,13 @@ For every `post/*` branch:
 
 ## 1. Find something genuinely new
 
+**Topic override.** Check whether `automation/next-topic.md` exists. If it does and
+today's date matches the date noted inside, write about the topic it specifies
+instead of searching for news (the verification bar in step 3 still applies in
+full). Delete `automation/next-topic.md` once you've used it, so it doesn't fire
+again next week. If the file exists but today doesn't match its date, leave it
+alone and proceed normally below.
+
 Search for Indian legal and compliance developments from the last 7 days. Cover:
 
 MCA circulars and notifications · CBDT / income tax · GST Council and CBIC ·
