@@ -146,7 +146,7 @@ def apply_content_migrations():
 # `git push` + restart — there is no separate migration runner. PRAGMA
 # user_version makes each block run exactly once, so an article the owner later
 # edits through the admin UI is never silently overwritten on the next restart.
-_SCHEMA_VERSION = 6
+_SCHEMA_VERSION = 7
 
 
 # ─── Real publication dates ──────────────────────────────────────────────────
@@ -490,7 +490,49 @@ def _apply_content_migrations(c):
         c.execute('UPDATE articles SET created_at = ?, updated_at = ? WHERE slug = ?',
                   ('2026-08-08 09:30:00', '2026-08-08 09:30:00', _AR.DPT3_SLUG))
 
+        c.execute('PRAGMA user_version = 6')
+
+    if version < 7:
+        # Humanizer pass. Everything written before the humanizer skill was wired
+        # into the weekly writer (Aug 2026) carried the usual LLM tells —
+        # significance filler, trailing "-ing" analysis, rule-of-three lists,
+        # "Key takeaways" closers. On a YMYL site published under a named human
+        # author that is a credibility problem, so all 127 pre-humanizer articles
+        # were rewritten. The two already drafted under the skill
+        # (eway-bill-ship-to-gstin-mandatory-2026, msme-development-amendment-bill-2026)
+        # are deliberately absent from the directory.
+        #
+        # Prose only. Titles, slugs, categories, summaries and read times are
+        # untouched, and every figure, section number, date and form name was
+        # carried across verbatim — checked per article, not by eye.
+        #
+        # Deliberately NOT wrapped in _touch(): the owner's instruction was to
+        # humanize without changing dates. Bumping dateModified on 127 articles
+        # in one restart is also exactly the mass-freshness pattern Google's
+        # helpful-content guidance flags, so the two agree here.
+        for slug, body in _humanized_articles():
+            c.execute('UPDATE articles SET content = ? WHERE slug = ?', (body, slug))
+
         c.execute(f'PRAGMA user_version = {_SCHEMA_VERSION}')
+
+
+# Rewritten bodies live one-per-file rather than as string literals in
+# article_rewrites.py: 127 of them would make that module unreadable, and a
+# per-slug file gives a reviewable diff when a single article changes.
+HUMANIZED_DIR = os.path.join(os.path.dirname(__file__), 'content', 'humanized')
+
+
+def _humanized_articles():
+    """(slug, body) for every rewritten article. Empty if the directory is gone,
+    which is survivable — the articles simply keep their pre-rewrite prose."""
+    if not os.path.isdir(HUMANIZED_DIR):
+        return []
+    out = []
+    for name in sorted(os.listdir(HUMANIZED_DIR)):
+        if name.endswith('.html'):
+            with open(os.path.join(HUMANIZED_DIR, name), encoding='utf-8') as fh:
+                out.append((name[:-5], fh.read()))
+    return out
 
 
 def seed_documents():
@@ -557,7 +599,14 @@ RETIRED_SLUGS = {
 def seed_articles():
     """Insert sample + imported blog articles for any slug not already present.
     Idempotent: existing rows (including articles edited via admin) are never
-    overwritten, so this is safe to run on every startup."""
+    overwritten, so this is safe to run on every startup.
+
+    NOTE: the prose below is the *pre-humanizer* text. What the site actually
+    serves for these slugs is `content/humanized/<slug>.html`, applied by
+    migration 7. The seed copy is kept because migrations 1a, 4b and 4c do
+    exact-string surgery on it, and rewriting it here would silently turn those
+    corrections into no-ops on a fresh database. Read the humanized file, not
+    this one, to know what an article says today."""
     conn = get_db()
     existing = {r[0] for r in conn.execute('SELECT slug FROM articles').fetchall()}
 
