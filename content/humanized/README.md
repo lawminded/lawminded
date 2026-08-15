@@ -58,7 +58,22 @@ to build the FAQPage schema — deviate and the schema silently emits nothing:
 
 ## Checking a rewrite
 
-`test_humanized.py` guards the structural rules on every file here. It does not
-know what the article said *before*, so fact-drift was checked separately during
-the rewrite, by diffing the figures and section numbers out of each old body
-against its replacement.
+Two tools, both runnable from a clean checkout with no setup:
+
+```
+python3 factcheck_rewrite.py <slug>   # fact drift vs the pre-rewrite body
+python3 test_humanized.py             # structural rules on every file here
+```
+
+`factcheck_rewrite.py` reconstructs the "before" text itself — it rebuilds a
+throwaway database from the seeders and migrations 1-6 with migration 7
+neutralised — then diffs every figure, section number, form name and date. Read
+every flag: singular/plural citation forms and years from deleted "Related
+Articles" lists are harmless, but a dropped rule number or an invented rupee
+figure is not. It has caught both.
+
+## Resuming an unfinished pass
+
+`ls content/humanized/` is the progress record. Anything in `PUBLISH_SCHEDULE`
+(database.py) without a file here has not been rewritten yet, except the two
+humanizer-era articles named above and the four unpublished slugs that only 301.
