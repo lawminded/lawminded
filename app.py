@@ -543,22 +543,21 @@ def inject_globals():
     }
 
 
-# Canonical host: in production, funnel every alternate hostname (www, the
-# lawminded.co.in domain, etc.) to the single primary domain from SITE_URL — one
-# site for SEO + AdSense. ACME challenges are always let through for cert renewal.
-CANONICAL_HOST = SITE_URL.split('://', 1)[-1].split('/', 1)[0].lower()
-
-
-@app.before_request
-def _force_canonical_host():
-    if not IS_PROD or request.path.startswith('/.well-known/'):
-        return
-    host = (request.host or '').split(':')[0].lower()
-    if host and host != CANONICAL_HOST and host.endswith(('lawminded.in', 'lawminded.co.in')):
-        target = f'https://{CANONICAL_HOST}{request.path}'
-        if request.query_string:
-            target += '?' + request.query_string.decode()
-        return redirect(target, code=301)
+# Both domains serve directly. There is deliberately no host redirect here:
+# lawminded.in and lawminded.co.in each answer 200 on every path, as do their www
+# forms, because the owner wants both reachable rather than one funnelling into
+# the other. nginx still sends http -> https, but it preserves $host, so it never
+# moves a visitor between domains.
+#
+# What stops that becoming a duplicate-content problem is the canonical tag, not
+# a redirect. `canonical_url` above is built from SITE_URL, so every page served
+# on any hostname declares the SITE_URL copy as the one to index, and the ranking
+# signals still consolidate onto a single address. Sitemap, OG and JSON-LD URLs
+# come from the same constant and agree with it.
+#
+# If you ever want one domain to funnel into the other again, this is the place:
+# reinstate a before_request that 301s to the host in SITE_URL, and let
+# /.well-known/ through untouched so certbot renewal keeps working.
 
 
 # ─── Helpers ────────────────────────────────────────────────────────────────

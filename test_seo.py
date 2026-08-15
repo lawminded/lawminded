@@ -10,7 +10,7 @@ import collections
 import json
 import re
 
-from app import app, JUDGMENTS_PUBLISHED, autolink
+from app import app, JUDGMENTS_PUBLISHED, autolink, SITE_URL
 from seo_meta import SEO_DESCRIPTIONS, RETIRED_ARTICLES, RETIRED_ARTICLES
 import content as C
 
@@ -189,6 +189,34 @@ def main():
         page = _page(client, f'/topic/{t["slug"]}')
         for s in (s for s in slugs if article_cat[s] == cat):
             assert f'/article/{s}' in page, f'{t["slug"]} hub missing {s}'
+
+    # Both domains answer directly. The owner wants lawminded.in and
+    # lawminded.co.in each reachable rather than one funnelling into the other,
+    # so no hostname may 301 to another. This has to force production mode on,
+    # because that is the only mode the old host redirect ever fired in — left
+    # off, the check would happily pass against a reinstated redirect.
+    import app as _app
+    was_prod = _app.IS_PROD
+    _app.IS_PROD = True
+    try:
+        for host in ('lawminded.in', 'www.lawminded.in',
+                     'lawminded.co.in', 'www.lawminded.co.in'):
+            for path in ('/', '/blogs'):
+                r = client.get(path, base_url=f'https://{host}')
+                assert r.status_code == 200, (
+                    f'https://{host}{path} -> {r.status_code}, expected 200. '
+                    'Both domains must serve directly; no hostname may redirect '
+                    'to another.')
+            # Whichever host served it, the page still nominates one URL for
+            # indexing. That canonical tag is the only thing keeping two live
+            # domains from reading as duplicate content.
+            html = client.get('/', base_url=f'https://{host}').get_data(as_text=True)
+            m = re.search(r'<link rel="canonical" href="([^"]+)"', html)
+            assert m, f'no canonical tag served on {host}'
+            assert m.group(1).rstrip('/') == SITE_URL.rstrip('/'), (
+                f'{host} declares canonical {m.group(1)}, expected {SITE_URL}')
+    finally:
+        _app.IS_PROD = was_prod
 
     print(f'OK — {checked} pages: descriptions <=155, JSON-LD valid, '
           f'{len(C.JUDGMENTS)} judgments have Article schema, '
