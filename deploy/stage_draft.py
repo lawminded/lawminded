@@ -24,7 +24,7 @@ from itsdangerous import URLSafeSerializer
 load_dotenv(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), '.env'))
 
 DB_PATH = os.getenv('DATABASE_PATH', os.path.expanduser('~/lawminded-data/lawminded.db'))
-SITE_URL = os.getenv('SITE_URL', 'https://lawminded.co.in')
+SITE_URL = os.getenv('SITE_URL', 'https://lawminded.in')
 
 REQUIRED = ('title', 'slug', 'category', 'act', 'read_time', 'summary', 'content')
 
