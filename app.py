@@ -1391,6 +1391,21 @@ def ads_txt():
     return app.response_class(line, mimetype='text/plain')
 
 
+# Google Search Console ownership proof. The path and the body both have to be
+# exactly what Google issued — it fetches the file and string-matches it — so
+# this returns the line verbatim, with no template, no trailing newline and no
+# styling. Both domains answer it, so this one token verifies whichever property
+# gets registered. If a second property is added it issues its own token, which
+# means another copy of this route with the new name; deliberately not a
+# wildcard, because a catch-all on /<anything>.html at the site root is a wide
+# rule to leave lying around for one static string.
+@app.route('/google790ff7b7719dd579.html')
+def google_site_verification():
+    return app.response_class(
+        'google-site-verification: google790ff7b7719dd579.html',
+        mimetype='text/html')
+
+
 @app.route('/robots.txt')
 def robots_txt():
     lines = [
