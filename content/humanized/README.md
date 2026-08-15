@@ -72,8 +72,26 @@ every flag: singular/plural citation forms and years from deleted "Related
 Articles" lists are harmless, but a dropped rule number or an invented rupee
 figure is not. It has caught both.
 
-## Resuming an unfinished pass
+Two flag shapes recur and are benign once you have checked them. The first is a
+citation the original wrote in shorthand — "(Reg 7(2))", "an 11B direction",
+"194I" bare — which reads as a NEW FACT once it is written out in full, because
+the differ only recognises a provision when the word Section, Rule or Regulation
+precedes it. Spell them out; the flag is the differ noticing an improvement. The
+second is a figure the original only ever wrote inside a dropped section, so it
+disappears with that section: check it is the same figure you carry elsewhere in
+another form, and if it is, put it back in the form people search for.
 
-`ls content/humanized/` is the progress record. Anything in `PUBLISH_SCHEDULE`
-(database.py) without a file here has not been rewritten yet, except the two
+One quirk of the fact regex is worth knowing before it wastes an hour. On a
+rupee figure with no unit, `[\d,]*` eats the trailing comma and then matches the
+"cr" of the next word, so "about ₹18,000, credited within 45 days" invents a
+token. Reword rather than chasing it.
+
+## The state of the pass
+
+Complete. Every slug in `PUBLISH_SCHEDULE` has a file here, plus
+`dpt-3-return-filing`, which reaches the database through
+`article_rewrites.DPT3_SLUG` rather than the schedule.
+
+`ls content/humanized/` stays the progress record if the set ever grows: a slug
+in `PUBLISH_SCHEDULE` with no file here has not been rewritten, except the two
 humanizer-era articles named above and the four unpublished slugs that only 301.
