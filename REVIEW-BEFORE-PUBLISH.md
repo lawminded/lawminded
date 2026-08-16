@@ -114,3 +114,43 @@ Not used: several outlets' claim that the Bill "makes Udyam registration
 mandatory" was checked against the primary text and found to be the opposite —
 the substituted Section 8 removes the one existing mandatory case rather than
 adding one. Corrected in the article rather than repeated.
+
+## blog_seed9.py — one owner-requested article, 14 August 2026
+
+Requested directly by the owner over Telegram (increase and reduction of LLP
+capital contribution), not a news-driven pick, so this is an evergreen guide
+rather than tied to a dated development. The site already had `llp-registration`
+and `annual-compliance-llps` (both in `blog_seed.py`); neither touches changing
+contribution after incorporation, so this fills a genuine gap.
+
+| Claim verified | Source | Result |
+|---|---|---|
+| S.23(1)–(4) LLP Act 2008: LLP Agreement governs mutual rights; any change must be filed with the Registrar in prescribed form/fee | Statutory text cross-checked across ibclaw.in and advocatekhoj.com (independent databases quoting identical wording) | Confirmed |
+| S.32(1)–(2): contribution can be cash, tangible/intangible property, or a service contract; monetary value must be disclosed in the accounts | Same two sources, cross-checked | Confirmed |
+| S.33(2): a creditor who extended credit relying on a partner's stated contribution, without notice of a compromise, can enforce the original obligation against that partner | Same two sources, cross-checked | Confirmed |
+| Form 3 filed under S.23(2)/(3) read with Rule 21(1) LLP Rules 2009, within 30 days of the change | Consistent across multiple independent professional-commentary sources citing the same rule number and period | Confirmed by consistency, not a single fetched PDF of the Rules themselves — flagged here for the record |
+| Non-cash contribution valued by a practising CA, Cost Accountant, or an approved valuer, under Rule 23(2) LLP Rules 2009 | Same basis as above | Confirmed by consistency |
+| LLP (Amendment) Rules, 2022 — G.S.R. 109(E) dated 11.02.2022, effective 1.04.2022 — replaced the flat additional-fee model with a multiplier of the normal fee (2x/4x rising to 25x/50x for small/other LLPs beyond 360 days) | Two independent secondary summaries (Taxguru's clause-by-clause analysis and IndiaFilings), both reproducing matching multiplier tables and the same notification number/date | Confirmed by cross-source agreement |
+| Normal Form 3 filing fee banded by contribution: Rs 50 (up to Rs 1 lakh) rising to Rs 600 (above Rs 1 crore) | Two independent sources (Taxguru's Annexure A reproduction, faallp.com) with matching figures | Confirmed |
+| Small LLP threshold: contribution ≤ Rs 25 lakh AND turnover ≤ Rs 40 lakh in the preceding year | Same sources, and consistent with the existing `llp-registration`/`annual-compliance-llps` articles' own stated audit threshold | Confirmed |
+| IT Act S.2(23): "firm", "partner" and "partnership" are each defined to include an LLP, its partners, and LLP partnership respectively | Direct search-extracted statutory text, consistent across sources | Confirmed |
+| IT Act S.45(4) (substituted by Finance Act 2021, AY 2021-22 onward): money/capital asset received by a partner from the firm "in connection with reconstitution" is taxed as the firm's own capital gain | Statutory text quoted across multiple sources referencing the Finance Act 2021 and CBDT Circular 14/2021 | Confirmed |
+| S.9B: same treatment where the firm hands over a capital asset or stock-in-trade instead of money | Same basis | Confirmed |
+| "Reconstitution" (Explanation 1 to S.45(4)) includes a case where every partner continues but their respective shares change, not only a partner's exit | Direct extraction of the Explanation's text from a clause-by-clause analysis (Taxguru) | Confirmed |
+| CBDT Circular 14/2021 (2 July 2021) and Rules 8AA(5)/8AB prescribe how the gain under S.45(4) is computed | Multiple independent sources citing the same circular number/date and rule numbers | Confirmed |
+| Companies Act 2013 S.66: a company reducing share capital needs Tribunal (NCLT) confirmation, unlike an LLP contribution change | General, settled company-law knowledge, not separately re-verified this session | Treated as background comparison, not a disputed figure |
+
+Deliberately left unquantified: state stamp duty on a supplementary LLP deed.
+Two secondary sources gave contradictory rates and caps for the same states
+(e.g. Maharashtra at "1% capped Rs 15,000" in one source and "0.2% or Rs 1,500"
+in another) within minutes of each other. Neither clears the site's bar, so no
+figure appears in the article — it tells the reader to check their state's
+current e-stamping schedule instead of repeating a number that might be wrong.
+
+Also produced, at the owner's request and outside the blog pipeline: a
+Partners' Resolution and a Supplementary LLP Deed template for a capital
+contribution change, sent directly to the owner for review rather than added to
+the site's Document Formats Library or Resolution Library — the DB-managed
+Resolution Library deliberately retired LLP partner resolutions on 2026-07-04
+(see `database.py`, `seed_documents()`), so adding one back without being asked
+would reverse a prior decision.

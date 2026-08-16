@@ -1407,6 +1407,13 @@ def seed_articles():
     except Exception:
         pass
 
+    # Owner-requested evergreen guide, 14 Aug 2026 (into blog_seed9.py).
+    try:
+        from blog_seed9 import BLOG_ARTICLES_9
+        articles = articles + list(BLOG_ARTICLES_9)
+    except Exception:
+        pass
+
     # DPT-3 is seeded from article_rewrites rather than blog_seed3, because the
     # evergreen rewrite (migration 6) is the current text and the old seed tuple
     # was a stale copy under the retired slug. Keeping one source stops the two
