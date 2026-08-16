@@ -154,3 +154,29 @@ the site's Document Formats Library or Resolution Library — the DB-managed
 Resolution Library deliberately retired LLP partner resolutions on 2026-07-04
 (see `database.py`, `seed_documents()`), so adding one back without being asked
 would reverse a prior decision.
+
+## blog_seed10.py — one owner-requested article, 16 August 2026
+
+Owner named the topic directly over Telegram: Hindu Undivided Family (HUF).
+Not news-driven, so this is an evergreen guide. Checked the live DB's 133
+published slugs first — HUF appears only inside a rate table cell in
+`tds-compliance-guide` ("1% (ind/HUF)"); no article covers HUF formation,
+taxation, coparcenary rights, or partition. Genuine gap.
+
+| Claim verified | Source | Result |
+|---|---|---|
+| Income-tax Act, 2025, s.2(93): "person" includes an individual, a Hindu undivided family, a company, a firm, and others | Bare-text mirror of the Act, eztax.in | Confirmed |
+| Income-tax Act, 2025, s.202: common rate schedule for individuals, HUF and others under the new regime; FY 2025-26 slabs (nil to 4L, then 5/10/15/20/25/30% in 4L steps to above 24L) | eztax.in bare text, cross-checked against the Income Tax Department's own AY 2026-27 HUF help page (incometax.gov.in/iec/foportal/help/individual/return-applicable), which also gave the Rs 2,50,000 old-regime exemption and confirmed HUF return forms are ITR-2/3/4 | Confirmed by two independent sources, one of them the Department's own site |
+| Income-tax Act, 2025, s.156 (formerly s.87A): rebate restricted to "resident individual"; HUF excluded, both regimes | eztax.in bare text, cross-checked against incometaxindia.gov.in's own s.87A explainer and two independent professional summaries | Confirmed |
+| Income-tax Act, 2025, s.92 (formerly s.56(2)(x)): gifts without consideration, Rs 50,000 threshold; Explanation defines "relative" for an HUF as any member of that HUF | eztax.in bare text | Confirmed |
+| Income-tax Act, 2025, s.99(3)-(4) (formerly s.64(2)): income from an individual's property converted into HUF property without adequate consideration is taxed in the individual's own hands; carve-out for conversions on or before 31 December 1969 | eztax.in bare text | Confirmed |
+| Income-tax Act, 2025, s.315 (formerly s.171): total partition — HUF assessed as undivided up to the date of partition, members jointly and severally liable for tax from before that date; partial partitions after 31 December 1978 not recognised for tax purposes at all | eztax.in bare text, cross-checked against incometaxindia.gov.in's own s.171 page for the equivalent 1961-Act wording | Confirmed |
+| Hindu Succession Act, 1956, s.6, as substituted by the Hindu Succession (Amendment) Act, 2005: daughters are coparceners by birth, same rights and liabilities as sons | Statutory text, cross-checked across two independent case-law summaries | Confirmed |
+| *Vineeta Sharma v Rakesh Sharma*, (2020) 9 SCC 576: daughters' coparcenary right applies regardless of whether the father was alive on 9 September 2005 | IndianKanoon judgment text and two independent case summaries (iPleaders, Drishti Judiciary) | Confirmed |
+| *Sujata Sharma v Manu Gupta*, Delhi HC, CS(OS) 2011/2006 (single judge, 22 December 2015): eldest female coparcener can be karta; upheld on appeal, RFA(OS) 13/2016, division bench, 4 December 2023 | IndianKanoon judgment text, SCC Online blog coverage of the 2023 appeal decision | Confirmed, including that the 2023 appeal upheld rather than reversed the 2015 ruling |
+| PAN application: Form 49A/49AA retired from 1 April 2026; HUF applications now use Form 94 (non-individual Indian entities, HUF named explicitly) filed by the karta, under Rule 158 of the Income-tax Rules, 2026 (CBDT notified 20 March 2026, in force 1 April 2026) read with s.262 of the Income-tax Act, 2025 | Three independent CA/professional summaries agreeing on the specific rule and section numbers | Corroborated by consistent secondary sourcing; no single official CBDT notification URL was fetched directly, so this is the weakest-sourced claim in the piece — flagged here for the record |
+
+Not used: one secondary source's claim that Form 94 requires a "family tree
+declaration" from the karta was not independently corroborated elsewhere, so
+it was left out of the documentation list in the article rather than stated as
+fact.

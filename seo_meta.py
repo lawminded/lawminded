@@ -313,6 +313,9 @@ SEO_DESCRIPTIONS = {
     'will-vs-gift-deed-vs-trust':
         "Will vs gift deed vs trust: how each transfers property in India, what each "
         "costs in stamp duty and tax, and how to choose the right one.",
+    'hindu-undivided-family-huf-tax-guide':
+        "An HUF is a separate taxpayer under Indian law. What it saves in tax, how to "
+        "set one up, and why moving your own property into it usually backfires.",
 }
 
 
