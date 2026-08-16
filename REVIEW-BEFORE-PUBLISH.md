@@ -180,3 +180,16 @@ Not used: one secondary source's claim that Form 94 requires a "family tree
 declaration" from the karta was not independently corroborated elsewhere, so
 it was left out of the documentation list in the article rather than stated as
 fact.
+
+### Addition, same day: children, date of formation, PAN separateness
+
+Owner asked, over Telegram, for a clarification on whether an HUF can be
+formed with just husband and wife (no children), what date counts as the
+HUF's "date of formation", and more detail on the HUF having its own PAN.
+
+| Claim verified | Source | Result |
+|---|---|---|
+| *C. Krishna Prasad v CIT*, (1974) 97 ITR 493 (SC): "plurality of persons is an essential attribute of a family... a single person, male or female, does not constitute a family"; HUF assessment needs two or more members | Direct read of the judgment text on IndianKanoon | Confirmed |
+| *Surjit Lal Chhabda v CIT*, (1975) 101 ITR 776 (SC): a joint Hindu family (not a coparcenary) can consist of husband, wife and unmarried daughter with no son; but self-acquired property isn't converted into HUF property by declaration alone where there's no pre-existing joint family property for it to blend with | Judgment text on courtkutchehry.com, cross-checked against itatonline.org's case-law digest | Confirmed. The same digest cites *CIT v Parshottamdas K Panchal* (2002) 257 ITR 96 (Guj) and *W.P.A.R Rajagopalan v CWT* (2000) 241 ITR 344 (Mad) for husband-and-wife HUFs funded by ancestral/partition property rather than self-acquired money — not independently fetched, used only as corroboration that the husband-wife point is settled beyond one case |
+| "Date of formation" for the HUF deed/PAN conventionally taken as the karta's date of marriage | CAclubindia expert thread, cross-checked against HUF-deed guides (taxbuddy.com, setindiabiz.com) | Corroborated by consistent professional practice, not any CBDT form or circular — there is none, since nothing about an HUF is registered. Stated in the article as convention, not law. Weakest-sourced claim in this addition |
+| HUF PAN is a separate identity from the karta's personal PAN; HUF files its own return (ITR-2/3/4) distinct from each member's personal return | Same Income Tax Department AY 2026-27 HUF help page already cited above, plus general PAN/HUF application guides | Confirmed |
