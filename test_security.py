@@ -6,7 +6,10 @@ assert-only — no framework, no fixtures.
 import os
 import sys
 
-os.environ.setdefault('PRODUCTION', 'false')
+# Forced, not setdefault: with PRODUCTION=true in the ambient environment (as it
+# is on the server) Talisman redirects the test client to https:// before the
+# admin-auth check runs, and the results depend on where you ran it from.
+os.environ['PRODUCTION'] = 'false'
 os.environ.setdefault('DATABASE_PATH', '/tmp/lm-sectest.db')
 
 import app as A
