@@ -83,12 +83,31 @@ sudo systemctl restart "$SERVICE_NAME"
 
 # ── 7. nginx reverse proxy ──────────────────────────────────────────────────
 echo "==> Configuring nginx…"
+# These three must land BEFORE the site config: it includes the proxy snippet and
+# the blocklist, and uses the limit_req zones declared in the security conf.
+# Without them `nginx -t` fails and the site does not come back up.
+sudo install -m 644 "$APP_DIR/deploy/nginx-security.conf" \
+  /etc/nginx/conf.d/00-lawminded-security.conf
+sudo install -m 644 -D "$APP_DIR/deploy/nginx-proxy-snippet.conf" \
+  /etc/nginx/snippets/lawminded-proxy.conf
+sudo install -m 644 "$APP_DIR/deploy/lawminded-blocklist.conf" \
+  /etc/nginx/lawminded-blocklist.conf
+
 sed -e "s|__APP_DIR__|$APP_DIR|g" \
   "$APP_DIR/deploy/nginx.conf" | sudo tee /etc/nginx/sites-available/$SERVICE_NAME >/dev/null
 sudo ln -sf /etc/nginx/sites-available/$SERVICE_NAME /etc/nginx/sites-enabled/$SERVICE_NAME
 sudo rm -f /etc/nginx/sites-enabled/default
 sudo nginx -t
 sudo systemctl restart nginx
+
+# ── 7b. fail2ban ────────────────────────────────────────────────────────────
+# Bans SSH brute-forcers and the scanners that probe for /.env, /wp-login.php
+# and friends. Config lives in deploy/fail2ban-jail.local.
+echo "==> Installing fail2ban…"
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y fail2ban
+sudo install -m 644 "$APP_DIR/deploy/fail2ban-jail.local" /etc/fail2ban/jail.local
+sudo systemctl enable --now fail2ban
+sudo systemctl restart fail2ban
 
 # ── 8. Firewall — open 80/443 (Oracle Ubuntu blocks them by default) ────────
 echo "==> Opening ports 80 and 443 in the OS firewall…"

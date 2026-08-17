@@ -1,0 +1,44 @@
+# Law Minded fail2ban policy.
+# SSH already refuses passwords, so the sshd jail is about cutting noise and
+# covering any future misconfiguration. The nginx jails are the ones that
+# actually matter day to day: they ban the scanners that probe for /.env,
+# /wp-login.php and friends, and anything that trips the nginx rate limits.
+
+[DEFAULT]
+backend  = systemd
+bantime  = 1h
+findtime = 10m
+maxretry = 5
+# Never ban ourselves or the writer box (92.4.76.145 pushes deploys over SSH).
+ignoreip = 127.0.0.1/8 ::1 92.4.76.145 10.0.0.0/24
+
+[sshd]
+enabled  = true
+maxretry = 4
+bantime  = 4h
+
+# Repeat offenders: banned 3 times in a day -> out for a week.
+[recidive]
+enabled  = true
+bantime  = 1w
+findtime = 1d
+maxretry = 3
+
+[nginx-http-auth]
+enabled = true
+backend = auto
+logpath = /var/log/nginx/error.log
+
+[nginx-botsearch]
+enabled  = true
+backend  = auto
+logpath  = /var/log/nginx/access.log
+maxretry = 5
+bantime  = 12h
+
+[nginx-limit-req]
+enabled  = true
+backend  = auto
+logpath  = /var/log/nginx/error.log
+maxretry = 10
+bantime  = 2h

@@ -5,7 +5,7 @@ import base64
 import hmac
 import time
 from io import BytesIO
-from datetime import date
+from datetime import date, timedelta
 from functools import wraps, lru_cache
 from flask import (Flask, render_template, request, redirect, url_for,
                    session, flash, jsonify, send_from_directory, send_file, abort)
@@ -37,13 +37,30 @@ from seo_meta import SEO_DESCRIPTIONS, INTERNAL_LINKS, RETIRED_ARTICLES
 IS_PROD = os.getenv('PRODUCTION', 'false').lower() in ('1', 'true', 'yes')
 
 app = Flask(__name__)
-app.secret_key = os.getenv('SECRET_KEY', 'dev-secret-change-in-production')
 
-# Behind a reverse proxy (nginx on the Oracle VM, or Render's edge), trust the
-# X-Forwarded-* headers so request.scheme is 'https'. Without this, Talisman's
-# force_https would redirect-loop forever when the app sits behind nginx.
+# The session cookie is what marks an admin as logged in, so the signing key is
+# effectively the admin credential. In production it MUST come from .env: if the
+# file ever fails to load, falling back to a known string published in this repo
+# would let anyone mint their own "admin_logged_in" cookie. Fail closed instead.
+_secret = os.getenv('SECRET_KEY')
+if IS_PROD and not _secret:
+    raise RuntimeError(
+        'SECRET_KEY is not set. Refusing to start in production with a default '
+        'signing key — set SECRET_KEY in .env.'
+    )
+app.secret_key = _secret or 'dev-secret-change-in-production'
+
+# Behind a reverse proxy (nginx on the Oracle VM), trust the X-Forwarded-* headers
+# so request.scheme is 'https'. Without this, Talisman's force_https would
+# redirect-loop forever when the app sits behind nginx.
+#
+# Only x_for/x_proto are trusted: nginx sets both itself, so a client cannot forge
+# them. It does NOT set X-Forwarded-Host or -Port, so those arrive straight from
+# the client — trusting them would let anyone rewrite request.host (poisoned
+# absolute URLs, redirects and cache entries). nginx now pins both headers too,
+# so this is belt and braces.
 if IS_PROD:
-    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1)
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=0, x_port=0)
 
 # ── Hardened session / request config ──
 app.config['SESSION_COOKIE_HTTPONLY'] = True
@@ -51,6 +68,9 @@ app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['SESSION_COOKIE_SECURE'] = IS_PROD
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB — room for admin Word (.docx) uploads
 app.config['WTF_CSRF_TIME_LIMIT'] = None            # token valid for the session
+# Admin sessions expire after 8 idle hours (Flask refreshes the cookie on every
+# request), so a forgotten login on a shared machine does not stay valid forever.
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=8)
 
 # Mail configuration — provider-agnostic via env (defaults to Gmail SMTP).
 # Set MAIL_SERVER/PORT for a custom-domain mailbox (e.g. Zoho, Titan, Workspace).
@@ -77,26 +97,54 @@ limiter = Limiter(
 )
 
 # ── Security headers + Content-Security-Policy ──
-# script-src is intentionally permissive (https:) so Google AdSense and the
-# Three.js CDN load reliably; the high-value protections (clickjacking, object/base
-# lockdown, MIME-sniffing, referrer, HSTS, secure cookies) are all enforced.
-CSP = {
-    'default-src': "'self'",
-    'script-src': ["'self'", "'unsafe-inline'", 'https:'],
-    'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
-    'font-src': ["'self'", 'https://fonts.gstatic.com', 'data:'],
-    'img-src': ["'self'", 'data:', 'https:'],
-    'frame-src': ['https://*.googlesyndication.com', 'https://*.google.com',
-                  'https://*.doubleclick.net'],
-    'connect-src': ["'self'", 'https:'],
-    'object-src': "'none'",
-    'base-uri': "'self'",
-    'frame-ancestors': "'self'",
-    'form-action': "'self'",
-}
+# script-src and connect-src used to be a blanket `https:`, which let injected
+# markup pull a payload from any HTTPS host anywhere. Every script this site
+# actually loads is either same-origin or Google AdSense, so the policy now names
+# those origins and nothing else.
+#
+# The AdSense origins are only added while ADS_ENABLED is on (see below), so
+# while ads are switched off the policy is same-origin only. `unsafe-inline`
+# stays because templates carry inline <script> and JSON-LD blocks; all
+# admin-entered HTML is bleach-sanitised before it is ever rendered.
+_GOOGLE_ADS_SCRIPT = [
+    'https://pagead2.googlesyndication.com',
+    'https://tpc.googlesyndication.com',
+    'https://partner.googleadservices.com',
+    'https://adservice.google.com',
+    'https://www.googletagservices.com',
+]
+_GOOGLE_ADS_CONNECT = [
+    'https://pagead2.googlesyndication.com',
+    'https://googleads.g.doubleclick.net',
+    'https://csi.gstatic.com',
+]
+
+
+def _build_csp(ads_on):
+    return {
+        'default-src': "'self'",
+        'script-src': ["'self'", "'unsafe-inline'"] + (_GOOGLE_ADS_SCRIPT if ads_on else []),
+        'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+        'font-src': ["'self'", 'https://fonts.gstatic.com', 'data:'],
+        'img-src': ["'self'", 'data:', 'https:'],   # ad creatives + remote article images
+        'frame-src': (['https://*.googlesyndication.com', 'https://*.google.com',
+                       'https://*.doubleclick.net'] if ads_on else ["'none'"]),
+        'connect-src': ["'self'"] + (_GOOGLE_ADS_CONNECT if ads_on else []),
+        'object-src': "'none'",
+        'base-uri': "'self'",
+        'frame-ancestors': "'self'",
+        'form-action': "'self'",
+    }
+
+
+# Site-wide ad kill-switch. Declared here (rather than with the other AdSense
+# config further down) because the CSP above widens only when ads are on.
+# While False, no ad script loads and every ad zone renders nothing.
+ADS_ENABLED = False
+
 Talisman(
     app,
-    content_security_policy=CSP,
+    content_security_policy=_build_csp(ADS_ENABLED),
     force_https=IS_PROD,
     strict_transport_security=IS_PROD,
     session_cookie_secure=IS_PROD,
@@ -130,10 +178,9 @@ ENV_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env')
 
 # Google AdSense — set ADSENSE_CLIENT in .env to your publisher id (ca-pub-XXXX).
 # Ad slot ids are configured per-placement in ADSENSE_SLOTS below.
-# ADS_ENABLED is a site-wide kill-switch: while False, no ad script loads and every
-# ad zone renders nothing (zero visible space). Turned OFF while re-applying for
-# AdSense approval — flip back to True to restore ads (config below is preserved).
-ADS_ENABLED = False
+# The ADS_ENABLED kill-switch is declared further up, next to the CSP it widens.
+# Turned OFF while re-applying for AdSense approval — flip it back to True there
+# to restore ads (the config below is preserved either way).
 ADSENSE_CLIENT = os.getenv('ADSENSE_CLIENT', '')
 ADSENSE_SLOTS = {
     'top': os.getenv('ADSENSE_SLOT_TOP', ''),
@@ -1373,14 +1420,6 @@ def download_request():
     return jsonify({'success': True, 'message': 'Download ready!'})
 
 
-@app.route('/uploads/templates/<filename>')
-def serve_template(filename):
-    return send_from_directory(
-        os.path.join(app.root_path, 'static', 'uploads', 'templates'),
-        filename
-    )
-
-
 @app.route('/ads.txt')
 def ads_txt():
     # Required by Google AdSense to authorise this site to show your ads.
@@ -1553,6 +1592,7 @@ def admin_login():
         password = request.form.get('password', '')
         if check_admin(username, password):
             session.clear()                      # rotate session on login (anti-fixation)
+            session.permanent = True             # subject to PERMANENT_SESSION_LIFETIME
             session['admin_logged_in'] = True
             return redirect(url_for('admin_dashboard'))
         flash('Incorrect username or password.', 'error')
