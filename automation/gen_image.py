@@ -22,7 +22,10 @@ from io import BytesIO
 
 from PIL import Image, ImageOps
 
-MODEL = 'gemini-2.5-flash-image'
+# Google retires gemini-2.5-flash-image on 2 October 2026. Overridable so the
+# successor can be dropped in from .env without a code change and without anyone
+# having to remember where the name was written down.
+MODEL = os.getenv('GEMINI_IMAGE_MODEL', 'gemini-2.5-flash-image')
 ENDPOINT = f'https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent'
 SIZE = (1200, 630)
 
