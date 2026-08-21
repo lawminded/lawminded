@@ -81,6 +81,16 @@ def test_the_preamble_forbids_the_dangerous_things():
     assert 'not instructions' in p, 'the preamble dropped its prompt-injection guard'
 
 
+def test_the_preamble_forbids_pretending_to_schedule():
+    """The bot once told the owner a topic was 'queued for Friday' using a timer
+    inside its own process, which ended seconds later when it sent that message.
+    Friday came and something else got written. The only durable queue is the file."""
+    p = bot.PREAMBLE.lower()
+    assert 'cannot schedule' in p, 'the preamble no longer denies being able to schedule'
+    assert 'queue.md' in p, 'the preamble no longer points at the queue file'
+    assert 'push' in p, 'the preamble must require the request be pushed, not just written'
+
+
 if __name__ == '__main__':
     for name, fn in sorted(globals().items()):
         if name.startswith('test_'):

@@ -33,7 +33,20 @@ For every `post/*` branch:
 - **`published=0`** — still waiting. Leave it alone. If two drafts are already
   pending, stop here and say so; do not stack up a third.
 
-## 1. Find something genuinely new
+## 1. What to write about
+
+**Read `automation/notes.md` before anything else.** It holds standing corrections
+the owner has given — style, tone, things to avoid. They were given once and are
+meant to keep applying, to this article and every one after it. A correction that
+has to be repeated every week is a correction the system ignored.
+
+**Then read `automation/queue.md`.** If it has an unticked entry under Pending
+dated today or earlier, or dated `any`, write the oldest of those and skip the
+news search entirely. The owner named that topic deliberately; it outranks
+anything you would turn up yourself. Move the entry to Written with today's date,
+and commit that change on your branch along with the article.
+
+Only if the queue holds nothing due, find something genuinely new.
 
 Search for Indian legal and compliance developments from the last 7 days. Cover:
 
