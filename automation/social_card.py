@@ -120,12 +120,51 @@ def compose(bg, eyebrow, headline, fact, footer='lawminded.in'):
     return img
 
 
-def build(slug, eyebrow, headline, fact, scene, out_dir=None):
-    raw = gen_image.generate(
-        f'{scene}. Wide empty space in the lower two-thirds of the frame with no '
-        f'subject matter, suitable for text to be laid over it afterwards.')
-    from io import BytesIO
-    card = compose(Image.open(BytesIO(raw)), eyebrow, headline, fact)
+def flat_ground():
+    """A card that needs no image API at all: deep ink, a warm lift in one corner,
+    and a faint grain so large flat areas do not band on a phone screen. A serious
+    publication's cards look like this more often than they look like stock photos,
+    so this is the default rather than a consolation."""
+    import random
+    w, h = SIZE
+    img = Image.new('RGB', (w, h), INK)
+    d = ImageDraw.Draw(img)
+    # A soft off-centre glow, drawn as widening ellipses then blurred flat.
+    cx, cy = int(w * 0.78), int(h * 0.16)
+    for i in range(28, 0, -1):
+        r = i * 46
+        t = i / 28
+        d.ellipse([cx - r, cy - r, cx + r, cy + r],
+                  fill=(int(INK[0] + 34 * (1 - t)),
+                        int(INK[1] + 27 * (1 - t)),
+                        int(INK[2] + 12 * (1 - t))))
+    img = img.filter(ImageFilter.GaussianBlur(120))
+
+    grain = Image.new('L', (w // 2, h // 2))
+    rnd = random.Random(0xC0FFEE)            # fixed, so a re-render is identical
+    grain.putdata([rnd.randint(118, 138) for _ in range((w // 2) * (h // 2))])
+    grain = grain.resize(SIZE).filter(ImageFilter.GaussianBlur(0.6))
+    return Image.blend(img, Image.merge('RGB', (grain, grain, grain)), 0.05)
+
+
+def build(slug, eyebrow, headline, fact, scene=None, out_dir=None):
+    """Gemini paints the background when a scene is asked for and the account can
+    pay for it. Neither is guaranteed — credits run out — and a card that cannot
+    be made is worse than a plainer one, so failure falls through to the flat
+    ground rather than stopping."""
+    bg, note = flat_ground(), 'flat ground'
+    if scene:
+        try:
+            from io import BytesIO
+            raw = gen_image.generate(
+                f'{scene}. Wide empty space in the lower two-thirds of the frame '
+                f'with no subject matter, suitable for text laid over it afterwards.')
+            bg, note = Image.open(BytesIO(raw)), 'Gemini background'
+        except SystemExit as e:
+            print(f'  background image unavailable ({e}) — using the flat ground',
+                  file=sys.stderr)
+    card = compose(bg, eyebrow, headline, fact)
+    print(f'  {note}', file=sys.stderr)
     out = Path(out_dir or OUT_DIR)
     out.mkdir(parents=True, exist_ok=True)
     path = out / f'{slug}.jpg'
@@ -142,6 +181,9 @@ def _self_check():
                      'for a Bill-to Ship-to Transaction Across India')
     with tempfile.TemporaryDirectory() as tmp:
         card = compose(bg, 'GST & Indirect Tax', long_headline, 'From 1 August 2026')
+        flat = compose(flat_ground(), 'Corporate Compliance',
+                       'Compounding: pay the penalty, close the default', 'Section 441')
+        assert flat.size == SIZE, 'flat ground card is the wrong size'
         p = Path(tmp) / 'check.jpg'
         card.save(p, 'JPEG', quality=88)
         assert card.size == SIZE, f'expected {SIZE}, got {card.size}'
@@ -160,6 +202,7 @@ if __name__ == '__main__':
     ap.add_argument('--eyebrow', required=True, help='category, e.g. "GST & Indirect Tax"')
     ap.add_argument('--headline', required=True)
     ap.add_argument('--fact', default='', help='the one number or date that matters')
-    ap.add_argument('--scene', required=True, help='what the background photo shows')
+    ap.add_argument('--scene', default=None,
+                    help='background photo to generate; omit for the flat ground')
     a = ap.parse_args()
     print(build(a.slug, a.eyebrow, a.headline, a.fact, a.scene))
