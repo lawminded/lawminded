@@ -5,7 +5,7 @@ import base64
 import hmac
 import time
 from io import BytesIO
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone, timedelta
 from functools import wraps, lru_cache
 from flask import (Flask, render_template, request, redirect, url_for,
                    session, flash, jsonify, send_from_directory, send_file, abort)
@@ -233,6 +233,21 @@ def unsubscribe_url(email):
     """Absolute, signed unsubscribe link for inclusion in outgoing emails."""
     token = _unsub_serializer.dumps(email)
     return f'{SITE_URL}{url_for("unsubscribe")}?token={token}'
+
+
+# The site's readers, its deadlines and its article dates are all Indian. The
+# server runs UTC and so does SQLite's CURRENT_TIMESTAMP, which puts anything
+# published after 18:30 UTC — i.e. after midnight in Delhi — on the previous day.
+IST = timezone(timedelta(hours=5, minutes=30))
+
+
+def ist_now():
+    """Current IST wall-clock in the format the articles table stores."""
+    return datetime.now(IST).strftime('%Y-%m-%d %H:%M:%S')
+
+
+def ist_today():
+    return datetime.now(IST).strftime('%Y-%m-%d')
 
 
 # Same idea for the weekly draft-approval links sent to Telegram. The scheduled
@@ -975,9 +990,11 @@ def draft_publish(slug):
     row = _load_draft(slug, request.form.get('t'))
     db = get_db()
     # Stamp the publication date at approval time, not at draft time, so the
-    # date on the page is the date it actually went live.
-    db.execute('UPDATE articles SET published=1, created_at=CURRENT_TIMESTAMP, '
-               'updated_at=CURRENT_TIMESTAMP WHERE id=?', (row['id'],))
+    # date on the page is the date it actually went live — in IST, since that is
+    # what every other date in this table is and what the reader expects.
+    now = ist_now()
+    db.execute('UPDATE articles SET published=1, publish_on=NULL, created_at=?, '
+               'updated_at=? WHERE id=?', (now, now, row['id']))
     db.commit()
     db.close()
     return redirect(url_for('article', slug=slug))

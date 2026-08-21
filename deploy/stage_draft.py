@@ -62,12 +62,32 @@ def stage(article):
     return f'{SITE_URL}/draft/{article["slug"]}?t={sign(article["slug"])}'
 
 
-def notify(article, url):
-    """Send the draft to Telegram. Absence of credentials is not fatal — the
-    draft is staged either way, and the link is printed to stdout."""
+def notify_text(text, html=False):
+    """Send a plain message to the owner. Absence of credentials is not fatal —
+    whatever called this has already done its real work, and the text is on
+    stdout regardless."""
     token = os.getenv('TELEGRAM_BOT_TOKEN')
     chat_id = os.getenv('TELEGRAM_CHAT_ID')
     if not (token and chat_id):
+        print('TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID not set — skipping the message.',
+              file=sys.stderr)
+        return False
+
+    params = {'chat_id': chat_id, 'text': text, 'disable_web_page_preview': 'true'}
+    if html:
+        params['parse_mode'] = 'HTML'
+    req = urllib.request.Request(
+        f'https://api.telegram.org/bot{token}/sendMessage',
+        data=urllib.parse.urlencode(params).encode())
+    with urllib.request.urlopen(req, timeout=20) as r:
+        if not json.load(r).get('ok'):
+            sys.exit('Telegram rejected the message.')
+    return True
+
+
+def notify(article, url):
+    """Send the draft to Telegram."""
+    if not (os.getenv('TELEGRAM_BOT_TOKEN') and os.getenv('TELEGRAM_CHAT_ID')):
         print('TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID not set — skipping the message.',
               file=sys.stderr)
         return False
@@ -85,18 +105,7 @@ def notify(article, url):
         lines += ['', '<b>Sources</b>'] + [esc(s) for s in sources]
     lines += ['', f'<a href="{esc(url)}">Read the draft and publish</a>']
 
-    body = urllib.parse.urlencode({
-        'chat_id': chat_id,
-        'text': '\n'.join(lines),
-        'parse_mode': 'HTML',
-        'disable_web_page_preview': 'true',
-    }).encode()
-    req = urllib.request.Request(
-        f'https://api.telegram.org/bot{token}/sendMessage', data=body)
-    with urllib.request.urlopen(req, timeout=20) as r:
-        if not json.load(r).get('ok'):
-            sys.exit('Telegram rejected the message.')
-    return True
+    return notify_text('\n'.join(lines), html=True)
 
 
 if __name__ == '__main__':

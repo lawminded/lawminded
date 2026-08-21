@@ -120,6 +120,9 @@ def init_db():
         if col not in cols:
             c.execute(f'ALTER TABLE {table} ADD COLUMN {col} {decl}')
     _ensure_column('articles', 'seo_title', 'TEXT')
+    # A date (YYYY-MM-DD, IST) on which an approved-but-held draft goes live.
+    # NULL for everything else, which is almost every row.
+    _ensure_column('articles', 'publish_on', 'TEXT')
 
     conn.commit()
     conn.close()
