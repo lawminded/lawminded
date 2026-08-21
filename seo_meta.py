@@ -19,6 +19,9 @@ SEO_DESCRIPTIONS = {
     '50-percent-wage-rule':
         "How India's new 50% wage definition changes your basic pay, PF and gratuity. "
         "What shifts on your payslip in 2026, explained in plain English.",
+    '54ec-capital-gains-bonds-online-guide':
+        "Save tax on a property sale with Section 54EC bonds: the Rs 50 lakh cap, the "
+        "5-year lock-in, and SEBI's new rule letting you buy them online.",
     'alteration-of-moa-aoa-section-13-14':
         "Alter your MOA or AOA under Sections 13 and 14: the special resolution, MGT-14 "
         "within 30 days, and the RUN plus INC-24 name-change route.",
@@ -559,6 +562,9 @@ INTERNAL_LINKS = {
     'upsi': 'sebi-pit-insider-trading-explained',
 
     # ─── Tax ────────────────────────────────────────────────────────────
+    '54ec bonds': '54ec-capital-gains-bonds-online-guide',
+    'capital gains bonds': '54ec-capital-gains-bonds-online-guide',
+    'online bond platform': '54ec-capital-gains-bonds-online-guide',
     'gstr-1': 'gst-returns-explained',
     'gstr-3b': 'gst-returns-explained',
     'gst returns': 'gst-returns-explained',

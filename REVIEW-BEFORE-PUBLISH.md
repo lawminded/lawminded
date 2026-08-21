@@ -193,3 +193,30 @@ HUF's "date of formation", and more detail on the HUF having its own PAN.
 | *Surjit Lal Chhabda v CIT*, (1975) 101 ITR 776 (SC): a joint Hindu family (not a coparcenary) can consist of husband, wife and unmarried daughter with no son; but self-acquired property isn't converted into HUF property by declaration alone where there's no pre-existing joint family property for it to blend with | Judgment text on courtkutchehry.com, cross-checked against itatonline.org's case-law digest | Confirmed. The same digest cites *CIT v Parshottamdas K Panchal* (2002) 257 ITR 96 (Guj) and *W.P.A.R Rajagopalan v CWT* (2000) 241 ITR 344 (Mad) for husband-and-wife HUFs funded by ancestral/partition property rather than self-acquired money — not independently fetched, used only as corroboration that the husband-wife point is settled beyond one case |
 | "Date of formation" for the HUF deed/PAN conventionally taken as the karta's date of marriage | CAclubindia expert thread, cross-checked against HUF-deed guides (taxbuddy.com, setindiabiz.com) | Corroborated by consistent professional practice, not any CBDT form or circular — there is none, since nothing about an HUF is registered. Stated in the article as convention, not law. Weakest-sourced claim in this addition |
 | HUF PAN is a separate identity from the karta's personal PAN; HUF files its own return (ITR-2/3/4) distinct from each member's personal return | Same Income Tax Department AY 2026-27 HUF help page already cited above, plus general PAN/HUF application guides | Confirmed |
+
+## blog_seed11.py — weekly news post, 21 August 2026
+
+News hook: SEBI circular dated 14 August 2026 lets Online Bond Platform
+Providers sell Section 54EC / Section 85 capital gains bonds directly, with
+new mandatory disclosures, and separately lets them offer IFSCA-regulated
+products. Checked the 131 published slugs first (live DB dump, 21 Aug 2026)
+and grepped blog_seed*.py for "54EC", "capital gain bonds" and "OBPP" —
+nothing on the site covers the Section 54EC exemption or these bonds.
+Genuine gap, and the circular changes something a reader can act on this
+week: how they buy the bonds, not just whether the exemption exists.
+
+| Claim verified | Source | Result |
+|---|---|---|
+| SEBI Circular HO/17/11/(2)2026-DDHS-POD1/I/18769/2026, dated 14 August 2026: OBPPs may now offer (a) bonds under Section 54EC of the Income Tax Act, 1961 or Section 85 of the Income-tax Act, 2025, and (b) IFSCA-regulated products/securities/services | Downloaded and read the full 4-page circular PDF directly from sebi.gov.in (`sebi_data/attachdocs/aug-2026/1786705729757.pdf`, linked from the circular's own listing page) | Confirmed by direct primary-source read |
+| Mandatory disclosures for 54EC bonds sold via an OBPP: disclaimer that they are tax-specific instruments; grievance redressal lies with the issuer, not SEBI; features disclosure covering eligible issuers, lock-in, investment limit, non-transferability, tax features, application size, and the LODR listing exemption | Same circular PDF, clause 3.1(b)-(d) | Confirmed by direct primary-source read |
+| IFSCA products offered via an OBPP must be labelled "international or overseas instruments" and comply with FEMA/LRS rules; OBPP compliance-officer rule changed from "must be a Company Secretary" to a NISM-certified compliance officer under SEBI (Stock Brokers) Regulations, 2026; circular in force with immediate effect | Same circular PDF, clauses 3.1(d) and 3.2, and paragraph 5 | Confirmed by direct primary-source read |
+| Section 54EC (Income Tax Act, 1961): exemption applies only to long-term capital gains from the transfer of land or a building, or both; 6-month reinvestment window from the date of transfer; Rs 50 lakh cap on investment made in a financial year, for investment on/after 1 April 2007; lock-in raised from 3 to 5 years for bonds acquired on/after 1 April 2018 | Bare statutory text reproduced on IndianKanoon (doc/82271184 and doc/172643298) | Confirmed by direct read of the bare-act text |
+| CBDT Notification No. 31/2025, dated 7 April 2025: HUDCO bonds issued on/after 1 April 2025 and redeemable after 5 years notified as a long-term specified asset under Section 54EC | TaxScan, CAclubindia and TaxManagement India, which independently quote the same notification number, date and terms | Corroborated across three independent professional sources quoting the same notification; the notification itself was not fetched directly |
+| Current 54EC issuers (REC, PFC, IRFC, HUDCO as of mid-2026), coupon (5.25% p.a., paid annually), and ticket size (Rs 10,000 minimum, Rs 50 lakh per PAN per financial year) | bondscanner.com's REC and NHAI explainers, cross-checked against zfunds.in | Corroborated across two independent professional sources; no issuer's own rate notice was fetched, so the article states the coupon as "the rate on offer in mid-2026" and tells the reader to confirm the live rate rather than treating it as fixed |
+| Section 85, Income-tax Act, 2025, as the renumbered successor to Section 54EC, same substantive terms | Three independent professional summaries (rrfinance.com, thefixedincome.com, mytaxexpert.co.in) agreeing the terms carried over unchanged | Corroborated by consistent secondary sourcing; the Income-tax Act, 2025 bare text for Section 85 itself was not independently fetched this session |
+
+Hero image: `automation/gen_image.py` failed with HTTP 429 ("prepayment
+credits are depleted") — a billing issue on the Gemini project, not a
+transient error, so no retry was attempted. The article ships without a
+hero image; `_article_image_url` returns None and the page falls back to
+the site default, confirmed by rendering the page locally before staging.
