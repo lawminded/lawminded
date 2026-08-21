@@ -18,7 +18,9 @@ The history of what was asked for is worth keeping.
 
 ## Pending
 
-<!-- nothing queued -->
+- [ ] 2026-08-22 | PMGEP scheme — what the benefits are, who can avail them, and the
+      special benefits for women, SC/ST and other reserved categories
+      *asked for 2026-08-17; the request was lost before the queue existed*
 
 ## Written
 
