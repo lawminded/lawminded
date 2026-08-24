@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Generate an article hero image with Gemini, sized to match the existing ones.
 
-    python3 automation/gen_image.py <slug> "<image prompt>"
+    python3 automation/gen_image.py <slug> "<image prompt>" ["stock search terms"]
     python3 automation/gen_image.py --self-check     # no API call, no credits
 
 Writes static/img/articles/<slug>.webp at 1200x630 — the size app.py's
@@ -10,13 +10,17 @@ _article_image_url helper expects, and the size og:image wants.
 Runs on the Mac only. GEMINI_API_KEY lives in the local .env and never goes near
 the server; images are committed as static WebP and deployed with the code.
 Billing must be enabled on the Google project — the free tier returns limit: 0
-for image generation.
+for image generation. When it is not, this falls back to a licensed photograph
+from Pexels (set PEXELS_API_KEY), whose licence allows commercial use and
+modification without attribution. It does not fall back to a general web image:
+those are somebody's copyright, and this site is monetised.
 """
 import base64
 import json
 import os
 import sys
 import urllib.error
+import urllib.parse
 import urllib.request
 from io import BytesIO
 
@@ -75,6 +79,61 @@ def generate(subject):
     sys.exit(f'No image in the response: {json.dumps(payload)[:400]}')
 
 
+# Pexels: free API, and its licence permits commercial use and modification with
+# no attribution required. That last part matters — a general web image is almost
+# certainly someone's copyright, and putting one on a monetised legal-compliance
+# site is exactly the risk this site exists to warn people about.
+PEXELS_SEARCH = 'https://api.pexels.com/v1/search'
+
+
+def _pexels_key():
+    key = os.getenv('PEXELS_API_KEY')
+    if not key:
+        from dotenv import load_dotenv
+        load_dotenv()
+        key = os.getenv('PEXELS_API_KEY')
+    return key
+
+
+def fetch_stock(query, orientation='landscape'):
+    """A licensed photograph matching the query, as raw bytes. Returns None rather
+    than raising when there is no key or no match, so callers can fall through to
+    the next option."""
+    key = _pexels_key()
+    if not key:
+        return None
+    url = f'{PEXELS_SEARCH}?{urllib.parse.urlencode({"query": query, "orientation": orientation, "per_page": 15})}'
+    try:
+        req = urllib.request.Request(url, headers={'Authorization': key})
+        with urllib.request.urlopen(req, timeout=30) as r:
+            photos = json.load(r).get('photos') or []
+        if not photos:
+            return None
+        # Take the widest available rendition; save() crops it down anyway, and
+        # starting large keeps the 1200x630 crop sharp.
+        src = photos[0]['src']
+        best = src.get('original') or src.get('large2x') or src.get('large')
+        with urllib.request.urlopen(best, timeout=60) as r:
+            return r.read()
+    except (urllib.error.URLError, urllib.error.HTTPError, KeyError, ValueError) as e:
+        print(f'  Pexels lookup failed: {e}', file=sys.stderr)
+        return None
+
+
+def best_effort(subject, stock_query=None):
+    """Try the sources in order of how well they fit the article, and say which
+    one answered. Gemini renders exactly the scene asked for; Pexels gives a real
+    photograph that is merely close; neither is guaranteed to be available."""
+    try:
+        return generate(subject), 'gemini'
+    except SystemExit as e:
+        print(f'  Gemini unavailable: {e}', file=sys.stderr)
+    raw = fetch_stock(stock_query or subject)
+    if raw:
+        return raw, 'pexels'
+    return None, 'none'
+
+
 def save(raw, slug, root='.'):
     """Crop to 1200x630 and write the WebP. ImageOps.fit centre-crops rather than
     squashing, so a 16:9 render loses a sliver of sky instead of distorting."""
@@ -106,4 +165,12 @@ if __name__ == '__main__':
     elif len(sys.argv) < 3:
         sys.exit(__doc__)
     else:
-        print(save(generate(sys.argv[2]), sys.argv[1]))
+        # argv[3], when given, is the plain-language search used if Gemini cannot
+        # be reached — "warehouse loading bay" finds a photo where the full scene
+        # description would not.
+        raw, source = best_effort(sys.argv[2], sys.argv[3] if len(sys.argv) > 3 else None)
+        if not raw:
+            sys.exit('No image source available (Gemini unavailable, no Pexels key '
+                     'or no match). The article will fall back to the site logo.')
+        print(f'  source: {source}', file=sys.stderr)
+        print(save(raw, sys.argv[1]))

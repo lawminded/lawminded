@@ -192,8 +192,12 @@ now brings traffic. Keep emitting it.
 ## 7. Hero image
 
 ```
-python3 automation/gen_image.py <slug> "<what the photo shows>"
+python3 automation/gen_image.py <slug> "<what the photo shows>" "<stock search terms>"
 ```
+
+The third argument is a plain search phrase — "warehouse loading bay", "accountant
+desk paperwork" — used only if Gemini is unavailable, when a licensed Pexels
+photograph stands in. Keep it to things a stock library would actually have.
 
 That script is the whole image step — Gemini `gemini-2.5-flash-image`, 16:9, then
 centre-cropped to the 1200×630 WebP the site expects. It carries the house style
