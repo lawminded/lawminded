@@ -246,3 +246,67 @@ Not used: no rupee example of an actual compounding fee was included, since the
 amount is fixed case-by-case by the Regional Director or NCLT and no schedule
 sets a standard figure — inventing a representative number would have been the
 kind of unsourced claim this site doesn't run.
+
+## blog_seed13.py — lifting the corporate veil, case study, 26 August 2026
+
+Requested directly by the owner over Telegram: a detailed case study with
+fictional characters and setup, explaining the corporate veil as a blanket over
+directors that is removed when something goes wrong, using proper company law
+sections. Checked the 133 published slugs first — the site has `director-duties`,
+`corporate-governance`, `din-allotment-kyc-disqualification` and
+`striking-off-company-stk-2`, but nothing on the veil itself or on when the
+protection stops. No duplication.
+
+**The narrative is fiction and says so.** Meridian Weaves Private Limited, Rohan
+Deshmukh, Anjali Rao, Vikram Sethi, Priya Nair, Mehta Fabrics, Northgate Retail
+and Vasant Looms do not exist, and every rupee figure in the story is invented to
+illustrate the provisions. The first FAQ states this outright so no reader mistakes
+it for a reported case. Every section number, penalty, threshold and judgment below
+is real and was read in the primary instrument, not in commentary.
+
+Bare Acts were downloaded and converted to text locally so sections could be quoted
+from the statute rather than from a summary. `mca.gov.in` and several
+`indiacode.nic.in` paths returned HTTP 403 to direct fetch from this box; where that
+happened the alternative source used is named in the table.
+
+| Claim verified | Source | Result |
+|---|---|---|
+| Separate legal personality from the date of incorporation | Companies Act 2013, Section 9 | Confirmed — India Code bare-act PDF (`indiacode.nic.in/bitstream/123456789/2114/5/A2013-18.pdf`), quoted from the statute text |
+| "The company is at law a different person altogether from the subscribers to the memorandum…" | *Salomon v A Salomon & Co Ltd* [1897] AC 22 (HL), 16 Nov 1896 | Confirmed verbatim. BAILII returned an empty body to direct fetch; the passage was taken from Trans-Lex's reproduction of the law report and matched word-for-word against a second independent reproduction before use |
+| "Officer who is in default" — whole-time director, KMP, person charged with filings who knowingly fails to prevent a default, and a director who received Board papers and did not object | Companies Act 2013, Section 2(60), clauses (i)–(vii) | Confirmed — quoted from the bare Act, including clause (vi) which is the one relied on for Anjali and Vikram |
+| Annual return late-filing penalty: ₹10,000 plus ₹100/day, capped ₹2 lakh (company) and ₹50,000 (officer in default) | Companies Act 2013, Section 92(5) as substituted | Confirmed from the bare Act |
+| Financial statement late-filing penalty, and that it names the MD and CFO specifically | Companies Act 2013, Section 137(3) | Confirmed from the bare Act |
+| Three continuous years of non-filing disqualifies every director for five years, in that company and any other | Companies Act 2013, Section 164(2)(a) | Confirmed from the bare Act |
+| Office falls vacant in all companies other than the defaulting one | Companies Act 2013, proviso to Section 167(1)(a) | Confirmed from the bare Act |
+| Duties of directors: good faith, due and reasonable care skill and diligence, no conflict, no undue gain; undue gain repayable to the company; fine ₹1–5 lakh | Companies Act 2013, Section 166(1)–(7) | Confirmed from the bare Act |
+| Independent and non-executive (non-promoter, non-KMP) directors liable only for acts with their knowledge attributable through Board processes, with consent or connivance, or where they did not act diligently | Companies Act 2013, Section 149(12) | Confirmed from the bare Act |
+| Fraudulent conduct of business: Tribunal may declare a director "personally responsible, without any limitation of liability" for the company's debts; everyone knowingly party is liable under Section 447 | Companies Act 2013, Section 339(1) and 339(3) | Confirmed — quoted verbatim from the bare Act |
+| Tribunal may order repayment with interest for misapplication or misfeasance; application within five years of the winding-up order or the misapplication, whichever is longer | Companies Act 2013, Section 340(1)–(2) | Confirmed from the bare Act |
+| Strike-off obtained to evade liabilities or deceive creditors: management jointly and severally liable "notwithstanding that the company has been notified as dissolved", plus Section 447 | Companies Act 2013, Section 251(1) | Confirmed — quoted verbatim from the bare Act |
+| Company may apply for removal of its name; creditor may apply to restore | Companies Act 2013, Sections 248(2) and 252 | Confirmed from the bare Act |
+| Fraud: definition in the Explanation, ₹10 lakh / 1% of turnover threshold, 6 months to 10 years plus fine of 1× to 3× the amount | Companies Act 2013, Section 447 | Confirmed — quoted from the bare Act including the amended threshold and the lower-value proviso |
+| Wrongful withholding of company property: fine ₹1–5 lakh, court may order return, default imprisonment up to two years | Companies Act 2013, Section 452(1)–(2) | Confirmed from the bare Act |
+| Auditor's duty to report fraud to the Central Government / audit committee | Companies Act 2013, Section 143(12) | Confirmed from the bare Act. **The ₹1 crore threshold was deliberately left out** — it sits in Rule 13 of the Companies (Audit and Auditors) Rules 2014, `mca.gov.in` returned 403 to every fetch attempted, and no primary text of the rule could be opened. The article describes the duty in the Act's own words ("such amount as may be prescribed") and states no figure |
+| Fraudulent trading, and wrongful trading where a director knew or ought to have known there was no reasonable prospect of avoiding insolvency and did not exercise due diligence to minimise creditor loss | Insolvency and Bankruptcy Code 2016, Section 66(1)–(2) and the Explanation | Confirmed — IBBI's consolidated bare Code (updated to 12.08.2021), quoted from the statute |
+| Directors of a private company jointly and severally liable for unrecoverable income tax unless they prove no gross neglect, misfeasance or breach of duty; "tax due" includes penalty, interest, fees | Income-tax Act 2025, Section 323(1)–(2) | Confirmed against the **Gazette of India** as published 22 Aug 2025 (`egazette.gov.in/WriteReadData/2025/265620.pdf`). Note: a widely mirrored secondary source shows a third sub-section carrying a private-to-public conversion exception; the enacted Gazette text has only two. The Gazette was followed. Section 323 replaces Section 179 of the 1961 Act, and the article says so |
+| Same structure for GST, with the burden of proof on the director | CGST Act 2017, Section 89(1) | Confirmed — CBIC's consolidated CGST Act PDF (`cbic-gst.gov.in`), quoted from the statute |
+| Cheque dishonour: up to two years, or fine up to twice the cheque amount, or both; Section 141(1) "in charge of, and was responsible to"; Section 141(2) consent, connivance or neglect | Negotiable Instruments Act 1881, Sections 138 and 141 | Confirmed — India Code bare-act PDF, quoted from the statute |
+| PF: every person in charge of and responsible to the company deemed guilty; sub-section (2) reaches consent, connivance or neglect; proviso requires proof of no knowledge or all due diligence | EPF & MP Act 1952, Section 14A(1)–(2) | Confirmed — India Code bare-act PDF, quoted from the statute |
+| "It is the cardinal principle of criminal jurisprudence that there is no vicarious liability unless the statute specifically provides so" | *Sunil Bharti Mittal v CBI*, Supreme Court, 9 Jan 2015 (Dattu CJ, Lokur and Sikri JJ) | Confirmed against the judgment text; case name, date and bench checked |
+| Veil pierced only where the company is "a mere camouflage or sham deliberately created… for the purpose of avoiding liability", applied restrictively | *Balwant Rai Saluja v Air India Ltd*, Supreme Court, 25 Aug 2014, (2014) 9 SCC 407, at para 71 | Confirmed against the judgment text; the paragraph number cited in the article was checked, not assumed |
+| Veil lifted and properties across family companies treated as one estate where the corporate form was used to defraud purchasers | *Delhi Development Authority v Skipper Construction Co (P) Ltd*, Supreme Court | Confirmed. **The article deliberately cites no SCC citation or date for this one** — the litigation ran across several judgments (1996 and 1999 among them) and the specific report carrying the veil-lifting holding could not be pinned down to one citation with confidence from the sources opened |
+| Section 141(1) requires "was in charge of" and "was responsible to" read conjunctively; merely managing the affairs of the company is not enough | *Ashok Shewakramani v State of Andhra Pradesh*, Supreme Court, 3 Aug 2023 (Oka and Karol JJ) | Confirmed against the judgment text. The Supreme Court's own API (`api.sci.gov.in`) timed out repeatedly, so the judgment reproduction was used and the holding cross-checked against a second report of the same case |
+
+Not used, and why:
+- **The ₹1 crore auditor fraud-reporting threshold** — see the Section 143(12) row. No primary text, so no figure.
+- **A citation for *DDA v Skipper*** — see that row. The holding is well established and is described without a citation rather than with a guessed one.
+- **Section 7(7)** (Tribunal may direct that members' liability be unlimited where a company was incorporated on false information) was verified in the bare Act but left out of the article — Meridian was incorporated honestly, so forcing it in would have been a section listed for its own sake.
+
+Length: about 4,700 words, against the 1,200–1,800 in `automation/weekly-post.md`.
+That is deliberate and outside house range — the owner asked for a detailed case
+study readers could go deep into. Flagged to the owner in the reply so it can be
+cut back if they would rather have the usual length.
+
+Hero image: Gemini returned HTTP 429 ("prepayment credits are depleted") — the same
+billing failure recorded above for blog_seed7, so no retry. `gen_image.py` fell back
+to a licensed Pexels photograph of a textile mill, which suits the subject.

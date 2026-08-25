@@ -187,6 +187,9 @@ SEO_DESCRIPTIONS = {
     'lease-vs-leave-and-licence':
         "Lease vs leave and licence: how the two differ in law, which to use, and why "
         "the wrong choice changes your rights over the property.",
+    'lifting-corporate-veil-director-liability-case-study':
+        "A case study in when directors stop being protected by their company: "
+        "Section 164, Section 339, Section 447 and IBC Section 66, worked through.",
     'llp-capital-contribution-increase-reduction':
         "Increase or reduce an LLP's capital contribution: the Form 3 filing, fees, and "
         "the tax a payout to a partner can trigger.",
@@ -407,6 +410,15 @@ INTERNAL_LINKS = {
     'dir-12': 'dir-12-appointment-resignation-directors',
     'director duties': 'director-duties',
     'duties of a director': 'director-duties',
+    # Corporate veil case study, Aug 2026. Each phrase checked against the live
+    # DB first: 'separate legal entity' occurs in two other guides, 'director
+    # liability' in one, 'section 447' in three. Deliberately not using
+    # 'officer in default' (22 articles, and it is the wrong destination for
+    # most of them) or 'personally liable' (fema-penalties uses it about
+    # individuals under FEMA, not about directors of a company).
+    'separate legal entity': 'lifting-corporate-veil-director-liability-case-study',
+    'director liability': 'lifting-corporate-veil-director-liability-case-study',
+    'section 447': 'lifting-corporate-veil-director-liability-case-study',
     'iepf': 'dividend-declaration-iepf-compliance',
     'unpaid dividend': 'dividend-declaration-iepf-compliance',
     'dormant company': 'dormant-company-section-455',
