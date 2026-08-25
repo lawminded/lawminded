@@ -214,8 +214,11 @@ def test_a_request_is_queued_not_run_in_the_poll_loop():
 
     assert s2.ran == [], 'the poll loop ran the job instead of queueing it'
     assert bot.WORK.qsize() == 1, 'the request never reached the work queue'
-    assert len(s2.sent) == 1 and 'status' in s2.sent[0].lower(), \
-        f'the acknowledgement should mention asking for status: {s2.sent}'
+    # One acknowledgement, giving a real time range. The owner asked for fewer
+    # messages, so it must not promise progress updates it will not send.
+    assert len(s2.sent) == 1, f'expected exactly one acknowledgement: {s2.sent}'
+    assert '10 to 20' in s2.sent[0], (
+        f'the acknowledgement should say how long it takes: {s2.sent}')
 
 
 def test_status_reports_what_is_running_and_for_how_long():

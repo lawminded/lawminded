@@ -329,8 +329,7 @@ def handle(msg):
              f'{waiting + 1} job(s) ahead of this finishing. I will reply when it '
              f'is done.')
     else:
-        send('On it. A new article usually takes 10 to 20 minutes. You can ask '
-             '"status" any time — I stay responsive while I work.')
+        send('On it — usually 10 to 20 minutes for a new article. I will send the finished thing, not progress updates.')
     WORK.put(text)
 
 

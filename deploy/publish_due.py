@@ -89,16 +89,20 @@ def main():
         lines.append(f'Published today: {row["title"]}{note}\n{url}')
 
     waiting = pending(conn)
-    if waiting:
-        held = [r for r in waiting if r['publish_on']]
+    held = [r for r in waiting if r['publish_on']]
+    if held:
+        lines.append('Scheduled:\n' + '\n'.join(
+            f'  {r["publish_on"]} — {r["title"]}' for r in held))
+
+    # Undated drafts are deliberately NOT listed here. Some have sat unpublished
+    # since June because the owner decided against them, and repeating 'four
+    # drafts are waiting for your decision' after every publish is nagging about
+    # a decision already made. They remain on /admin/automation, which is a page
+    # someone chooses to open, and in an explicit status request.
+    if report_only and waiting:
         loose = [r for r in waiting if not r['publish_on']]
-        if held:
-            lines.append('Scheduled:\n' + '\n'.join(
-                f'  {r["publish_on"]} — {r["title"]}' for r in held))
         if loose:
-            lines.append(f'Waiting for your decision ({len(loose)}):\n' + '\n'.join(
-                f'  {r["title"]}\n  {stage_draft.SITE_URL}/draft/{r["slug"]}'
-                f'?t={stage_draft.sign(r["slug"])}' for r in loose[:5]))
+            lines.append(f'{len(loose)} undated draft(s) exist — see /admin/automation.')
     conn.close()
 
     msg = '\n\n'.join(lines) if lines else 'Nothing published, nothing pending.'
