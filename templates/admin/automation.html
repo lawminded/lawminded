@@ -1,0 +1,147 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_title %}Automation{% endblock %}
+
+{% block admin_content %}
+<style>
+  .au-grid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));margin-bottom:1.6rem;}
+  .au-tile{background:#fff;border:1px solid #e3e0d9;border-radius:6px;padding:.9rem 1rem;}
+  .au-tile .k{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:#8a8579;font-weight:600;}
+  .au-tile .v{font-size:1.45rem;font-weight:600;margin-top:.25rem;font-variant-numeric:tabular-nums;}
+  .au-tile .s{font-size:.78rem;color:#8a8579;}
+  .pill{display:inline-block;padding:.12rem .5rem;border-radius:99px;font-size:.72rem;font-weight:600;}
+  .pill.ok{background:#e4f1e9;color:#256b45;}
+  .pill.bad{background:#fbe6e3;color:#a3392c;}
+  .pill.warn{background:#fdf1dd;color:#8a6412;}
+  .au-sec{background:#fff;border:1px solid #e3e0d9;border-radius:6px;padding:1rem 1.15rem;margin-bottom:1.4rem;}
+  .au-sec h3{margin:0 0 .75rem;font-size:.78rem;letter-spacing:.09em;text-transform:uppercase;color:#8a8579;}
+  .au-table{width:100%;border-collapse:collapse;font-size:.88rem;}
+  .au-table th{text-align:left;font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:#8a8579;padding:.35rem .5rem .35rem 0;font-weight:600;}
+  .au-table td{padding:.45rem .5rem .45rem 0;border-top:1px solid #f0ede6;vertical-align:top;}
+  .au-table a{color:#8a6412;}
+  .muted{color:#8a8579;font-size:.85rem;}
+  .mono{font-family:ui-monospace,Menlo,monospace;font-size:.8rem;}
+</style>
+
+<p class="muted" style="margin-top:-.6rem;">
+  {% if status.age_minutes is not none and status.get('generated_at') %}
+    Writer box reported {{ status.age_minutes }} min ago.
+  {% endif %}
+  Runs Friday 08:00, Saturday and Sunday 12:00 IST.
+</p>
+
+{% if status_error %}
+  <div class="au-sec" style="border-color:#e8c9c3;background:#fdf3f1;">
+    <strong>{{ status_error }}</strong>
+    <p class="muted" style="margin-bottom:0;">
+      The writer box pushes a report every 15 minutes. If this persists, it is
+      either off, out of disk, or cannot reach this server over SSH.
+    </p>
+  </div>
+{% endif %}
+
+<div class="au-grid">
+  <div class="au-tile">
+    <div class="k">Telegram bot</div>
+    <div class="v">
+      {% if status.get('bot_active') %}<span class="pill ok">running</span>
+      {% elif status %}<span class="pill bad">stopped</span>
+      {% else %}<span class="pill warn">unknown</span>{% endif %}
+    </div>
+    <div class="s">{{ 'working on a job now' if status.get('busy') else 'idle' }}</div>
+  </div>
+  <div class="au-tile">
+    <div class="k">Drafts awaiting you</div>
+    <div class="v">{{ drafts|length }}</div>
+    <div class="s">{{ published }} articles published</div>
+  </div>
+  <div class="au-tile">
+    <div class="k">Topics queued</div>
+    <div class="v">{{ status.get('queue', [])|length }}</div>
+    <div class="s">written on the next run due</div>
+  </div>
+  <div class="au-tile">
+    <div class="k">Writer box memory</div>
+    <div class="v">{{ status.get('mem_available_mb', '—') }}<span style="font-size:.8rem;"> MB</span></div>
+    <div class="s">free of {{ status.get('mem_total_mb', '—') }} MB · disk {{ status.get('disk_pct_used', '—') }}% used</div>
+  </div>
+</div>
+
+<div class="au-sec">
+  <h3>Recent runs</h3>
+  {% if status.get('runs') %}
+  <table class="au-table">
+    <tr><th>When</th><th>Result</th><th>Article</th></tr>
+    {% for r in status['runs'] %}
+    <tr>
+      <td class="mono">{{ r.when }}</td>
+      <td>{% if r.status == 'ok' %}<span class="pill ok">ok</span>
+          {% else %}<span class="pill bad">{{ r.status }}</span>{% endif %}</td>
+      <td>{{ r.article or '—' }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}<p class="muted">No run logs reported yet.</p>{% endif %}
+</div>
+
+<div class="au-sec">
+  <h3>Drafts waiting for you</h3>
+  {% if drafts %}
+  <table class="au-table">
+    <tr><th>Article</th><th>Status</th><th></th></tr>
+    {% for d in drafts %}
+    <tr>
+      <td>{{ d['title'] }}</td>
+      <td>
+        {% if d['publish_on'] %}
+          <span class="pill warn">publishes {{ d['publish_on'] }}</span>
+        {% else %}
+          <span class="muted">needs your decision</span>
+        {% endif %}
+      </td>
+      <td><a href="{{ draft_url(d['slug']) }}" target="_blank">Read &amp; publish →</a></td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}<p class="muted">Nothing waiting. Everything written has been decided on.</p>{% endif %}
+</div>
+
+<div class="au-sec">
+  <h3>Queued topics</h3>
+  {% if status.get('queue') %}
+    <table class="au-table">
+      {% for t in status['queue'] %}<tr><td>{{ t }}</td></tr>{% endfor %}
+    </table>
+  {% else %}
+    <p class="muted">Nothing queued. The next run will pick its own topic from the week's legal news.</p>
+  {% endif %}
+</div>
+
+{% if status.get('held') %}
+<div class="au-sec" style="border-color:#f0dcb8;background:#fdfaf3;">
+  <h3>Held until your Claude quota resets</h3>
+  <table class="au-table">
+    {% for h in status['held'] %}
+    <tr><td>{{ h.message[:110] }}</td><td class="mono">retries {{ h.retry_at[11:16] }}</td></tr>
+    {% endfor %}
+  </table>
+  <p class="muted" style="margin-bottom:0;">These run automatically. Nothing is lost.</p>
+</div>
+{% endif %}
+
+<div class="au-sec">
+  <h3>Recently published</h3>
+  <table class="au-table">
+    {% for a in recent %}
+    <tr>
+      <td class="mono" style="white-space:nowrap;">{{ a['created_at'][:10] }}</td>
+      <td><a href="{{ url_for('article', slug=a['slug']) }}" target="_blank">{{ a['title'] }}</a></td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+
+<p class="muted mono">
+  {{ status.get('host', '') }} · {{ status.get('uptime', '') }} ·
+  {{ status.get('branch', '') }} @ {{ status.get('commit', '')[:60] }}
+</p>
+{% endblock %}

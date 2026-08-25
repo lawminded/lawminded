@@ -1,3 +1,4 @@
+import json
 import os
 import re
 import sqlite3
@@ -27,7 +28,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from database import (get_db, init_db, seed_articles, seed_documents, seed_formats,
-                      apply_content_migrations)
+                      apply_content_migrations, DB_PATH)
 import content as C
 import formats as F
 from seo_meta import SEO_DESCRIPTIONS, INTERNAL_LINKS, RETIRED_ARTICLES
@@ -1661,6 +1662,48 @@ def admin_dashboard():
     ).fetchall()
     db.close()
     return render_template('admin/dashboard.html', stats=stats, recent_messages=recent_messages)
+
+
+@app.route('/admin/automation')
+@admin_required
+def admin_automation():
+    """What the writing automation is doing. Two sources: this database, which
+    knows what is drafted and scheduled, and a JSON snapshot the writer box
+    pushes here every quarter hour. The snapshot is deliberately not fetched live
+    — a writer box that is slow or down should not hang the admin panel of a site
+    that does not otherwise need it."""
+    status, status_error = {}, None
+    snap = os.path.join(os.path.dirname(DB_PATH), 'writer-status.json')
+    try:
+        with open(snap) as f:
+            status = json.load(f)
+    except FileNotFoundError:
+        status_error = 'No report from the writer box yet.'
+    except (OSError, ValueError) as e:
+        status_error = f'Could not read the writer box report: {e}'
+
+    if status.get('generated_at'):
+        try:
+            age = datetime.now(IST) - datetime.fromisoformat(status['generated_at'])
+            status['age_minutes'] = int(age.total_seconds() // 60)
+        except ValueError:
+            status['age_minutes'] = None
+
+    db = get_db()
+    drafts = db.execute(
+        'SELECT slug, title, publish_on, created_at FROM articles '
+        'WHERE published=0 ORDER BY publish_on IS NULL, publish_on, created_at'
+    ).fetchall()
+    recent = db.execute(
+        'SELECT slug, title, created_at FROM articles WHERE published=1 '
+        'ORDER BY created_at DESC LIMIT 8').fetchall()
+    published = db.execute('SELECT COUNT(*) FROM articles WHERE published=1').fetchone()[0]
+    db.close()
+
+    return render_template('admin/automation.html', status=status,
+                           status_error=status_error, drafts=drafts,
+                           recent=recent, published=published,
+                           draft_url=draft_url, today=ist_today())
 
 
 @app.route('/admin/articles')

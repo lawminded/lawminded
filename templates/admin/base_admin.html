@@ -23,6 +23,7 @@
       <li><a href="{{ url_for('admin_formats') }}" {% if request.endpoint in ['admin_formats','admin_format_new','admin_format_edit'] %}class="active"{% endif %}>📎 Formats</a></li>
       <li><a href="{{ url_for('admin_subscribers') }}" {% if request.endpoint == 'admin_subscribers' %}class="active"{% endif %}>📧 Subscribers</a></li>
       <li><a href="{{ url_for('admin_messages') }}" {% if request.endpoint == 'admin_messages' %}class="active"{% endif %}>💬 Messages</a></li>
+      <li><a href="{{ url_for('admin_automation') }}" {% if request.endpoint == 'admin_automation' %}class="active"{% endif %}>🤖 Automation</a></li>
       <li><a href="{{ url_for('admin_password') }}" {% if request.endpoint == 'admin_password' %}class="active"{% endif %}>🔑 Change Password</a></li>
       <li style="margin-top:auto;border-top:1px solid #333;padding-top:.5rem;">
         <a href="{{ url_for('index') }}" target="_blank">🌐 View Site</a>
