@@ -85,6 +85,12 @@ def generate(subject):
 # site is exactly the risk this site exists to warn people about.
 PEXELS_SEARCH = 'https://api.pexels.com/v1/search'
 
+# Pexels answers 403 to urllib's default "Python-urllib/3.x" while the identical
+# request from curl succeeds. Identify the caller properly — this is a real site
+# making real requests, and saying so is also just good manners to an API being
+# given away for free.
+UA = {'User-Agent': 'LawMindedBot/1.0 (+https://lawminded.in)'}
+
 
 def _pexels_key():
     key = os.getenv('PEXELS_API_KEY')
@@ -104,7 +110,7 @@ def fetch_stock(query, orientation='landscape'):
         return None
     url = f'{PEXELS_SEARCH}?{urllib.parse.urlencode({"query": query, "orientation": orientation, "per_page": 15})}'
     try:
-        req = urllib.request.Request(url, headers={'Authorization': key})
+        req = urllib.request.Request(url, headers={'Authorization': key, **UA})
         with urllib.request.urlopen(req, timeout=30) as r:
             photos = json.load(r).get('photos') or []
         if not photos:
@@ -113,7 +119,8 @@ def fetch_stock(query, orientation='landscape'):
         # starting large keeps the 1200x630 crop sharp.
         src = photos[0]['src']
         best = src.get('original') or src.get('large2x') or src.get('large')
-        with urllib.request.urlopen(best, timeout=60) as r:
+        with urllib.request.urlopen(
+                urllib.request.Request(best, headers=UA), timeout=60) as r:
             return r.read()
     except (urllib.error.URLError, urllib.error.HTTPError, KeyError, ValueError) as e:
         print(f'  Pexels lookup failed: {e}', file=sys.stderr)
