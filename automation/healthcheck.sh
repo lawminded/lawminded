@@ -26,8 +26,11 @@ echo "── Writer box ──────────────────�
   && ok "telegram bot" "$(systemctl show lm-bot -p NRestarts --value) restarts" \
   || bad "telegram bot" "NOT RUNNING"
 
-if pgrep -f "claude -p" >/dev/null; then
-  warn "claude job" "one running ($(ps -eo etime,args | grep '[c]laude -p' | head -1 | awk '{print $1}'))"
+# Anchored to the start of the command line. `pgrep -f "claude -p"` also matches
+# any shell or ssh wrapper that merely mentions the string — including the command
+# doing the checking, which reported a job running when the box was idle.
+if ps -eo args | grep -q "^claude -p"; then
+  warn "claude job" "one running ($(ps -eo etime,args | grep "^ *[0-9:]* claude -p" | head -1 | awk '{print $1}'))"
 else
   ok "claude job" "idle"
 fi
