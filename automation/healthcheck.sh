@@ -141,9 +141,17 @@ ssh -o BatchMode=yes -o ConnectTimeout=10 "$WEB" 'crontab -l 2>/dev/null | grep 
 
 q=$(sed -n '/## Pending/,/## Written/p' "$REPO/automation/queue.md" 2>/dev/null | grep -c '^- \[ \]')
 ok "queued topics" "$q pending"
-[ -s "$REPO/automation/.bot_retry.json" ] \
-  && warn "held requests" "$(python3 -c "import json;print(len(json.load(open('$REPO/automation/.bot_retry.json'))))" 2>/dev/null || echo '?') waiting on quota" \
-  || ok "held requests" "none"
+# An empty queue is the file "[]", which is two bytes — so a size test calls it
+# non-empty and warns about nothing. Count the entries instead.
+held=$(python3 -c "
+import json
+try:
+    print(len(json.load(open('$REPO/automation/.bot_retry.json'))))
+except Exception:
+    print(0)
+" 2>/dev/null || echo 0)
+[ "$held" = 0 ] && ok "held requests" "none" \
+  || warn "held requests" "$held waiting on quota"
 
 echo
 [ "$FAIL" = 0 ] && echo "  ALL GREEN" || echo "  SOMETHING IS DOWN — see the ✗ lines above"
