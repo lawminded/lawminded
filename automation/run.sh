@@ -55,13 +55,31 @@ fi
 # Tell the owner when a run dies. A failed run is otherwise completely silent —
 # the log sits on a box nobody logs into, and a fortnight of breakage looks
 # exactly like a fortnight with no legal news worth writing about.
+# Deliberately stdlib-only and self-contained: it reads .env itself and imports
+# nothing from the repo. The first version called into deploy/stage_draft.py,
+# which imports itsdangerous — absent from the system python — so the alert for a
+# broken run was itself broken, and the `|| true` hid that. A safety net must not
+# depend on the machinery it is watching.
 notify() {
-  python3 -c "
-import sys
-sys.path.insert(0, 'deploy')
-import stage_draft
-stage_draft.notify_text(sys.argv[1])
-" "$1" >/dev/null 2>&1 || true
+  python3 - "$1" <<'PYEOF' || echo "    (could not send the failure alert)" >&2
+import sys, urllib.parse, urllib.request
+from pathlib import Path
+
+env = {}
+for line in (Path.home() / 'lawminded' / '.env').read_text().splitlines():
+    if '=' in line and not line.startswith('#'):
+        k, v = line.split('=', 1)
+        env[k.strip()] = v.strip()
+
+tok, chat = env.get('TELEGRAM_BOT_TOKEN'), env.get('TELEGRAM_CHAT_ID')
+if not (tok and chat):
+    sys.exit('no telegram credentials in .env')
+body = urllib.parse.urlencode({'chat_id': chat, 'text': sys.argv[1][:4000],
+                               'disable_web_page_preview': 'true'}).encode()
+urllib.request.urlopen(
+    urllib.request.Request(f'https://api.telegram.org/bot{tok}/sendMessage', data=body),
+    timeout=20).read()
+PYEOF
 }
 
 on_failure() {
