@@ -4,11 +4,13 @@ import re
 import sqlite3
 import base64
 import hmac
+import threading
 import time
 from io import BytesIO
 from datetime import date, datetime, timedelta, timezone, timedelta
 from functools import wraps, lru_cache
 from flask import (Flask, render_template, request, redirect, url_for,
+                   has_request_context,
                    session, flash, jsonify, send_from_directory, send_file, abort)
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeSerializer, URLSafeTimedSerializer, BadSignature, SignatureExpired
@@ -231,9 +233,21 @@ _unsub_serializer = URLSafeSerializer(app.secret_key, salt='lm-unsubscribe')
 
 
 def unsubscribe_url(email):
-    """Absolute, signed unsubscribe link for inclusion in outgoing emails."""
+    """Absolute, signed unsubscribe link for inclusion in outgoing emails.
+
+    url_for needs a request context, and the biggest caller of this — the
+    announcement sent when an article is published — runs on a background
+    thread that has only an app context. Without the fallback below, every
+    subscriber email fails on building the link rather than on the mail
+    server: a confusing way to discover you have sent nothing.
+    """
     token = _unsub_serializer.dumps(email)
-    return f'{SITE_URL}{url_for("unsubscribe")}?token={token}'
+    if has_request_context():
+        path = url_for("unsubscribe")
+    else:
+        with app.test_request_context():
+            path = url_for("unsubscribe")
+    return f'{SITE_URL}{path}?token={token}'
 
 
 # The site's readers, its deadlines and its article dates are all Indian. The
@@ -389,6 +403,99 @@ def send_branded_email(subject, recipients, heading, body_html, body_text, unsub
         msg.attach('logo.png', 'image/png', f.read(), 'inline',
                    headers={'Content-ID': '<logo>', 'X-Attachment-Id': 'logo'})
     mail.send(msg)
+
+
+def _log_email(db, recipient, subject, kind, slug, status, error=None):
+    db.execute(
+        'INSERT INTO email_log (recipient, subject, kind, article_slug, status, error) '
+        'VALUES (?,?,?,?,?,?)',
+        (recipient, subject, kind, slug, status, (error or '')[:500]))
+
+
+def mail_subscribers(subject, heading, body_html, body_text, kind, slug=None):
+    """Send one message to every subscriber, one SMTP conversation each, and
+    record the outcome per recipient.
+
+    Individually rather than one message with everyone in the To line, for two
+    reasons: subscribers must not see each other's addresses, and each person's
+    unsubscribe link has to be their own. The per-recipient log exists because
+    SMTP tells you nothing after the fact — 'it was sent' is not a record of who
+    received what.
+
+    Returns (sent, failed). Never raises: a mail server having a bad afternoon
+    must not take down whatever called this.
+    """
+    db = get_db()
+    people = db.execute('SELECT email, name FROM subscribers').fetchall()
+    sent = failed = 0
+    for person in people:
+        addr = (person['email'] or '').strip()
+        if not addr:
+            continue
+        try:
+            send_branded_email(subject, [addr], heading, body_html, body_text,
+                               unsub=unsubscribe_url(addr))
+            _log_email(db, addr, subject, kind, slug, 'sent')
+            sent += 1
+        except Exception as e:                       # noqa: BLE001 — see docstring
+            _log_email(db, addr, subject, kind, slug, 'failed', repr(e))
+            failed += 1
+            app.logger.warning('newsletter to %s failed: %r', addr, e)
+    db.commit()
+    db.close()
+    return sent, failed
+
+
+def announce_article(slug):
+    """Tell subscribers about a newly published article. Called after the owner
+    publishes, in a background thread so the tap returns immediately."""
+    db = get_db()
+    row = db.execute(
+        'SELECT title, slug, summary, read_time, category FROM articles '
+        'WHERE slug=? AND published=1', (slug,)).fetchone()
+    db.close()
+    if not row:
+        return 0, 0
+
+    url = f'{SITE_URL}/article/{row["slug"]}'
+    cat = CATEGORY_MAP.get(row['category'], 'Guide')
+    summary = (row['summary'] or '').strip()
+
+    body_html = (
+        f'<p style="margin:0 0 14px;">We have just published something new on '
+        f'Law Minded, and it looked worth putting in front of you.</p>'
+        f'<p style="margin:0 0 6px;font-size:13px;letter-spacing:.06em;'
+        f'text-transform:uppercase;color:#8a6412;">{cat}</p>'
+        f'<p style="margin:0 0 10px;font-size:19px;font-weight:600;line-height:1.35;">'
+        f'{row["title"]}</p>'
+        f'<p style="margin:0 0 18px;">{summary}</p>'
+        f'<p style="margin:0 0 20px;"><a href="{url}" '
+        f'style="background:#E8A020;color:#1a1a1a;padding:11px 22px;border-radius:4px;'
+        f'text-decoration:none;font-weight:600;display:inline-block;">Read it '
+        f'&rarr;</a></p>'
+        f'<p style="margin:0;color:#6b6b6b;font-size:14px;">'
+        f'{row["read_time"] or "A few minutes"} &middot; free to read, no sign-up.</p>'
+    )
+    body_text = (
+        f'We have just published something new on Law Minded.\n\n'
+        f'{row["title"]}\n\n{summary}\n\nRead it: {url}\n'
+    )
+    return mail_subscribers(f'New on Law Minded: {row["title"]}',
+                            'A new guide is up', body_html, body_text,
+                            kind='new-article', slug=row['slug'])
+
+
+def announce_article_async(slug):
+    """Publishing should feel instant. The send happens behind the redirect."""
+    def _run():
+        with app.app_context():
+            try:
+                s, f = announce_article(slug)
+                app.logger.info('announced %s to subscribers: %d sent, %d failed',
+                                slug, s, f)
+            except Exception as e:                   # noqa: BLE001
+                app.logger.exception('announcing %s failed: %r', slug, e)
+    threading.Thread(target=_run, daemon=True).start()
 
 
 # ─── Context Processor (globals available in every template) ─────────────────
@@ -998,6 +1105,10 @@ def draft_publish(slug):
                'updated_at=? WHERE id=?', (now, now, row['id']))
     db.commit()
     db.close()
+    # Subscribers hear about it the moment it goes live. Backgrounded so the tap
+    # returns straight to the article rather than waiting on a mail server.
+    announce_article_async(slug)
+    flash('Published. Subscribers are being notified.', 'success')
     return redirect(url_for('article', slug=slug))
 
 

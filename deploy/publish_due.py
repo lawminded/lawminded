@@ -58,6 +58,20 @@ def publish_due(conn, today):
     return out
 
 
+def announce(slug):
+    """Mail subscribers about an article the scheduler just published. Imported
+    lazily: this script also runs with --report, where loading the whole Flask
+    app to send nothing would be waste."""
+    try:
+        sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        import app as site
+        with site.app.app_context():
+            return site.announce_article(slug)
+    except Exception as e:                           # noqa: BLE001
+        print(f'  could not email subscribers about {slug}: {e!r}', file=sys.stderr)
+        return 0, 0
+
+
 def main():
     report_only = '--report' in sys.argv
     today = datetime.now(IST).strftime('%Y-%m-%d')
@@ -68,7 +82,11 @@ def main():
     lines = []
     for row in published:
         url = f'{stage_draft.SITE_URL}/article/{row["slug"]}'
-        lines.append(f'Published today: {row["title"]}\n{url}')
+        sent, failed = announce(row['slug'])
+        note = f' · emailed {sent} subscriber{"s" if sent != 1 else ""}'
+        if failed:
+            note += f', {failed} failed'
+        lines.append(f'Published today: {row["title"]}{note}\n{url}')
 
     waiting = pending(conn)
     if waiting:

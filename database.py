@@ -40,6 +40,17 @@ def init_db():
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
 
+        CREATE TABLE IF NOT EXISTS email_log (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            recipient TEXT NOT NULL,
+            subject TEXT NOT NULL,
+            kind TEXT NOT NULL,            -- 'new-article' | 'roundup' | other
+            article_slug TEXT,
+            status TEXT NOT NULL,          -- 'sent' | 'failed'
+            error TEXT,
+            sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+
         CREATE TABLE IF NOT EXISTS subscribers (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT,
