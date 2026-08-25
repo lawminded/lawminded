@@ -128,5 +128,9 @@ trap on_failure EXIT
   echo "=== exit $? at $(date '+%H:%M:%S') ==="
 } >>"$LOG" 2>&1
 
+# Push a fresh snapshot so the dashboard reflects this run immediately rather
+# than up to fifteen minutes later.
+python3 "$REPO/automation/report_status.py" >/dev/null 2>&1 || true
+
 # Keep the last 30 runs; the logs hold full article drafts and get large.
 ls -1t "$LOGS"/*.log 2>/dev/null | tail -n +31 | xargs -r rm --

@@ -9,7 +9,8 @@ on every page load instead, but then a slow or unreachable writer box would hang
 the admin panel, and the site would depend on a machine it does not need in order
 to serve anyone. A file that is a few minutes stale is the better trade.
 
-Runs from cron every 15 minutes and at the end of each weekly run.
+Runs from cron every 5 minutes, at the end of each weekly run, and
+whenever the bot finishes a job — so the dashboard is never far behind.
 """
 import json
 import os
@@ -58,12 +59,30 @@ def last_runs(n=6):
 
 
 def queue_topics():
+    """Pending entries, whole. An entry wraps over several lines for readability
+    in the file, so taking only the checkbox line truncated topics mid-sentence
+    on the dashboard. Continuation lines are joined; the italic provenance note
+    is dropped, being for whoever reads the file rather than for a status page."""
     q = REPO / 'automation' / 'queue.md'
     if not q.exists():
         return []
     body = q.read_text().split('## Pending', 1)[-1].split('## Written')[0]
-    return [l.strip()[5:].strip() for l in body.splitlines()
-            if l.strip().startswith('- [ ]')]
+
+    topics, current = [], None
+    for raw in body.splitlines():
+        line = raw.strip()
+        if line.startswith('- [ ]'):
+            if current:
+                topics.append(current)
+            current = line[5:].strip()
+        elif current is not None and line and not line.startswith(('*', '<!--', '-')):
+            current += ' ' + line
+        elif current is not None and (not line or line.startswith(('*', '<!--'))):
+            topics.append(current)
+            current = None
+    if current:
+        topics.append(current)
+    return topics
 
 
 def held_messages():
