@@ -21,6 +21,7 @@ sys.path.insert(0, str(REPO / 'automation'))
 import telegram_bot as bot  # noqa: E402
 
 ALLOWED = bot.ALLOWED_CHAT
+REAL_QUICK_ANSWER = bot.quick_answer
 STRANGER = '999999999'
 
 
@@ -52,20 +53,31 @@ def test_chat_id_type_does_not_matter():
     """Telegram sends the id as an integer; the allowlist holds a string. A
     forgotten str() here would compare 6178813834 to "6178813834" and reject the
     owner — or worse, a loosened check would accept everyone."""
+    # Accepted means the request reaches the work queue; the worker runs it.
+    Spy().install()
+    bot.quick_answer = lambda t: None
+    for form in (int(ALLOWED), str(ALLOWED)):
+        while not bot.WORK.empty():
+            bot.WORK.get_nowait()
+        bot.handle(_msg(form, 'write something'))
+        assert bot.WORK.qsize() == 1, (
+            f'owner rejected when their id arrived as {type(form).__name__}')
+
+
+def test_owner_gets_an_acknowledgement_then_the_result():
+    """The ack comes from the poll loop, the result from the worker. Both must
+    reach the owner, and the work must actually run."""
     s = Spy().install()
-    bot.handle(_msg(int(ALLOWED), 'write something'))
-    assert len(s.ran) == 1, 'owner was rejected when their id arrived as an int'
+    bot.quick_answer = lambda t: None
+    while not bot.WORK.empty():
+        bot.WORK.get_nowait()
 
-    s2 = Spy().install()
-    bot.handle(_msg(str(ALLOWED), 'write something'))
-    assert len(s2.ran) == 1, 'owner was rejected when their id arrived as a string'
-
-
-def test_owner_gets_an_acknowledgement_and_the_result():
-    s = Spy().install()
     bot.handle(_msg(ALLOWED, 'write about the new EPFO circular'))
+    assert len(s.sent) == 1, f'expected one acknowledgement, got {s.sent}'
+
+    # Now do what the worker would do with the queued item.
+    bot.dispatch(bot.WORK.get_nowait())
     assert len(s.ran) == 1 and 'EPFO' in s.ran[0], 'the message never reached Claude'
-    assert len(s.sent) == 2, f'expected an ack then a result, got {len(s.sent)}'
     assert 'done' in s.sent[-1], 'the result was not sent back'
 
 
@@ -172,16 +184,82 @@ def test_status_questions_do_not_spend_a_claude_run():
     assert s2.sent == ['nothing pending'], f'unexpected reply: {s2.sent}'
 
 
-def test_a_real_request_still_reaches_claude():
-    s2 = Spy().install()
+def test_a_real_request_still_reaches_the_worker():
+    """Handled by the worker now rather than inline, but it must still get
+    there — the fast path must not swallow actual work."""
+    Spy().install()
     bot.quick_answer = lambda t: None
+    while not bot.WORK.empty():
+        bot.WORK.get_nowait()
     bot.handle(_msg(ALLOWED, 'write about the PAN application process'))
-    assert len(s2.ran) == 1, 'a real request was swallowed by the fast path'
+    assert bot.WORK.qsize() == 1, 'a real request was swallowed by the fast path'
+    assert 'PAN' in bot.WORK.get_nowait()
 
 
 def test_the_model_is_pinned_not_left_to_a_default():
     assert bot.MODEL, 'no model configured'
     assert 'opus' in bot.MODEL.lower(), f'expected an Opus model, got {bot.MODEL}'
+
+
+def test_a_request_is_queued_not_run_in_the_poll_loop():
+    """The poll loop must return immediately. When it ran jobs itself, a long
+    article blocked Telegram reads for up to forty-five minutes and the bot could
+    not answer "are you stuck?" — which looked identical to being stuck."""
+    s2 = Spy().install()
+    bot.quick_answer = lambda t: None
+    while not bot.WORK.empty():
+        bot.WORK.get_nowait()
+
+    bot.handle(_msg(ALLOWED, 'write a long article about something'))
+
+    assert s2.ran == [], 'the poll loop ran the job instead of queueing it'
+    assert bot.WORK.qsize() == 1, 'the request never reached the work queue'
+    assert len(s2.sent) == 1 and 'status' in s2.sent[0].lower(), \
+        f'the acknowledgement should mention asking for status: {s2.sent}'
+
+
+def test_status_reports_what_is_running_and_for_how_long():
+    bot.quick_answer = REAL_QUICK_ANSWER
+    from datetime import datetime, timedelta
+    with bot.CURRENT_LOCK:
+        bot.CURRENT['text'] = 'write about the corporate veil'
+        bot.CURRENT['started'] = datetime.now(bot.IST) - timedelta(minutes=7)
+    try:
+        bot.subprocess = bot.subprocess          # unchanged; ssh call may fail, that is fine
+        answer = bot.quick_answer('status')
+        assert answer, 'status returned nothing'
+        assert 'corporate veil' in answer, 'status does not say what is running'
+        assert '7 min' in answer, f'status does not say how long: {answer[:160]}'
+    finally:
+        with bot.CURRENT_LOCK:
+            bot.CURRENT['text'] = None
+            bot.CURRENT['started'] = None
+
+
+def test_status_says_idle_when_nothing_is_running():
+    bot.quick_answer = REAL_QUICK_ANSWER
+    while not bot.WORK.empty():
+        bot.WORK.get_nowait()
+    with bot.CURRENT_LOCK:
+        bot.CURRENT['text'] = None
+    answer = bot.quick_answer('status')
+    assert 'idle' in answer.lower(), f'expected idle, got: {answer[:120]}'
+
+
+def test_a_second_request_is_told_it_is_queued():
+    s2 = Spy().install()
+    bot.quick_answer = lambda t: None
+    while not bot.WORK.empty():
+        bot.WORK.get_nowait()
+    with bot.CURRENT_LOCK:
+        bot.CURRENT['text'] = 'something already running'
+    try:
+        bot.handle(_msg(ALLOWED, 'and also write about X'))
+        assert 'queued' in s2.sent[0].lower(), \
+            f'a request sent during a job should say it is queued: {s2.sent}'
+    finally:
+        with bot.CURRENT_LOCK:
+            bot.CURRENT['text'] = None
 
 
 if __name__ == '__main__':

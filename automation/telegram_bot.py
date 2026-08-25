@@ -22,6 +22,8 @@ import json
 import os
 import subprocess
 import sys
+import queue
+import threading
 import time
 from datetime import datetime, timedelta, timezone
 import urllib.error
@@ -44,6 +46,14 @@ TELEGRAM_LIMIT = 4000      # API caps a message at 4096; leave room for markup
 MODEL = os.getenv('CLAUDE_MODEL', 'claude-opus-5')
 
 RETRY_FILE = REPO / 'automation' / '.bot_retry.json'
+
+# Requests wait here for the single worker. The poll loop must never run a
+# job itself: claude -p blocks for up to forty-five minutes, and while it did,
+# the bot read no Telegram messages at all — so asking "are you stuck?" during
+# a long job got no answer, which looks exactly like being stuck.
+WORK = queue.Queue()
+CURRENT = {'text': None, 'started': None}
+CURRENT_LOCK = threading.Lock()
 IST = timezone(timedelta(hours=5, minutes=30))
 
 
@@ -248,6 +258,17 @@ def quick_answer(text):
         return None
 
     lines = []
+    with CURRENT_LOCK:
+        running, started = CURRENT['text'], CURRENT['started']
+    if running:
+        mins = int((datetime.now(IST) - started).total_seconds() // 60)
+        lines.append(f'Working on it right now ({mins} min so far):\n  "{running[:110]}"')
+    waiting = WORK.qsize()
+    if waiting:
+        lines.append(f'{waiting} more request(s) queued behind it.')
+    if not running and not waiting:
+        lines.append('Idle — nothing running.')
+
     try:
         r = subprocess.run(
             ['ssh', '-o', 'BatchMode=yes', '-o', 'ConnectTimeout=15',
@@ -300,8 +321,38 @@ def handle(msg):
         return
 
     print(f'>>> {text[:120]}', flush=True)
-    send('On it. Research and writing can take a while — I will reply here when done.')
-    dispatch(text)
+    waiting = WORK.qsize()
+    with CURRENT_LOCK:
+        busy = CURRENT['text'] is not None
+    if busy or waiting:
+        send(f'Queued — I am still working on the previous one. '
+             f'{waiting + 1} job(s) ahead of this finishing. I will reply when it '
+             f'is done.')
+    else:
+        send('On it. A new article usually takes 10 to 20 minutes. You can ask '
+             '"status" any time — I stay responsive while I work.')
+    WORK.put(text)
+
+
+def worker():
+    """Runs one job at a time, forever. One at a time because the box has a single
+    core and two concurrent Claude runs would swap each other to death."""
+    while True:
+        item = WORK.get()
+        text, retried = item if isinstance(item, tuple) else (item, False)
+        with CURRENT_LOCK:
+            CURRENT['text'] = text
+            CURRENT['started'] = datetime.now(IST)
+        try:
+            dispatch(text, retried=retried)
+        except Exception as e:                       # noqa: BLE001
+            print(f'worker error: {e!r}', flush=True)
+            send(f'That job failed unexpectedly: {e!r}')
+        finally:
+            with CURRENT_LOCK:
+                CURRENT['text'] = None
+                CURRENT['started'] = None
+            WORK.task_done()
 
 
 def dispatch(text, retried=False):
@@ -331,6 +382,7 @@ def main():
         NOTES.write_text('# Notes from the owner\n\nStanding preferences and '
                          'corrections. Read before writing; append when told '
                          'something worth remembering.\n')
+    threading.Thread(target=worker, daemon=True).start()
     print(f'listening, repo={REPO}, chat={ALLOWED_CHAT}', flush=True)
 
     offset = None
@@ -340,7 +392,7 @@ def main():
             # the owner asked for it first.
             for item in due_retries():
                 print(f'retrying: {item["message"][:100]}', flush=True)
-                dispatch(item['message'], retried=True)
+                WORK.put((item['message'], True))
 
             params = {'timeout': POLL_TIMEOUT}
             if offset is not None:
