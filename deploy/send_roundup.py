@@ -70,12 +70,15 @@ def build(site, month):
             summary = (r['summary'] or '').strip()
             if len(summary) > 165:
                 summary = summary[:163].rsplit(' ', 1)[0] + '…'
+            # One link per article, on the title. A second "Read →" pointing at
+            # the same place doubled the link count to 24 in a single message,
+            # which is the shape mail filters treat as promotional — and this
+            # domain has almost no sending history to argue otherwise.
             html.append(
                 f'<p style="margin:0 0 16px;line-height:1.5;">'
-                f'<a href="{url}" style="color:#1a1a1a;font-weight:600;'
+                f'<a href="{url}" style="color:#8a6412;font-weight:600;'
                 f'text-decoration:none;font-size:16px;">{r["title"]}</a><br>'
-                f'<span style="color:#5f5f5f;font-size:14px;">{summary}</span><br>'
-                f'<a href="{url}" style="color:#8a6412;font-size:14px;">Read →</a>'
+                f'<span style="color:#5f5f5f;font-size:14px;">{summary}</span>'
                 f'</p>')
             text.append(f'* {r["title"]}\n  {summary}\n  {url}\n')
 
