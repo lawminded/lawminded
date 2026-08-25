@@ -52,12 +52,53 @@ if [ -f "$HOME/.claude-writer.env" ]; then
   set -a; . "$HOME/.claude-writer.env"; set +a
 fi
 
+# Tell the owner when a run dies. A failed run is otherwise completely silent —
+# the log sits on a box nobody logs into, and a fortnight of breakage looks
+# exactly like a fortnight with no legal news worth writing about.
+notify() {
+  python3 -c "
+import sys
+sys.path.insert(0, 'deploy')
+import stage_draft
+stage_draft.notify_text(sys.argv[1])
+" "$1" >/dev/null 2>&1 || true
+}
+
+on_failure() {
+  local code=$?
+  [ "$code" = 0 ] && return 0
+  notify "The weekly post run failed on $(hostname) at $(date '+%H:%M') (exit $code).
+Last lines of the log:
+
+$(tail -12 "$LOG" 2>/dev/null)"
+}
+trap on_failure EXIT
+
 {
   echo "=== $(date '+%Y-%m-%d %H:%M:%S') — weekly post run on $(hostname) ==="
 
   # Start from current main. A leftover checkout on last week's branch would
   # otherwise have the run branching off a branch.
   git checkout main
+
+  # An untracked file that the incoming commit also adds makes git refuse to
+  # pull, and under `set -e` that kills the whole run. It has happened: hero
+  # images copied here for a preview, and font files added by hand, silently
+  # cost two weekly articles. Drop our copy when it is byte-identical to the
+  # one arriving; stop loudly when it is not.
+  git fetch -q origin
+  for f in $(git diff --name-only HEAD origin/main 2>/dev/null); do
+    [ -f "$f" ] || continue
+    git ls-files --error-unmatch "$f" >/dev/null 2>&1 && continue
+    if [ "$(sha256sum < "$f")" = "$(git show "origin/main:$f" | sha256sum)" ]; then
+      echo "    dropping identical untracked $f"
+      rm -f "$f"
+    else
+      echo "    untracked $f differs from the incoming version — stopping."
+      exit 1
+    fi
+  done
+
   git pull --ff-only
 
   # Skill must be in the list or the humanizer / seo-content / seo-schema steps
