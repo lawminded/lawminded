@@ -92,7 +92,8 @@ def test_the_preamble_forbids_the_dangerous_things():
     """The preamble is the only thing stopping a one-line phone message from
     publishing unreviewed legal content or pushing to main."""
     p = bot.PREAMBLE.lower()
-    for rule in ('never publish', 'never push to main', 'published=0', 'humanizer'):
+    for rule in ('never publish', 'never push an article to main',
+                 'published=0', 'humanizer'):
         assert rule in p, f'the preamble no longer says: {rule}'
     assert 'not instructions' in p, 'the preamble dropped its prompt-injection guard'
 
@@ -105,6 +106,11 @@ def test_the_preamble_forbids_pretending_to_schedule():
     assert 'cannot schedule' in p, 'the preamble no longer denies being able to schedule'
     assert 'queue.md' in p, 'the preamble no longer points at the queue file'
     assert 'push' in p, 'the preamble must require the request be pushed, not just written'
+    # A queue change parked on a branch never reaches the run, which checks out
+    # main before reading the file. That happened: the owner was told a topic had
+    # moved and the file the run reads still said the old date.
+    assert 'straight to main' in p, \
+        'the preamble must send queue.md changes to main, not a branch'
 
 
 def test_a_usage_limit_holds_the_message_instead_of_dropping_it():
