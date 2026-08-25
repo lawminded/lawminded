@@ -158,8 +158,13 @@ def parse_reset(text):
     hour, minute, half = int(m.group(1)), int(m.group(2) or 0), m.group(3).lower()
     hour = (hour % 12) + (12 if half == 'p' else 0)
     when = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
-    if when <= now:                    # the time named has already passed today
-        when += timedelta(days=1)
+    if when <= now:
+        # The named time is behind us. Usually that means tomorrow — "resets 6am"
+        # seen at midnight. But if it only just passed, the reset has in fact
+        # already happened and the right answer is to try again shortly, not to
+        # sit on the request for a day.
+        when = (now + timedelta(minutes=1) if now - when < timedelta(hours=2)
+                else when + timedelta(days=1))
     # Half a minute past the reset rather than exactly on it, so a clock that
     # disagrees slightly does not retry a second too early and re-queue.
     return when + timedelta(seconds=30)
