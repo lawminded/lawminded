@@ -38,6 +38,11 @@ TELEGRAM_LIMIT = 4000      # API caps a message at 4096; leave room for markup
 # Messages that could not be run yet, kept on disk so a restart does not lose
 # them. Three of the owner's requests were dropped on the floor when the Claude
 # account hit its usage limit and the bot simply reported "exit 1".
+# Named rather than left to whatever the CLI defaults to, so the model writing
+# legal guidance under the owner's byline is a deliberate choice. Overridable
+# from .env without editing this file.
+MODEL = os.getenv('CLAUDE_MODEL', 'claude-opus-5')
+
 RETRY_FILE = REPO / 'automation' / '.bot_retry.json'
 IST = timezone(timedelta(hours=5, minutes=30))
 
@@ -212,6 +217,7 @@ def run_claude(message):
     try:
         proc = subprocess.run(
             ['claude', '-p', PREAMBLE + message,
+             '--model', MODEL,
              '--permission-mode', 'acceptEdits',
              '--allowedTools', 'Read,Write,Edit,Glob,Grep,WebSearch,WebFetch,Bash,Skill'],
             cwd=REPO, env=env, capture_output=True, text=True, timeout=CLAUDE_TIMEOUT)
@@ -229,6 +235,44 @@ def run_claude(message):
     return f'That failed (exit {proc.returncode}).\n\n{err[-600:] or out[-600:]}', 'error'
 
 
+STATUS_PHRASES = ('what is pending', "what's pending", 'whats pending', 'pending',
+                  'what is queued', "what's queued", 'whats queued', 'queue',
+                  'status', '/status', '/pending', '/queue',
+                  'what is scheduled', "what's scheduled", 'whats scheduled')
+
+
+def quick_answer(text):
+    """Answer without spending a Claude run, or return None to hand it on."""
+    t = text.lower().strip().rstrip('?').strip()
+    if t not in STATUS_PHRASES:
+        return None
+
+    lines = []
+    try:
+        r = subprocess.run(
+            ['ssh', '-o', 'BatchMode=yes', '-o', 'ConnectTimeout=15',
+             'ubuntu@161.118.176.94',
+             'cd ~/lawminded && ./venv/bin/python deploy/publish_due.py --report'],
+            capture_output=True, text=True, timeout=90)
+        lines.append((r.stdout or r.stderr).strip() or 'Nothing pending.')
+    except (subprocess.TimeoutExpired, OSError) as e:
+        lines.append(f'Could not reach the web server to check drafts ({e}).')
+
+    queue = REPO / 'automation' / 'queue.md'
+    if queue.exists():
+        body = queue.read_text().split('## Pending', 1)[-1].split('## Written')[0]
+        topics = [l.strip() for l in body.splitlines() if l.strip().startswith('- [ ]')]
+        lines.append('Topics queued:\n' + '\n'.join(f'  {t[5:].strip()}' for t in topics)
+                     if topics else 'No topics queued.')
+
+    held = load_retries()
+    if held:
+        lines.append(f'Waiting on your Claude quota ({len(held)}):\n' + '\n'.join(
+            f'  "{h["message"][:80]}" — retries {h["retry_at"][11:16]}' for h in held))
+
+    return '\n\n'.join(lines)
+
+
 def handle(msg):
     chat_id = str(msg.get('chat', {}).get('id', ''))
     text = (msg.get('text') or '').strip()
@@ -238,6 +282,15 @@ def handle(msg):
         print(f'ignored message from chat {chat_id}', flush=True)
         return
     if not text:
+        return
+
+    # "what's pending" is a database lookup, not a reasoning problem. Answering it
+    # with a full Claude run costs the same as writing an article, and the owner
+    # asks it often. Anything this can answer directly, it should.
+    quick = quick_answer(text)
+    if quick:
+        print(f'>>> [direct] {text[:80]}', flush=True)
+        send(quick)
         return
 
     if text.lower() in ('/start', '/help'):

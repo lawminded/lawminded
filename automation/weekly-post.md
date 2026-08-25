@@ -69,7 +69,11 @@ Read every existing slug before you commit to a topic:
 sqlite3 -readonly instance/lawminded.db "SELECT slug, title, category FROM articles WHERE published=1"
 ```
 
-(or read the `BLOG_ARTICLES*` lists in `blog_seed*.py`)
+**Use that query. Do not read the `blog_seed*.py` files to find out what exists.**
+They hold the full text of every article ever published — 1.4 MB across eleven
+files, several hundred thousand tokens — and the query above returns the same
+list of titles in a few kilobytes. Open a seed file only to append your own
+article to it, and even then edit it, never read it whole.
 
 If the subject is already covered, either pick something else or — better, if the
 existing article is now out of date — say so and stop. An update to a live article

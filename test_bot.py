@@ -161,6 +161,29 @@ def test_a_reset_that_just_passed_retries_now_not_tomorrow():
     assert later > now + timedelta(hours=2), 'a genuinely stale time should mean tomorrow'
 
 
+def test_status_questions_do_not_spend_a_claude_run():
+    """The owner asks "what's pending" often. Answering it with a full research
+    session costs the same as writing an article, and it is a database lookup."""
+    s2 = Spy().install()
+    bot.quick_answer = lambda t: 'nothing pending' if 'pending' in t.lower() else None
+
+    bot.handle(_msg(ALLOWED, "what's pending?"))
+    assert s2.ran == [], 'a status question started a Claude run'
+    assert s2.sent == ['nothing pending'], f'unexpected reply: {s2.sent}'
+
+
+def test_a_real_request_still_reaches_claude():
+    s2 = Spy().install()
+    bot.quick_answer = lambda t: None
+    bot.handle(_msg(ALLOWED, 'write about the PAN application process'))
+    assert len(s2.ran) == 1, 'a real request was swallowed by the fast path'
+
+
+def test_the_model_is_pinned_not_left_to_a_default():
+    assert bot.MODEL, 'no model configured'
+    assert 'opus' in bot.MODEL.lower(), f'expected an Opus model, got {bot.MODEL}'
+
+
 if __name__ == '__main__':
     for name, fn in sorted(globals().items()):
         if name.startswith('test_'):
