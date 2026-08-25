@@ -137,10 +137,28 @@ def test_a_future_reset_is_not_run_early():
 
 
 def test_reset_time_is_read_from_claudes_own_words():
-    when = bot.parse_reset("You've hit your session limit · resets 11:20pm (Asia/Kolkata)")
-    assert when.hour == 23 and when.minute == 20, f'parsed {when}'
+    """Built relative to now rather than hardcoding a clock time — an earlier
+    version asserted 11:20pm and started failing at 11:20pm."""
+    now = datetime.now(bot.IST)
+    soon = now + timedelta(hours=3)
+    when = bot.parse_reset(
+        f"You've hit your session limit · resets {soon.strftime('%-I:%M%p').lower()} (Asia/Kolkata)")
+    assert (when.hour, when.minute) == (soon.hour, soon.minute), f'parsed {when} for {soon}'
+
     # Unparseable text must still schedule a retry rather than lose the message.
-    assert bot.parse_reset('something else entirely') > datetime.now(bot.IST)
+    assert bot.parse_reset('something else entirely') > now
+
+
+def test_a_reset_that_just_passed_retries_now_not_tomorrow():
+    """The quota is already back; waiting a day for it would be absurd."""
+    now = datetime.now(bot.IST)
+    just_gone = (now - timedelta(minutes=3)).strftime('%-I:%M%p').lower()
+    when = bot.parse_reset(f'resets {just_gone} (Asia/Kolkata)')
+    assert when - now < timedelta(hours=1), f'waiting until {when} for a reset already past'
+
+    long_gone = (now - timedelta(hours=7)).strftime('%-I:%M%p').lower()
+    later = bot.parse_reset(f'resets {long_gone} (Asia/Kolkata)')
+    assert later > now + timedelta(hours=2), 'a genuinely stale time should mean tomorrow'
 
 
 if __name__ == '__main__':
