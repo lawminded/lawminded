@@ -1,9 +1,10 @@
-# One news-driven article written 13 August 2026, verified against the primary
-# GSTN advisory (PDF fetched directly from tutorial.gst.gov.in) rather than
-# secondary commentary. Checked against the existing 131 published articles
-# first — the site had no e-way bill article of any kind, and this is also
-# the only tax/GST guide that touches goods-movement compliance rather than
-# returns or ITC.
+# Two articles written 13 August 2026.
+#
+# The first is news-driven, verified against the primary GSTN advisory (PDF
+# fetched directly from tutorial.gst.gov.in) rather than secondary commentary.
+# Checked against the existing 131 published articles first — the site had no
+# e-way bill article of any kind, and this is also the only tax/GST guide that
+# touches goods-movement compliance rather than returns or ITC.
 #
 # The underlying change: GSTN advisories dated 20.05.2026 and 17.06.2026 made
 # the "Ship-to GSTIN" field mandatory for Bill-to/Ship-to e-way bills, on the
@@ -11,6 +12,21 @@
 # Production from 1 August 2026 — a date that had already passed when this was
 # written, meaning some readers will already be hitting the rejection errors
 # this article explains.
+#
+# The second, requested directly by the owner, is an evergreen gap-fill on
+# compounding of offences under the Companies Act — the site covered ROC
+# adjudication and the CCFS-2026 late-filing scheme but had nothing on
+# Section 441 itself. Verified against the Gazette text of the Companies
+# (Amendment) Act, 2019 (raised the Regional Director ceiling from five lakh
+# to twenty-five lakh rupees, and rewrote Section 441(6) on what cannot be
+# compounded at all), the Companies (Amendment) Act, 2020 (replaced the
+# original imprisonment-or-fine consequence for ignoring a compounding
+# authority's filing order with a doubled fine instead), and the Companies
+# (Registration Offices and Fees) Rules, 2014 (Form GNL-1, filed with the
+# Registrar under rule 12(2)). The seven-day intimation and three-year bar in
+# Section 441(2)-(3) were cross-checked against two independent bare-act
+# reproductions after the canonical indiacode/mca.gov.in pages returned 403 to
+# every fetch tried from this box.
 #
 # Format matches the earlier seeds: (title, slug, category, act, read_time,
 # summary, content).
@@ -78,5 +94,58 @@ BLOG_ARTICLES_7 = [
      "<p><strong>Who is allowed to close an e-way bill?</strong> The supplier, the recipient, the transporter, or a driver or authorised person whose mobile number was registered for that purpose.</p>"
      "<p><strong>What happens if my Ship-to State Code doesn't match the GSTIN I entered?</strong> The system rejects the entry. The Ship-to State Code has to correspond to the state code embedded in the Ship-to GSTIN, and the PIN code has to belong to that same state.</p>"
      "<p><strong>Does this change apply to export e-way bills?</strong> Partially. For exports, Ship details including GSTIN given at the IRN stage may still be replaced when the e-way bill is generated, and URP can be used where there is no domestic Ship-to GSTIN to declare.</p>"),
+
+    ('Compounding Under the Companies Act: What It Costs, Who Decides, and What It Doesn\'t Fix',
+     'compounding-offences-companies-act',
+     'corp',
+     'Companies Act, 2013',
+     '7 min read',
+     'Compounding lets a company or its officers pay a fixed sum to close a compoundable offence under the Companies Act instead of standing trial for it. What it costs, who decides, and why it will not touch a routine late filing.',
+     '<p><em>A company misses a filing, someone points out months later that it also breached a section carrying a fine, and the directors start hearing words like "prosecution" and "special court." Most of the time, that case never gets anywhere near a courtroom.</em></p>'
+     '<p><strong>Compounding lets a company or its officers pay a fixed sum to close a compoundable offence under the Companies Act, instead of standing trial for it.</strong></p>'
+     '<blockquote>'
+     '<p><strong>The bottom line</strong></p>'
+     '<p><strong>What it costs:</strong> whatever the Regional Director or the NCLT decides, capped at the maximum fine the offence carries.</p>'
+     '<p><strong>What it covers:</strong> it ends the prosecution risk for that specific offence, whether a case has already been filed or not.</p>'
+     '<p><strong>What it does not fix:</strong> the underlying default. You still have to file whatever you failed to file, and it is not available at all for offences that carry mandatory imprisonment.</p>'
+     '</blockquote>'
+     '<h2>What compounding actually does</h2>'
+     '<p>Section 441 of the Companies Act, 2013 lets certain offences be settled by paying a sum fixed by an authority, rather than being tried in a special court. The application can be made either before prosecution starts or after — the law does not force a company to wait for a summons before applying. Once an offence is compounded, that specific charge is closed. It is not a criminal conviction, and it does not create the record a conviction would.</p>'
+     '<p>What it is not: an amnesty for the underlying paperwork. A company that is late filing its financial statements and also happens to have committed a fine-only offence in the process still owes the filing. Compounding deals with the offence, not the document.</p>'
+     '<h2>Which offences actually qualify</h2>'
+     '<p>Not everything under the Act can be compounded. The dividing line is the punishment attached to the offence. An offence that carries a fine only, or a fine or imprisonment as alternatives, can be compounded. An offence that carries imprisonment only, or imprisonment and a fine together as a mandatory combination, cannot be. Section 441(6) says so directly, in language the Companies (Amendment) Act, 2019 rewrote specifically to remove any ambiguity on the point. If a section makes both the jail term and the fine compulsory, there is no compounding route out of it, and no authority has discretion to create one.</p>'
+     '<p>This matters because directors sometimes assume compounding is a general escape hatch for anything company-law related. It is not. Fraud provisions, and other sections built around mandatory imprisonment, sit outside Section 441 entirely.</p>'
+     '<h2>Who decides: Regional Director or NCLT</h2>'
+     '<p>Two authorities can compound an offence, and which one you land with depends purely on the size of the maximum fine, not on the size of the company or the nature of the default.</p>'
+     "<p>Where the maximum fine for the offence does not exceed twenty-five lakh rupees, the Regional Director, or an officer the Central Government has authorised, can compound it. Above that figure, only the National Company Law Tribunal can. That twenty-five lakh threshold is not the original number. The Companies (Amendment) Act, 2019 raised it from five lakh rupees. Most offences a small or mid-sized company runs into sit comfortably under the current ceiling, so in practice the Regional Director's office handles the bulk of these applications, and the NCLT route stays reserved for the larger exposures.</p>"
+     '<p>Whichever authority handles it, the sum they fix cannot exceed the maximum fine the offence carries. They can charge less. They cannot charge more.</p>'
+     '<h2>How the application actually moves</h2>'
+     "<p>The application does not go straight to the Regional Director or the Tribunal. It goes to the Registrar of Companies first, in Form GNL-1, and the Registrar forwards it on with comments attached. That comment is not a formality: the Registrar's view of the default, and of the company's compliance history, is part of what the deciding authority reads before it fixes a sum.</p>"
+     '<p>The compounding authority also has the power to order the company to file whatever returns or documents triggered the default in the first place, as a condition of compounding. This is where two later amendments changed the consequence of getting it wrong. Under the original 2013 text, an officer who ignored that filing direction faced up to six months in prison, or a fine of up to one lakh rupees, or both — a criminal consequence stacked on top of the one just resolved. The Companies (Amendment) Act, 2020 replaced that with something civil instead. If the officer does not comply, the maximum fine for the offence that was compounded simply doubles. Non-compliance still costs money. It no longer risks a second prosecution.</p>'
+     '<h2>What happens once it is granted</h2>'
+     '<p>The consequence depends on timing. If the offence is compounded before any prosecution was filed, no prosecution can be instituted for it afterward, not by the Registrar, not by a shareholder, not by anyone the Central Government has authorised to bring one. If a prosecution was already running when the compounding order came through, the Registrar brings that order to the notice of the court hearing the case, and the company or officer is discharged.</p>'
+     '<p>One procedural step is easy to miss: the company has to intimate the Registrar within seven days of the offence being compounded. It is a short window, and it falls on the company to track, not on the authority that granted the order.</p>'
+     '<h2>The three-year catch</h2>'
+     '<p>Compounding is not something a company can lean on repeatedly for the same kind of lapse. If a similar offence by the same company or the same officer was compounded within the preceding three years, it cannot be compounded again. The second time around, it goes to full prosecution regardless of the fine amount. A director who treats compounding as a standing fallback for a recurring compliance gap will eventually find that door closed, at exactly the point the gap becomes routine enough to actually need it.</p>'
+     '<h2>Why fewer offences reach this stage than they used to</h2>'
+     '<p>Between 2018 and 2020, a large slice of what used to be prosecutable company law offences moved out of Section 441 entirely. Filing defaults that once carried a criminal fine, like a late annual return or a delayed financial statement, were reclassified as civil penalties handled through in-house adjudication under Section 454, where the Registrar of Companies acts as the adjudicating officer and imposes a penalty directly. There is no prosecution to compound in that process, because there is no longer a criminal offence attached to the default. Our guide to <a href="/article/annual-compliance-companies">annual ROC compliance for companies</a> covers what those routine filings actually require.</p>'
+     '<p>The practical effect is that most small companies who miss an ordinary filing deadline today are dealing with adjudication, not compounding. Section 441 still matters, but for a narrower set of offences than it covered a decade ago: the ones the 2019 and 2020 amendments left as genuine offences rather than converting into penalties. A company still carrying old, uncompounded prosecutable offences from before that shift is a different situation, and one worth taking to a professional rather than treating as routine paperwork.</p>'
+     '<p>If the underlying problem is simply that filings are late and the penalty itself is the pain point, it is also worth checking whether the <a href="/article/ccfs-2026-companies-compliance-facilitation-scheme">CCFS-2026 late-filing relief scheme</a> applies before assuming compounding is the tool needed. The two solve different problems and are sometimes confused with each other.</p>'
+     '<h2>Common mistakes</h2>'
+     '<ul>'
+     '<li>Assuming compounding is available for anything filed late. Most routine filing defaults are now civil penalties under adjudication, not offences that need compounding at all.</li>'
+     '<li>Applying for compounding without first fixing the underlying default. The authority can order the filing anyway, and turning up with it already done makes the application move faster.</li>'
+     '<li>Missing the seven-day intimation to the Registrar after an offence is compounded. It is easy to treat the order as the end of the process when one small step still remains.</li>'
+     "<li>Assuming a Regional Director's compounding order is available a second time for a repeat of the same lapse inside three years. It is not.</li>"
+     '<li>Confusing an offence that allows imprisonment or fine with one that mandates both. Only the first can be compounded; the second cannot, whatever the officer offers to pay.</li>'
+     '</ul>'
+     '<h2>Frequently asked questions</h2>'
+     '<p><strong>Can compounding be applied for before a prosecution is even filed?</strong> Yes. Section 441 allows an application either before or after prosecution starts, and applying early avoids the case being formally instituted at all.</p>'
+     '<p><strong>Does paying the compounding amount count as a criminal conviction?</strong> No. Compounding closes the offence without a trial or a conviction; it is a different outcome from being tried and found guilty.</p>'
+     '<p><strong>Who decides whether the Regional Director or the NCLT handles an application?</strong> The maximum fine the offence carries decides it. Up to twenty-five lakh rupees goes to the Regional Director; above that, only the NCLT can compound it.</p>'
+     '<p><strong>Can every company law offence be compounded if the company is willing to pay?</strong> No. Offences punishable with imprisonment only, or with imprisonment and a fine both mandatorily, cannot be compounded under any circumstances.</p>'
+     '<p><strong>What happens if the same kind of offence happens again soon after compounding?</strong> If a similar offence by the same company or officer is committed within three years of the earlier compounding, it cannot be compounded again.</p>'
+     '<p><strong>Does compounding also take care of the filing that triggered the offence?</strong> No. The compounding authority can separately order the company to file the pending document, and failing to comply doubles the fine for the offence that was compounded.</p>'
+     '<p><strong>Where does the application actually get filed?</strong> With the Registrar of Companies, in Form GNL-1. The Registrar forwards it, with comments, to the Regional Director or the Tribunal depending on the fine involved.</p>'),
 
 ]

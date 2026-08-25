@@ -70,6 +70,9 @@ SEO_DESCRIPTIONS = {
     'competition-act-agreements-abuse-dominance':
         "Competition Act 2002: cartels under Section 3(3), vertical agreements, abuse of "
         "dominance under Section 4, and penalties up to 10% of turnover.",
+    'compounding-offences-companies-act':
+        "Compounding under the Companies Act: what it costs, who decides (Regional "
+        "Director or NCLT), and why it won't fix a routine late filing.",
     'conducting-a-valid-board-meeting-section-173':
         "A valid board meeting needs 7 days' notice, the right quorum, four meetings a "
         "year with no 120-day gap, and correct video-conferencing rules.",
@@ -383,6 +386,9 @@ INTERNAL_LINKS = {
     'registered office': 'change-of-registered-office-section-12',
     'chg-1': 'chg-1-registration-of-charges',
     'registration of charges': 'chg-1-registration-of-charges',
+    'compounding of offences': 'compounding-offences-companies-act',
+    'section 441': 'compounding-offences-companies-act',
+    'gnl-1': 'compounding-offences-companies-act',
     'company registration': 'company-registration',
     'spice+': 'company-registration',
     'board meeting': 'conducting-a-valid-board-meeting-section-173',

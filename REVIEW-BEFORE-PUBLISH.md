@@ -220,3 +220,29 @@ credits are depleted") — a billing issue on the Gemini project, not a
 transient error, so no retry was attempted. The article ships without a
 hero image; `_article_image_url` returns None and the page falls back to
 the site default, confirmed by rendering the page locally before staging.
+
+## blog_seed7.py — compounding of offences under the Companies Act, 13 August 2026
+
+Requested directly by the owner over Telegram ("Write a blog on compounding under
+companies act"). The site had extensive Companies Act coverage (ROC adjudication,
+CCFS-2026, annual compliance) but nothing on Section 441 itself, so this fills a
+genuine gap rather than duplicating anything live.
+
+An earlier run of this same request timed out after 45 minutes mid-workflow —
+research and drafting were done and left in `/tmp`, but the article was never
+wired in, tested, imaged or staged. This run picked up that draft, independently
+re-verified every load-bearing claim against primary sources rather than trusting
+the prior session's word, and completed the remaining steps.
+
+| Claim verified | Source | Result |
+|---|---|---|
+| Regional Director/authorised officer ceiling raised from ₹5 lakh to ₹25 lakh; Section 441(6) rewritten so offences punishable with imprisonment only, or imprisonment and fine together, are not compoundable | Companies (Amendment) Act, 2019, Section 39, amending Section 441(1)(b) and substituting Section 441(6) | Confirmed — fetched the Gazette PDF directly (`cdnbbsr.s3waas.gov.in`, NIC-hosted mirror; `mca.gov.in` itself returned HTTP 403 to every fetch tried from this box) and quoted the amending language verbatim |
+| Non-compliance with a compounding authority's filing order now doubles the maximum fine for the compounded offence, replacing the original 2013 text's six-months-imprisonment-or-₹1-lakh-fine consequence | Companies (Amendment) Act, 2020, Section 61, substituting Section 441(5) | Confirmed — fetched the Gazette PDF directly (`prsindia.org` mirror of the official Act) and quoted "shall be twice the amount provided in the corresponding section" verbatim. The original 2013 wording was separately confirmed against a bare-act reproduction (ca2013.com) |
+| Form GNL-1 is the application form, filed with the Registrar of Companies under rule 12(2) | Companies (Registration Offices and Fees) Rules, 2014, G.S.R. 268(E) dated 31.03.2014 | Confirmed — fetched the Gazette PDF directly (`thc.nic.in`, a Telangana High Court mirror of the central rules) and located the actual GNL-1 form text |
+| Seven-day intimation to the Registrar after compounding; three-year bar on compounding a similar offence again; no prosecution if compounded before institution, discharge if compounded after | Section 441(2)–(3) of the Companies Act, 2013 (unamended by the 2019/2020 Acts) | Confirmed by cross-checking two independent bare-act reproductions (ca2013.com, aubsp.com) against each other, after `indiacode.nic.in` and `mca.gov.in` both returned HTTP 403 to direct fetch. Both reproductions agree on substance and neither is a professional-firm commentary layer — they reproduce the statute text itself |
+| Filing defaults such as late annual returns/financial statements were moved out of Section 441 into civil adjudication under Section 454 by the 2018–2020 amendments | General background, consistent with the existing `annual-compliance-companies` and CCFS-2026 articles already on the site | Not re-verified against the Section 454 Gazette text directly in this run — stated at a level of generality (a "large slice… reclassified") that does not depend on a specific figure or date |
+
+Not used: no rupee example of an actual compounding fee was included, since the
+amount is fixed case-by-case by the Regional Director or NCLT and no schedule
+sets a standard figure — inventing a representative number would have been the
+kind of unsourced claim this site doesn't run.
