@@ -18,9 +18,10 @@ The history of what was asked for is worth keeping.
 
 ## Pending
 
-- [ ] 2026-08-22 | PMGEP scheme — what the benefits are, who can avail them, and the
+- [ ] 2026-08-28 | PMGEP scheme — what the benefits are, who can avail them, and the
       special benefits for women, SC/ST and other reserved categories
-      *asked for 2026-08-17; the request was lost before the queue existed*
+      *asked for 2026-08-17; the request was lost before the queue existed;
+      first queued for 2026-08-22, moved to Friday 2026-08-28 on the owner's ask*
 
 ## Written
 
