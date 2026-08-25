@@ -178,6 +178,9 @@ SEO_DESCRIPTIONS = {
     'input-tax-credit-gst':
         "Input tax credit under GST: the conditions you must meet, the blocked credits "
         "you cannot claim, and the mistakes that get ITC reversed.",
+    'instant-e-pan-apply-online-free':
+        "Apply for a free, instant e-PAN on incometax.gov.in using Aadhaar OTP and "
+        "DigiLocker, and the Rs 50 fee for a physical card.",
     'ipo-sebi-icdr-eligibility-process':
         "IPO under SEBI ICDR 2018: the Reg 6(1) and 6(2) eligibility tests, promoter "
         "lock-in, investor quotas and the T+3 listing timeline.",
@@ -571,6 +574,9 @@ INTERNAL_LINKS = {
     '54ec bonds': '54ec-capital-gains-bonds-online-guide',
     'capital gains bonds': '54ec-capital-gains-bonds-online-guide',
     'online bond platform': '54ec-capital-gains-bonds-online-guide',
+    'instant e-pan': 'instant-e-pan-apply-online-free',
+    'e-pan': 'instant-e-pan-apply-online-free',
+    'pan card': 'instant-e-pan-apply-online-free',
     'gstr-1': 'gst-returns-explained',
     'gstr-3b': 'gst-returns-explained',
     'gst returns': 'gst-returns-explained',

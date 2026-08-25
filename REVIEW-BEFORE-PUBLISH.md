@@ -246,3 +246,31 @@ Not used: no rupee example of an actual compounding fee was included, since the
 amount is fixed case-by-case by the Regional Director or NCLT and no schedule
 sets a standard figure — inventing a representative number would have been the
 kind of unsourced claim this site doesn't run.
+
+## blog_seed12.py — Instant e-PAN: how to apply for a PAN card online for free, 25 August 2026
+
+Requested directly by the owner over Telegram: how to apply for a free, instant
+e-PAN from the income tax department's own website, and confirmation that a
+physical card costs Rs 50 for delivery. Checked all published slugs and grepped
+`blog_seed*.py` for "PAN card", "e-PAN" and "instant PAN" first — PAN comes up
+inside the HUF, freelancer and rent-agreement articles, but no article covers how
+an individual actually applies for one. Genuine gap, so this is an evergreen guide
+rather than a news piece.
+
+| Claim verified | Source | Result |
+|---|---|---|
+| Instant e-PAN is free, pre-login, for an individual with no PAN already allotted, valid Aadhaar linked to an active mobile number, DigiLocker access; minors, Representative Assessees (Section 160) and foreign citizens (e-KYC mode) excluded; process is Get New e-PAN → Aadhaar number → mobile OTP → DigiLocker date-of-birth proof → optional email validation → submit; Acknowledgement Number and SMS confirmation on success; status checked post-login-free via Aadhaar + OTP; only a digitally signed e-PAN PDF is issued, no physical card | incometax.gov.in/iec/foportal/help/all-topics/e-filing-services/instant-e-pan and incometax.gov.in/iec/foportal/help/e-filing-generate-instant-e-pan-faq (Income Tax Department's own Instant e-PAN help pages) | Confirmed — fetched directly |
+| Reprint of a physical PAN card costs Rs 50 (inclusive of taxes) for dispatch within India, Rs 959 outside India; requires PAN number, Aadhaar (individuals) and full date of birth; e-PAN re-download is free within 30 days of allotment/change | onlineservices.proteantech.in/paam/ReprintEPan.html (Protean, formerly NSDL, the Income Tax Department's authorised PAN service provider) | Confirmed — fetched directly |
+| Cabinet approved the PAN 2.0 Project on 25 November 2024 at a cost of Rs 1,435 crore; allotment/updation/correction stays free with the e-PAN emailed to the applicant; a physical card costs "the prescribed fee of Rs 50 (domestic)" under the same project; existing PAN cardholders are not required to apply afresh | PIB Research Unit, Ministry of Finance, "PAN 2.0: A Digital Leap in Taxpayer Services," 27 November 2024 (static.pib.gov.in PDF) | Confirmed — fetched directly, and corroborates the Protean fee independently |
+| Form 93 replaces Form 49A for individual Indian citizens, effective 1 April 2026, under Rule 158 of the Income-tax Rules, 2026 read with Section 262 of the Income-tax Act, 2025; paid-route fee is roughly Rs 107 domestic / ~Rs 1,017 foreign | taxguru.in, cleartax.in, businesstoday.in, lendingkart.com, bankbazaar.com, paytm.com, finpulseindia.com | Corroborated across multiple independent professional summaries that agree on form numbers, effective date and governing rule/section, consistent with the Form 94 detail already verified for the HUF article (`blog_seed10.py`). Not fetched from a single official fee schedule PDF — flagged as the weaker-sourced figure in the article, on a point secondary to the free instant e-PAN process |
+
+Not used: Section 465 of the Income-tax Act, 2025 as the renumbered successor to
+Section 272B (PAN non-compliance penalty) was checked but left out — the section
+mapping was consistent across sources but the current penalty amount wasn't
+confirmed clearly enough to state a figure, and it wasn't essential to a
+how-to-apply article.
+
+No hero image: Gemini returned HTTP 429 ("prepayment credits are depleted"), a
+billing issue rather than a transient error, and no Pexels key is configured. The
+article ships without one; `_article_image_url` returns None and the page falls
+back to the site default.
