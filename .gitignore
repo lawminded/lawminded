@@ -23,3 +23,6 @@ instance/
 # Local SEO audit artefacts (large, not part of the site)
 SEO Audit/
 automation/logs/
+
+# Bot retry queue — transient state, not history.
+automation/.bot_retry.json

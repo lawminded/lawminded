@@ -9,6 +9,8 @@ it. So the check gets a test even though it is three lines.
 import os
 import sys
 import tempfile
+from datetime import datetime, timedelta
+from pathlib import Path
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent
@@ -29,7 +31,9 @@ class Spy:
 
     def install(self):
         bot.send = self.sent.append
-        bot.run_claude = lambda m: (self.ran.append(m), 'done')[1]
+        # run_claude returns (reply, status) since usage limits became a
+        # distinct outcome from failure.
+        bot.run_claude = lambda m: (self.ran.append(m), ('done', 'ok'))[1]
         return self
 
 
@@ -89,6 +93,54 @@ def test_the_preamble_forbids_pretending_to_schedule():
     assert 'cannot schedule' in p, 'the preamble no longer denies being able to schedule'
     assert 'queue.md' in p, 'the preamble no longer points at the queue file'
     assert 'push' in p, 'the preamble must require the request be pushed, not just written'
+
+
+def test_a_usage_limit_holds_the_message_instead_of_dropping_it():
+    """Three of the owner's requests were lost when the Claude account hit its
+    limit: the bot reported "That failed (exit 1)" and forgot them. The work was
+    still wanted, so the message must survive until the quota comes back."""
+    import json
+    bot.RETRY_FILE = Path(tempfile.mkdtemp()) / 'retry.json'
+    s2 = Spy().install()
+    bot.run_claude = lambda m: (
+        "You've hit your session limit · resets 11:20pm (Asia/Kolkata)", 'limit')
+
+    bot.dispatch('write about PAN applications')
+
+    held = json.loads(bot.RETRY_FILE.read_text())
+    assert len(held) == 1, 'the message was not held for retry'
+    assert held[0]['message'] == 'write about PAN applications'
+    said = ' '.join(s2.sent).lower()
+    assert 'limit' in said and 'nothing is lost' in said, \
+        f'the owner was not told plainly what happened: {said[:200]}'
+    assert 'exit 1' not in said, 'still reporting a quota limit as a crash'
+
+
+def test_a_held_message_runs_once_the_reset_passes():
+    import json
+    bot.RETRY_FILE = Path(tempfile.mkdtemp()) / 'retry.json'
+    past = (datetime.now(bot.IST) - timedelta(minutes=5)).isoformat()
+    bot.RETRY_FILE.write_text(json.dumps([{'message': 'do the thing', 'retry_at': past}]))
+
+    due = bot.due_retries()
+    assert len(due) == 1, 'an overdue message was not picked up'
+    assert json.loads(bot.RETRY_FILE.read_text()) == [], \
+        'a message taken off the queue must not be left on it and run twice'
+
+
+def test_a_future_reset_is_not_run_early():
+    import json
+    bot.RETRY_FILE = Path(tempfile.mkdtemp()) / 'retry.json'
+    later = (datetime.now(bot.IST) + timedelta(hours=2)).isoformat()
+    bot.RETRY_FILE.write_text(json.dumps([{'message': 'later', 'retry_at': later}]))
+    assert bot.due_retries() == [], 'ran a held message before its reset time'
+
+
+def test_reset_time_is_read_from_claudes_own_words():
+    when = bot.parse_reset("You've hit your session limit · resets 11:20pm (Asia/Kolkata)")
+    assert when.hour == 23 and when.minute == 20, f'parsed {when}'
+    # Unparseable text must still schedule a retry rather than lose the message.
+    assert bot.parse_reset('something else entirely') > datetime.now(bot.IST)
 
 
 if __name__ == '__main__':

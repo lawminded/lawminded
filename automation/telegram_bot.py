@@ -23,6 +23,7 @@ import os
 import subprocess
 import sys
 import time
+from datetime import datetime, timedelta, timezone
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -33,6 +34,12 @@ NOTES = REPO / 'automation' / 'notes.md'
 POLL_TIMEOUT = 50          # seconds Telegram holds the connection open
 CLAUDE_TIMEOUT = 60 * 45   # a research-and-write job can legitimately take this
 TELEGRAM_LIMIT = 4000      # API caps a message at 4096; leave room for markup
+
+# Messages that could not be run yet, kept on disk so a restart does not lose
+# them. Three of the owner's requests were dropped on the floor when the Claude
+# account hit its usage limit and the bot simply reported "exit 1".
+RETRY_FILE = REPO / 'automation' / '.bot_retry.json'
+IST = timezone(timedelta(hours=5, minutes=30))
 
 
 def _env(name, required=True):
@@ -138,6 +145,56 @@ The owner's message follows.
 """
 
 
+def parse_reset(text):
+    """Pull the reset moment out of Claude's own words, e.g.
+    "You've hit your session limit · resets 11:20pm (Asia/Kolkata)".
+    Falls back to twenty minutes, which is wrong but harmless — the retry simply
+    finds the limit still in force and re-queues."""
+    import re
+    m = re.search(r'resets\s+(\d{1,2})(?::(\d{2}))?\s*([ap])m', text, re.I)
+    now = datetime.now(IST)
+    if not m:
+        return now + timedelta(minutes=20)
+    hour, minute, half = int(m.group(1)), int(m.group(2) or 0), m.group(3).lower()
+    hour = (hour % 12) + (12 if half == 'p' else 0)
+    when = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
+    if when <= now:                    # the time named has already passed today
+        when += timedelta(days=1)
+    # Half a minute past the reset rather than exactly on it, so a clock that
+    # disagrees slightly does not retry a second too early and re-queue.
+    return when + timedelta(seconds=30)
+
+
+def load_retries():
+    try:
+        return json.loads(RETRY_FILE.read_text())
+    except (FileNotFoundError, ValueError):
+        return []
+
+
+def save_retries(items):
+    RETRY_FILE.write_text(json.dumps(items, indent=1))
+
+
+def queue_retry(message, when):
+    items = [i for i in load_retries() if i['message'] != message]
+    items.append({'message': message, 'retry_at': when.isoformat()})
+    save_retries(items)
+
+
+def due_retries():
+    now, due, keep = datetime.now(IST), [], []
+    for item in load_retries():
+        try:
+            ready = datetime.fromisoformat(item['retry_at']) <= now
+        except ValueError:
+            ready = True
+        (due if ready else keep).append(item)
+    if due:
+        save_retries(keep)
+    return due
+
+
 def run_claude(message):
     env = {**os.environ}
     token_file = Path.home() / '.claude-writer.env'
@@ -154,13 +211,17 @@ def run_claude(message):
              '--allowedTools', 'Read,Write,Edit,Glob,Grep,WebSearch,WebFetch,Bash,Skill'],
             cwd=REPO, env=env, capture_output=True, text=True, timeout=CLAUDE_TIMEOUT)
     except subprocess.TimeoutExpired:
-        return f'Gave up after {CLAUDE_TIMEOUT // 60} minutes. Nothing was published.'
+        return f'Gave up after {CLAUDE_TIMEOUT // 60} minutes. Nothing was published.', 'error'
 
     out = (proc.stdout or '').strip()
-    if proc.returncode != 0:
-        err = (proc.stderr or '').strip()[-600:]
-        return f'That failed (exit {proc.returncode}).\n\n{err or out[-600:]}'
-    return out or 'Finished, but produced no output.'
+    err = (proc.stderr or '').strip()
+    if proc.returncode == 0:
+        return out or 'Finished, but produced no output.', 'ok'
+
+    blob = f'{out}\n{err}'
+    if 'session limit' in blob.lower() or 'usage limit' in blob.lower():
+        return blob, 'limit'
+    return f'That failed (exit {proc.returncode}).\n\n{err[-600:] or out[-600:]}', 'error'
 
 
 def handle(msg):
@@ -182,8 +243,27 @@ def handle(msg):
 
     print(f'>>> {text[:120]}', flush=True)
     send('On it. Research and writing can take a while — I will reply here when done.')
-    reply = run_claude(text)
-    print(f'<<< {reply[:200]}', flush=True)
+    dispatch(text)
+
+
+def dispatch(text, retried=False):
+    """Run one request and answer it. A usage limit is not a failure of the
+    request — the work is still wanted — so the message is held and run again
+    once the quota resets, rather than discarded with an exit code."""
+    reply, status = run_claude(text)
+    print(f'<<< [{status}] {reply[:180]}', flush=True)
+
+    if status == 'limit':
+        when = parse_reset(reply)
+        queue_retry(text, when)
+        send(f'Your Claude usage limit is used up, so I could not run that yet. '
+             f'It resets at {when.strftime("%-I:%M%p").lower()} IST — I have saved '
+             f'your message and will run it automatically then. Nothing is lost.\n\n'
+             f'Waiting: "{text[:120]}"')
+        return
+
+    if retried:
+        reply = f'(Picked this back up after the usage limit reset.)\n\n{reply}'
     send(reply)
 
 
@@ -198,6 +278,12 @@ def main():
     offset = None
     while True:
         try:
+            # Anything held back by a usage limit gets run before new traffic —
+            # the owner asked for it first.
+            for item in due_retries():
+                print(f'retrying: {item["message"][:100]}', flush=True)
+                dispatch(item['message'], retried=True)
+
             params = {'timeout': POLL_TIMEOUT}
             if offset is not None:
                 params['offset'] = offset
