@@ -140,6 +140,9 @@ SEO_DESCRIPTIONS = {
     'electronic-signatures-india':
         "Are electronic signatures legally valid in India? What the law recognises, "
         "which documents are excluded, and how to sign so it holds up.",
+    'epf-esi-social-security-code':
+        "EPF and ESI in 2026: the wage ceilings that trigger each deduction, "
+        "the contribution rates, and what employers must file.",
     'esops-sweat-equity-shares':
         "ESOPs under Section 62(1)(b) and sweat equity under Section 54: the special "
         "resolution, one-year vesting, who is eligible, and the limits.",
@@ -191,6 +194,9 @@ SEO_DESCRIPTIONS = {
     'independent-directors-companies-act':
         "Independent directors: who must appoint one, the Section 149(6) test, IICA "
         "databank registration, the proficiency test and the 10-year cap.",
+    'influencer-disclosure-misleading-ads':
+        "India's disclosure rules for paid posts: what counts as a material "
+        "connection, the labels that satisfy the law, and the penalties.",
     'input-tax-credit-gst':
         "Input tax credit under GST: the conditions you must meet, the blocked credits "
         "you cannot claim, and the mistakes that get ITC reversed.",
@@ -203,6 +209,9 @@ SEO_DESCRIPTIONS = {
     'lease-vs-leave-and-licence':
         "Lease vs leave and licence: how the two differ in law, which to use, and why "
         "the wrong choice changes your rights over the property.",
+    'limitation-act-1963-guide':
+        "How long you have to file: the Limitation Act's periods for contracts, "
+        "recovery and appeals, when the clock starts, and when it can be paused.",
     'llp-capital-contribution-increase-reduction':
         "Increase or reduce an LLP's capital contribution: the Form 3 filing, fees, and "
         "the tax a payout to a partner can trigger.",
@@ -311,6 +320,9 @@ SEO_DESCRIPTIONS = {
     'gig-platform-workers-rights-labour-codes':
         "Gig and platform workers are recognised in law from 21 November 2025. The "
         "aggregator levy, what benefits it funds, and why you must register yourself.",
+    'new-labour-codes-explained':
+        "India's four labour codes took effect on 21 November 2025, replacing 29 "
+        "laws. What changed for wages, hours, social security and termination.",
     'non-compete-clause-enforceability-india':
         "A post-employment non-compete is void in India under Section 27 of the Contract "
         "Act, however reasonable. What your employer can still enforce.",
