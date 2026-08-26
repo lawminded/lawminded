@@ -11,14 +11,14 @@ import html
 import json
 import re
 
-from app import app, JUDGMENTS_PUBLISHED, autolink, seotitle, SITE_URL
+from app import (app, JUDGMENTS_PUBLISHED, autolink, seotitle, SITE_URL,
+                 TITLE_MAX)
 from seo_meta import SEO_DESCRIPTIONS, SEO_TITLES, RETIRED_ARTICLES
 import content as C
 
 DESC_RE = re.compile(r'<meta name="description" content="(.*?)">', re.S)
 LD_RE = re.compile(r'<script type="application/ld\+json">(.*?)</script>', re.S)
 TITLE_RE = re.compile(r'<title>(.*?)</title>', re.S)
-TITLE_MAX = 60
 
 
 def _page(client, path):
