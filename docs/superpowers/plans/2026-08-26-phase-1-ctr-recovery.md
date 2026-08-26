@@ -33,7 +33,7 @@
 - Consumes: nothing from earlier tasks.
 - Produces: `test_title_length()` in `test_seo.py`, which every later task re-runs. It crawls the same page list `main()` already builds and asserts `len(title) <= 60`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Add to `test_seo.py`, above `main()`:
 
@@ -69,13 +69,13 @@ Add `import html` to the imports at the top of `test_seo.py` (it currently impor
 
 Call it from `main()`, alongside the existing checks, passing the same client and path list `main()` already assembles for the description check.
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `/usr/bin/python3 test_seo.py`
 
 Expected: FAIL, an assertion naming ~56 pages over 60 characters — 54 `/format/...` pages plus `/compare/consumer-forum-vs-civil-court` and `/compare/lease-vs-leave-and-license`.
 
-- [ ] **Step 3: Shorten the format title pattern**
+- [x] **Step 3: Shorten the format title pattern**
 
 `templates/format.html:4` currently reads:
 
@@ -94,7 +94,7 @@ Worked examples:
 - `Minutes – Audit Committee Meeting — Free Word Format` is 52 → brand omitted → 52 chars
 - `Board Resolution – General Template — Free Word Format` is 54 → brand omitted → 54 chars
 
-- [ ] **Step 4: Shorten the compare title pattern**
+- [x] **Step 4: Shorten the compare title pattern**
 
 `templates/compare.html:3` currently reads:
 
@@ -113,13 +113,13 @@ Worked examples:
 - `Consumer Forum vs Civil Court: Key Differences Compared` is 54 → brand omitted → 54 chars
 - `Lease vs Leave and License: Key Differences Compared` is 51 → brand omitted → 51 chars
 
-- [ ] **Step 5: Run the test to verify it passes**
+- [x] **Step 5: Run the test to verify it passes**
 
 Run: `/usr/bin/python3 test_seo.py`
 
 Expected: PASS. If any format document has a name long enough to breach 60 on its own, the assertion names it — shorten that document's `title` in the database seed rather than weakening the limit.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add templates/format.html templates/compare.html test_seo.py
@@ -150,7 +150,7 @@ Preferring the last clause boundary fixes two of the three observed cases and le
 - Consumes: `test_title_length()` from Task 1 must still pass.
 - Produces: `seotitle(article, brand=' - Law Minded', maxlen=60)` keeps its exact signature. Task 3 modifies the same function's lookup order and relies on the truncation branch remaining the last resort.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Add to `test_seo.py`:
 
@@ -193,13 +193,13 @@ While editing that import block, drop the duplicated `RETIRED_ARTICLES` on line 
 
 Call `test_seotitle_cases()` from `main()`.
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `/usr/bin/python3 test_seo.py`
 
 Expected: FAIL on the first case — got `'Auditor Appointment, Rotation & Removal: ADT-1, Sections'`, expected `'Auditor Appointment, Rotation & Removal: ADT-1'`.
 
-- [ ] **Step 3: Prefer the last clause boundary**
+- [x] **Step 3: Prefer the last clause boundary**
 
 In `app.py`, inside `seotitle`, replace the `if len(title) > maxlen:` block (currently lines 570-583) with:
 
@@ -241,13 +241,13 @@ _CLAUSE_RE = re.compile(r'[,:;]|\s[-–—]\s')
 _CLAUSE_FLOOR = 30
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `/usr/bin/python3 test_seo.py`
 
 Expected: PASS, including `test_title_length` from Task 1.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add app.py test_seo.py
@@ -276,7 +276,7 @@ This does not fix every case: nothing can tell that 'Raise' dangles while
 - Consumes: `seotitle` from Task 2, whose truncation branch becomes the third and last fallback.
 - Produces: `SEO_TITLES: dict[str, str]` — slug to bare title, no brand suffix. `seotitle` appends the brand when it fits, exactly as it does for the other two sources. Task 5 fills this dict.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Add to `test_seo.py`:
 
@@ -315,13 +315,13 @@ from seo_meta import SEO_DESCRIPTIONS, SEO_TITLES, RETIRED_ARTICLES
 
 Call both from `main()`, passing the published-slug set `main()` already builds.
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `/usr/bin/python3 test_seo.py`
 
 Expected: FAIL with `ImportError: cannot import name 'SEO_TITLES' from 'seo_meta'`.
 
-- [ ] **Step 3: Add the dict**
+- [x] **Step 3: Add the dict**
 
 In `seo_meta.py`, directly above `SEO_DESCRIPTIONS = {`, add:
 
@@ -341,7 +341,7 @@ SEO_TITLES = {}
 
 ```
 
-- [ ] **Step 4: Wire the lookup into seotitle**
+- [x] **Step 4: Wire the lookup into seotitle**
 
 In `app.py`, change the import on line 36 to:
 
@@ -368,13 +368,13 @@ Update the docstring's first sentence to name the new source:
     mid-phrase in search results."""
 ```
 
-- [ ] **Step 5: Run the tests to verify they pass**
+- [x] **Step 5: Run the tests to verify they pass**
 
 Run: `/usr/bin/python3 test_seo.py`
 
 Expected: PASS. `test_seo_title_wins` returns early while the dict is empty; Task 5 fills it.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add app.py seo_meta.py test_seo.py
@@ -400,7 +400,7 @@ Empty for now — the entries land next."
 - Consumes: nothing.
 - Produces: nothing consumed later.
 
-- [ ] **Step 1: Confirm they are missing**
+- [x] **Step 1: Confirm they are missing**
 
 Run:
 
@@ -415,7 +415,7 @@ for s in ['influencer-disclosure-misleading-ads', 'new-labour-codes-explained',
 
 Expected: all four print `MISSING`.
 
-- [ ] **Step 2: Add the entries**
+- [x] **Step 2: Add the entries**
 
 Insert each into `SEO_DESCRIPTIONS` at its alphabetical position, matching the file's existing two-line style:
 
@@ -434,13 +434,13 @@ Insert each into `SEO_DESCRIPTIONS` at its alphabetical position, matching the f
         "laws. What changed for wages, hours, social security and termination.",
 ```
 
-- [ ] **Step 3: Run the tests to verify they pass**
+- [x] **Step 3: Run the tests to verify they pass**
 
 Run: `/usr/bin/python3 test_seo.py`
 
 Expected: PASS. The existing description-length check confirms each renders at 155 characters or fewer.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add seo_meta.py
@@ -463,7 +463,7 @@ These are the article pages inside the 80%-of-impressions set. Each title leads 
 - Consumes: `SEO_TITLES` from Task 3 and its two guard tests.
 - Produces: nothing consumed later.
 
-- [ ] **Step 1: Fill the dict**
+- [x] **Step 1: Fill the dict**
 
 Replace `SEO_TITLES = {}` in `seo_meta.py` with the entries below, keeping the comment block above it. Impressions and position are from the 26 August 2026 export and are noted so a later reader knows why these slugs and not others.
 
@@ -555,7 +555,7 @@ SEO_TITLES = {
 }
 ```
 
-- [ ] **Step 2: Run the tests to verify they pass**
+- [x] **Step 2: Run the tests to verify they pass**
 
 Run: `/usr/bin/python3 test_seo.py`
 
@@ -563,7 +563,7 @@ Expected: PASS. `test_seo_titles_valid` confirms every slug is live and every ti
 
 If a slug fails the live check, it has been renamed or retired — look it up in `RETIRED_ARTICLES` in the same file and use the surviving slug.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add seo_meta.py
@@ -590,7 +590,7 @@ these slugs were chosen and re-check them against a fresh export."
 - Consumes: `test_title_length()` from Task 1.
 - Produces: nothing consumed later.
 
-- [ ] **Step 1: Change the title**
+- [x] **Step 1: Change the title**
 
 `templates/templates_page.html:3` currently reads:
 
@@ -606,13 +606,13 @@ Replace with:
 
 That is 44 characters. The brand is deliberately dropped: the count and the file type earn the click, and the page already ranks for brand queries.
 
-- [ ] **Step 2: Run the tests to verify they pass**
+- [x] **Step 2: Run the tests to verify they pass**
 
 Run: `/usr/bin/python3 test_seo.py`
 
 Expected: PASS.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add templates/templates_page.html
@@ -635,7 +635,7 @@ The owner approves before anything deploys. This task produces what they read.
 - Consumes: every earlier task.
 - Produces: the report the owner approves. Nothing consumes it in code.
 
-- [ ] **Step 1: Re-measure the site**
+- [x] **Step 1: Re-measure the site**
 
 Do **not** measure "how many titles were shortened". A clause-trimmed title is
 still a prefix of its headline, so that number does not move and reads as a
@@ -697,7 +697,7 @@ title from Task 5, and the rest are low-traffic pages.
 Separately, `test_title_length` passing is the proof that no page exceeds 60
 characters — that count was 56 pages before Task 1.
 
-- [ ] **Step 2: Generate the before/after table**
+- [x] **Step 2: Generate the before/after table**
 
 `git stash` is shared across worktrees on this machine and unsafe here, so the
 "before" column comes from a second checkout rather than from stashing. Run:
@@ -747,7 +747,7 @@ If `HEAD~6` does not predate Task 1 — because commits were combined or split �
 use `git log --oneline` to find the commit before the first Task 1 commit and set
 `BASE` to it.
 
-- [ ] **Step 3: Write the report**
+- [x] **Step 3: Write the report**
 
 Create `docs/phase-1-title-changes.md` with:
 
@@ -756,13 +756,13 @@ Create `docs/phase-1-title-changes.md` with:
 - The before/after table from Step 2, sorted by impressions descending, covering the 39 hand-written articles plus the three format and two compare samples and `/templates`.
 - The explicit caveat, restated from the spec: a page ranking 4.6 with zero clicks is probably losing them to an AI Overview, and no title rewrite recovers that.
 
-- [ ] **Step 4: Run the full suite one final time**
+- [x] **Step 4: Run the full suite one final time**
 
 Run: `/usr/bin/python3 test_seo.py`
 
 Expected: PASS, with the summary line reporting the page count.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add docs/phase-1-title-changes.md
@@ -772,7 +772,7 @@ So the owner can approve the change by reading it, and so a later reader can
 tell what moved when the next Search Console export comes in."
 ```
 
-- [ ] **Step 6: Stop. Do not deploy.**
+- [x] **Step 6: Stop. Do not deploy.**
 
 Report to the owner: the counts before and after, the report path, and that the branch is ready to push on their approval. Deployment is `git push` then `./deploy/update.sh` on the Oracle box — the owner's call, not the implementer's.
 
