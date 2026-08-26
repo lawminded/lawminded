@@ -28,7 +28,95 @@ ordinary `git push` — no migration, no script run against the production DB.
 #
 # Values carry no brand suffix. `seotitle` appends ' - Law Minded' when the
 # result still fits in 60 characters.
-SEO_TITLES = {}
+SEO_TITLES = {
+    # Ordered by impressions in the 2026-08-26 Search Console export, which is
+    # kept at docs/gsc-performance-2026-08-26.xlsx. The trailing comment on each
+    # line is impressions · average position at that time, so a later reader can
+    # tell why these slugs and re-check them against a fresh export.
+    #
+    # Sits at the 60-char ceiling if 'Under' is kept, and Google's real limit is
+    # pixel width rather than characters, so the site's biggest page by some
+    # distance does not run to the edge of the heuristic.
+    'rights-issue-procedure-section-62':
+        'Rights Issue Section 62(1)(a): Procedure, Renunciation',  # 554 · 11.1
+    'influencer-disclosure-misleading-ads':
+        'Influencer Disclosure & Misleading Ad Rules in India 2026',  # 146 · 7.1
+    'auditor-appointment-rotation-removal':
+        'Auditor Appointment & Rotation: ADT-1, Sections 139-140',  # 136 · 17.8
+    'appointment-of-kmp-section-203':
+        'Appointment of KMP Under Section 203: MD, CFO & CS Rules',  # 130 · 11.4
+    'board-committees-audit-nrc-stakeholders':
+        'Board Committees Under Sections 177 & 178: Audit, NRC, SRC',  # 128 · 12.1
+    'hindu-undivided-family-huf-tax-guide':
+        'HUF Explained: How to Create One and What It Saves in Tax',  # 125 · 68.8
+    'private-placement-section-42':
+        'Private Placement Under Section 42: PAS-4, PAS-3 & Limits',  # 124 · 13.2
+    # Carries its own 107 plus the 160 from the two spokes that 301 into it.
+    'sebi-pit-insider-trading-explained':
+        'SEBI Insider Trading Rules (PIT): UPSI, Trading Window',  # 267 · 23.2
+    'secretarial-standards-ss-1-ss-2':
+        'Secretarial Standards SS-1 & SS-2: Are They Mandatory?',  # 103 · 13.0
+    'drafting-maintaining-minutes-section-118':
+        'Minutes of Meetings Under Section 118: Rules & Time Limits',  # 80 · 12.4
+    'ipo-sebi-icdr-eligibility-process':
+        'IPO Under SEBI ICDR 2018: Eligibility & Listing Process',  # 79 · 9.7
+    'sebi-sast-takeover-code-open-offer':
+        'SEBI Takeover Code (SAST) 2011: Open Offer Triggers',  # 72 · 22.3
+    'income-tax-act-2025-what-changed':
+        'Income-tax Act 2025: What Changed on 1 April 2026',  # 66 · 65.3
+    'perquisite-valuation-rules-2026-salaried':
+        'Perquisite Valuation Rules 2026: Car, HRA & Meal Limits',  # 63 · 20.7
+    'how-to-terminate-a-contract':
+        'How to Terminate a Contract Legally in India',  # 63 · 39.5
+    'conducting-agm-egm-companies-act':
+        'AGM & EGM Rules: Notice, Quorum, Proxies & E-Voting',  # 58 · 28.2
+    'consumer-complaint-guide':
+        'How to File a Consumer Complaint Online on e-Jagriti',  # 55 · 8.7
+    'fpo-further-public-offer-explained':
+        'FPO Explained: How Listed Companies Raise Capital Again',  # 48 · 7.6
+    'new-labour-codes-explained':
+        "India's New Labour Codes 2025: What Changed for Employers",  # 47 · 73.2
+    'bonus-issue-of-shares-section-63':
+        'Bonus Issue Under Section 63: Sources, Conditions, Process',  # 44 · 22.0
+    'dematerialization-of-shares':
+        'Dematerialization of Shares: Rules for Private Companies',  # 41 · 43.4
+    'posh-internal-committee-small-company':
+        'POSH Internal Committee Rules for Small Companies',  # 39 · 8.0
+    'llp-capital-contribution-increase-reduction':
+        "LLP Capital Contribution: How to Increase or Reduce It",  # 38 · 7.1
+    'alteration-of-moa-aoa-section-13-14':
+        'Alteration of MOA & AOA: Sections 13, 14 and MGT-14',  # 38 · 22.8
+    'eway-bill-ship-to-gstin-mandatory-2026':
+        'Ship-to GSTIN Now Mandatory on E-Way Bills (Aug 2026)',  # 38 · 26.2
+    'secretarial-audit-mr-3-section-204':
+        'Secretarial Audit Under Section 204: MR-3 Applicability',  # 37 · 12.2
+    'dpdp-rules-2025-compliance-timeline':
+        'DPDP Rules 2025: The Full Compliance Deadline Calendar',  # 34 · 8.2
+    'ccfs-2026-companies-compliance-facilitation-scheme':
+        'CCFS-2026: Cut ROC Late Fees by 90% Before 31 August',  # 33 · 14.2
+    'statutory-registers-and-records':
+        'Statutory Registers Every Indian Company Must Keep',  # 33 · 48.1
+    'share-transfer-private-company-sh4':
+        'Share Transfer in a Private Company: Form SH-4 Procedure',  # 33 · 40.2
+    'director-duties':
+        'Director Duties Under the Companies Act 2013',  # 32 · 57.3
+    'reduction-of-share-capital-section-66':
+        'Reduction of Share Capital Under Section 66: NCLT Route',  # 29 · 26.6
+    'cci-merger-control-sun-pharma-ranbaxy':
+        'CCI Merger Control: Thresholds & the Deal Value Test',  # 28 · 10.4
+    'epf-esi-social-security-code':
+        'EPF & ESI Rules 2026: Wage Ceilings and Employer Duties',  # 28 · 15.8
+    'msme-development-amendment-bill-2026':
+        'MSME Amendment Bill 2026: Delayed Payment Rules Explained',  # 26 · 7.0
+    'gig-platform-workers-rights-labour-codes':
+        "Gig Worker Rights Under India's Labour Codes",  # 26 · 28.8
+    'sebi-pit-compliance-solutions-founders-kmp':
+        'SEBI PIT Compliance for Founders and KMPs',  # 26 · 38.0
+    'mergers-amalgamations-companies-act':
+        'Mergers & Amalgamations Under the Companies Act 2013',  # 24 · 30.7
+    'limitation-act-1963-guide':
+        'Limitation Act 1963: Time Limits to File a Case in India',  # 23 · 50.0
+}
 
 
 SEO_DESCRIPTIONS = {
