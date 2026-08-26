@@ -310,3 +310,26 @@ cut back if they would rather have the usual length.
 Hero image: Gemini returned HTTP 429 ("prepayment credits are depleted") — the same
 billing failure recorded above for blog_seed7, so no retry. `gen_image.py` fell back
 to a licensed Pexels photograph of a textile mill, which suits the subject.
+
+### Revision, 26 August 2026 — plain English, personal guarantee removed
+
+The owner read the draft and asked for two changes: simpler language ("a laymen
+would not be able to understand or absorb it"), and the personal-guarantee thread
+taken out because it was causing confusion.
+
+Both done. **No verified claim changed.** Every section number, penalty,
+threshold, date, rupee figure and judgment is exactly as it was in the table
+above — only the sentences around them were rewritten. Terms that had been used
+bare are now explained on first use: whole-time director, non-executive director,
+key managerial personnel, jointly and severally, connivance, proviso, DIN,
+vicarious liability, Adjudicating Authority. Average sentence length went from
+18.8 words to 16.7, the longest sentence from 85 words to 49, and sentences over
+40 words from 18 to 5 (the remainder are verbatim statutory quotes).
+
+Removed with the guarantee: the line in the blockquote listing personal
+guarantees among what the veil does not cover, Rohan's one-crore guarantee to the
+bank in Act one, the paragraph distinguishing a guarantee from veil-lifting, and
+the FAQ "What is the difference between lifting the veil and a personal
+guarantee?". Eight FAQs are now seven; `faqs()` in app.py parses all seven, so
+the FAQPage schema is still populated. Nothing in the fact-check table above
+depended on the guarantee — it was a general contract point, not a sourced claim.
