@@ -15,6 +15,10 @@
 # and striking-off-company-stk-2, but nothing on the corporate veil itself or on
 # when directors stop being protected by it. No overlap.
 #
+# Revised again 26 August 2026: the owner asked for an explicit fiction
+# disclaimer, so the article now closes on one — invented company, invented
+# people, any resemblance coincidental, the law itself real and verified.
+#
 # The company, the people and every rupee figure in the narrative are invented.
 # Every section number, penalty, threshold and judgment is verified against the
 # primary instrument — see REVIEW-BEFORE-PUBLISH.md on this branch for the
@@ -179,6 +183,8 @@ BLOG_ARTICLES_13 = [
 
      "<p><strong>What is the difference between Section 339 of the Companies Act and Section 66 of the IBC?</strong> Section 339 applies in a winding up under the Companies Act and lets the Tribunal declare a director personally responsible for the company's debts without any limit. Section 66 applies in insolvency under the IBC and lets the Adjudicating Authority, which is the NCLT again, order a director to pay money into the company's assets. That includes Section 66(2), where he kept trading knowing there was no reasonable prospect of avoiding insolvency.</p>"
 
-     "<p><strong>If the company owes GST and income tax, can the department come after me directly?</strong> If it is a private company and the money cannot be recovered from the company, yes. Section 89(1) of the CGST Act and Section 323 of the Income-tax Act 2025 both make every director of that period jointly and severally liable. The only escape is to prove that the failure to recover cannot be put down to serious carelessness, misuse of position or breach of duty on his part. The burden sits on the director, not on the department.</p>"),
+     "<p><strong>If the company owes GST and income tax, can the department come after me directly?</strong> If it is a private company and the money cannot be recovered from the company, yes. Section 89(1) of the CGST Act and Section 323 of the Income-tax Act 2025 both make every director of that period jointly and severally liable. The only escape is to prove that the failure to recover cannot be put down to serious carelessness, misuse of position or breach of duty on his part. The burden sits on the director, not on the department.</p>"
+
+     "<p><em><strong>Disclaimer:</strong> This story is fiction. Meridian Weaves, Vasant Looms, Northgate Retail, Mehta Fabrics and every person named in it are invented, as are the dates and the rupee figures in the narrative. Any resemblance to a real company, or to any person living or dead, is purely coincidental. The law is not invented. Every section, penalty, threshold and judgment quoted here was checked against the bare Act or the judgment itself. This article is general information and not legal advice on your own facts; take advice before you act on it.</em></p>"),
 
 ]
