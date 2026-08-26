@@ -33,7 +33,7 @@ from database import (get_db, init_db, seed_articles, seed_documents, seed_forma
                       apply_content_migrations, DB_PATH)
 import content as C
 import formats as F
-from seo_meta import SEO_DESCRIPTIONS, INTERNAL_LINKS, RETIRED_ARTICLES
+from seo_meta import SEO_DESCRIPTIONS, SEO_TITLES, INTERNAL_LINKS, RETIRED_ARTICLES
 
 # Production flag: enables HTTPS enforcement, HSTS, and Secure cookies on the live
 # server. Stays off locally so http://localhost development still works.
@@ -603,11 +603,11 @@ def fit(base, *extras, maxlen=TITLE_MAX):
 
 @app.template_filter('seotitle')
 def seotitle(article, brand=' - Law Minded', maxlen=TITLE_MAX):
-    """Build a search-friendly <title>. Uses the article's explicit seo_title
-    when set; otherwise shortens the long editorial headline (preferring the
-    lead before a colon, else trimming on a word boundary). The ' - Law Minded'
-    suffix is only appended when the whole thing still fits Google's ~60-char
-    display width, so titles stop truncating mid-phrase in search results."""
+    """Build a search-friendly <title>. Prefers a hand-written SEO_TITLES entry,
+    then the article's admin-editable seo_title column, and otherwise shortens
+    the long editorial headline. The ' - Law Minded' suffix is only appended when
+    the whole thing still fits Google's ~60-char display width, so titles stop
+    truncating mid-phrase in search results."""
     def _get(row, key):
         try:
             v = row[key]
@@ -615,7 +615,9 @@ def seotitle(article, brand=' - Law Minded', maxlen=TITLE_MAX):
             v = None
         return v.strip() if isinstance(v, str) else ''
 
-    title = _get(article, 'seo_title')
+    # Three sources, most deliberate first: a title written for the query, the
+    # admin-editable column, then the shortened headline.
+    title = SEO_TITLES.get(_get(article, 'slug'), '') or _get(article, 'seo_title')
     if not title:
         # Do NOT reduce the title to the text before the colon. That rule used
         # to fire on 113 of 126 articles, and on this site the part after the

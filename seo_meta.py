@@ -15,6 +15,22 @@ ordinary `git push` — no migration, no script run against the production DB.
 `test_seo.py` fails if any rendered description exceeds the limit.
 """
 
+# Hand-written <title> tags, keyed by article slug, for the pages that carry the
+# traffic. Same reasoning as SEO_DESCRIPTIONS below, and the same deployment
+# story: a plain module ships with `git push`, no migration.
+#
+# The automatic shortener in app.py trims a long editorial headline to Google's
+# display width. It cuts at a clause boundary where one exists, but it cannot
+# always end on a complete phrase — nothing in the string tells it that "Raise"
+# opens a phrase while "Removal" closes one. The pages Search Console shows
+# people actually reaching get a title written for the query instead of derived
+# from the headline.
+#
+# Values carry no brand suffix. `seotitle` appends ' - Law Minded' when the
+# result still fits in 60 characters.
+SEO_TITLES = {}
+
+
 SEO_DESCRIPTIONS = {
     '50-percent-wage-rule':
         "How India's new 50% wage definition changes your basic pay, PF and gratuity. "

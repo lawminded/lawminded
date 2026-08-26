@@ -637,40 +637,65 @@ The owner approves before anything deploys. This task produces what they read.
 
 - [ ] **Step 1: Re-measure the site**
 
+Do **not** measure "how many titles were shortened". A clause-trimmed title is
+still a prefix of its headline, so that number does not move and reads as a
+failure when the change worked. The property that matters is whether the cut
+lands on a finished clause or mid-phrase.
+
 Run:
 
 ```bash
 /usr/bin/python3 - <<'PY'
-import html, re, sys
+import re, sys
 sys.path.insert(0, '.')
-from app import app, SITE_URL
+from app import app, shorten_title
 import database
 
-T = re.compile(r'<title>(.*?)</title>', re.S)
-conn = database.get_db()
-arts = [(r['slug'], r['title']) for r in conn.execute(
-    'SELECT slug, title FROM articles WHERE published=1')]
-conn.close()
+with app.app_context():
+    db = database.get_db()
+    arts = [' '.join((r['title'] or '').split()) for r in
+            db.execute('SELECT title FROM articles WHERE published=1')]
+    db.close()
 
-trunc = over = ok = 0
-with app.test_client() as c:
-    for slug, raw in arts:
-        r = c.get(f'/article/{slug}', base_url=SITE_URL)
-        if r.status_code != 200:
+
+def old_shorten(t, maxlen=60):
+    """The word-boundary trim as it behaved before this branch."""
+    if len(t) <= maxlen:
+        return t
+    cut = t[:maxlen]
+    if ' ' in cut:
+        cut = cut[:cut.rindex(' ')]
+    cut = cut.rstrip(' ,;:-–—&')
+    while True:
+        head, _, last = cut.rpartition(' ')
+        if head and last.lower() in ('and', 'the', 'a', 'an', 'of', 'for',
+                                     'in', 'on', 'to', 'with', '&'):
+            cut = head.rstrip(' ,;:-–—&')
             continue
-        t = html.unescape(T.search(r.get_data(as_text=True)).group(1).strip())
-        bare = t[:-len(' - Law Minded')] if t.endswith(' - Law Minded') else t
-        if bare != raw and raw.startswith(bare[:max(len(bare)-2, 1)]):
-            trunc += 1
-        elif len(t) > 60:
-            over += 1
-        else:
-            ok += 1
-print(f'articles: {trunc} truncated, {over} over 60, {ok} clean (of {len(arts)})')
+        return cut
+
+
+def lands_on_clause(raw, cut):
+    """True when the headline continues with punctuation — the cut ended a
+    clause rather than stranding the first word of the next one."""
+    if cut == raw:
+        return True
+    return bool(re.match(r'^\s*[,:;]|^\s+[-–—]\s', raw[len(cut):]))
+
+
+before = sum(lands_on_clause(r, old_shorten(r)) for r in arts)
+after = sum(lands_on_clause(r, shorten_title(r)) for r in arts)
+print(f'{len(arts)} articles, {sum(1 for r in arts if len(r) > 60)} need shortening')
+print(f'  ends mid-phrase: {len(arts) - before} -> {len(arts) - after}')
 PY
 ```
 
-Expected: truncated count well below the 120 measured before the plan, and `over` at 0. The remainder are low-traffic pages the shortener handles acceptably.
+Expected: mid-phrase endings fall from 105 to 27. Those 27 are headlines with no
+clause boundary in range; the high-traffic ones among them carry a hand-written
+title from Task 5, and the rest are low-traffic pages.
+
+Separately, `test_title_length` passing is the proof that no page exceeds 60
+characters — that count was 56 pages before Task 1.
 
 - [ ] **Step 2: Generate the before/after table**
 

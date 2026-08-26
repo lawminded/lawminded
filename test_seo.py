@@ -12,7 +12,7 @@ import json
 import re
 
 from app import app, JUDGMENTS_PUBLISHED, autolink, seotitle, SITE_URL
-from seo_meta import SEO_DESCRIPTIONS, RETIRED_ARTICLES
+from seo_meta import SEO_DESCRIPTIONS, SEO_TITLES, RETIRED_ARTICLES
 import content as C
 
 DESC_RE = re.compile(r'<meta name="description" content="(.*?)">', re.S)
@@ -100,6 +100,33 @@ def test_seotitle_cases():
         assert len(got) <= TITLE_MAX, f'{got!r} is {len(got)} chars'
 
 
+def test_seo_titles_valid(slugs):
+    """Every hand-written title must fit the budget and point at a live page.
+
+    The slug check is the guard INTERNAL_LINKS already has: when an article is
+    renamed, a stale entry fails the build instead of silently going dead and
+    handing the page back to the automatic shortener."""
+    for slug, title in SEO_TITLES.items():
+        assert slug in slugs, (
+            f'SEO_TITLES has an entry for {slug!r}, which is not a published '
+            'article. Rename it or remove it.')
+        assert title == title.strip(), f'{slug}: title has stray whitespace'
+        assert len(title) <= TITLE_MAX, (
+            f'{slug}: hand-written title is {len(title)} chars, over {TITLE_MAX}\n'
+            f'  {title}')
+
+
+def test_seo_title_wins(client):
+    """A hand-written title beats both the database column and the shortener."""
+    if not SEO_TITLES:
+        return
+    slug, expected = next(iter(SEO_TITLES.items()))
+    page = client.get(f'/article/{slug}', base_url=SITE_URL).get_data(as_text=True)
+    got = html.unescape(TITLE_RE.search(page).group(1).strip())
+    assert got.startswith(expected), (
+        f'/article/{slug} rendered {got!r}, expected it to start with {expected!r}')
+
+
 def _types(blocks):
     types = set()
     for b in blocks:
@@ -138,6 +165,8 @@ def main():
 
     test_title_length(client, paths)
     test_seotitle_cases()
+    test_seo_titles_valid(slugs)
+    test_seo_title_wins(client)
 
     long_descs, checked = [], 0
     for p in paths:
