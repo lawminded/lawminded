@@ -617,8 +617,6 @@ def seotitle(article, brand=' - Law Minded', maxlen=TITLE_MAX):
 
     title = _get(article, 'seo_title')
     if not title:
-        raw = ' '.join(_get(article, 'title').split())
-        title = raw
         # Do NOT reduce the title to the text before the colon. That rule used
         # to fire on 113 of 126 articles, and on this site the part after the
         # colon is where the statute reference lives — "Appointment of KMP:
@@ -626,22 +624,10 @@ def seotitle(article, brand=' - Law Minded', maxlen=TITLE_MAX):
         # Search Console for Aug 2026 shows the section numbers are precisely
         # what people search ("section 203 of companies act 2013", "section 68",
         # "62(1)(a)"), so dropping them removed the strongest on-page signal
-        # from the one tag that carries the most weight. Trim on a word
-        # boundary instead and keep as much of the reference as fits.
-        if len(title) > maxlen:
-            cut = title[:maxlen]
-            if ' ' in cut:
-                cut = cut[:cut.rindex(' ')]
-            title = cut.rstrip(' ,;:-–—&')
-            # Drop a dangling connector so the title doesn't read as cut off
-            # mid-phrase ("… Section 63 Sources, Conditions &").
-            while True:
-                head, _, last = title.rpartition(' ')
-                if head and last.lower() in ('and', 'the', 'a', 'an', 'of', 'for',
-                                             'in', 'on', 'to', 'with', '&'):
-                    title = head.rstrip(' ,;:-–—&')
-                    continue
-                break
+        # from the one tag that carries the most weight. shorten_title keeps as
+        # much of the reference as fits, cutting at a clause boundary so the
+        # result still reads as a finished phrase.
+        title = shorten_title(_get(article, 'title'), maxlen)
     if brand and len(title) + len(brand) <= maxlen:
         return title + brand
     return title

@@ -11,8 +11,8 @@ import html
 import json
 import re
 
-from app import app, JUDGMENTS_PUBLISHED, autolink, SITE_URL
-from seo_meta import SEO_DESCRIPTIONS, RETIRED_ARTICLES, RETIRED_ARTICLES
+from app import app, JUDGMENTS_PUBLISHED, autolink, seotitle, SITE_URL
+from seo_meta import SEO_DESCRIPTIONS, RETIRED_ARTICLES
 import content as C
 
 DESC_RE = re.compile(r'<meta name="description" content="(.*?)">', re.S)
@@ -66,6 +66,40 @@ def test_title_length(client, paths):
             for n, p, t in sorted(too_long, reverse=True)[:10]))
 
 
+def test_seotitle_cases():
+    """The automatic shortener must not leave a title ending mid-phrase.
+
+    Each headline below is real. The last case is kept deliberately: nothing in
+    the string distinguishes a dangling 'Raise' from a perfectly fine 'Removal',
+    so the shortener cannot fix every headline and the pages that matter carry a
+    hand-written SEO_TITLES entry instead."""
+    cases = [
+        # Trims at the last clause boundary instead of stranding a phrase's
+        # first word ('... ADT-1, Sections', '... e-Jagriti - Step'). Trimming
+        # can free enough room for the brand, as it does here.
+        ('Auditor Appointment, Rotation & Removal: ADT-1, Sections 139-140',
+         'Auditor Appointment, Rotation & Removal: ADT-1 - Law Minded'),
+        # 51 chars after the trim, so the 13-char brand no longer fits.
+        ('How to File a Consumer Complaint Online on e-Jagriti - Step by Step',
+         'How to File a Consumer Complaint Online on e-Jagriti'),
+        # Inside the budget already: untouched, and the brand fits.
+        ('Reduction of Share Capital',
+         'Reduction of Share Capital - Law Minded'),
+        # Inside the budget without the brand, which does not fit.
+        ('Appointment of KMP: Section 203 Thresholds for MD, CFO & CS',
+         'Appointment of KMP: Section 203 Thresholds for MD, CFO & CS'),
+        # No clause boundary in range: falls back to the word-boundary trim,
+        # which cannot know that 'Raise' opens a phrase.
+        ('FPO (Further Public Offer): How Listed Companies Raise Capital Again',
+         'FPO (Further Public Offer): How Listed Companies Raise'),
+    ]
+    for headline, expected in cases:
+        got = seotitle({'title': headline, 'seo_title': None, 'slug': ''})
+        assert got == expected, (
+            f'seotitle({headline!r})\n  got      {got!r}\n  expected {expected!r}')
+        assert len(got) <= TITLE_MAX, f'{got!r} is {len(got)} chars'
+
+
 def _types(blocks):
     types = set()
     for b in blocks:
@@ -103,6 +137,7 @@ def main():
              + [f'/article/{s}' for s in slugs])
 
     test_title_length(client, paths)
+    test_seotitle_cases()
 
     long_descs, checked = [], 0
     for p in paths:
