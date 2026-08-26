@@ -29,3 +29,14 @@ Standing preferences and corrections. Read before writing; append when told some
   by contract; veil-lifting is protection the law takes back. Sitting side by
   side they read as two versions of the same thing. Keep them in separate
   articles.
+
+- Any article built on an invented story ends with a fiction disclaimer, in the
+  first draft, not after the owner asks. The wording the owner wanted on the
+  corporate veil case study: the story is fiction, the company and the people
+  in it are invented, and any resemblance to a real company or to any person
+  living or dead is purely coincidental. Say in the same breath that the law
+  around the story is real and was checked against the bare Act or the
+  judgment. Put it after the FAQ — a trailing <p> does not disturb the FAQPage
+  regex in app.py, which only reads <p><strong>question?</strong> answer</p>.
+  Invented names matter here: "Meridian Weaves" or "Mehta Fabrics" are ordinary
+  enough that a real business could be carrying one.
