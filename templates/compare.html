@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 
-{% block title %}{% if current %}{{ current.title }} — Compared Side by Side | Law Minded{% else %}Compare Indian Laws Side by Side — 5 Comparisons | Law Minded{% endif %}{% endblock %}
+{# Search Console shows the query is 'difference between rti and pil', not
+   'compared side by side', so the title leads on the word people type. #}
+{% block title %}{% if current %}{{ (current.title ~ ': Key Differences')|fit(' Compared', ' | Law Minded') }}{% else %}Compare Indian Laws Side by Side | Law Minded{% endif %}{% endblock %}
 
 {% block meta_desc %}{% if current %}{{ current.meta }}{% else %}Side-by-side comparisons of key Indian laws: Private Limited vs LLP, Lease vs Leave & License, Partnership vs LLP, Consumer Forum vs Civil Court, RTI vs PIL.{% endif %}{% endblock %}
 

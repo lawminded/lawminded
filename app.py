@@ -540,8 +540,69 @@ def iso8601(value, offset='+05:30'):
     return str(value)
 
 
+# Google renders roughly 60 characters of a <title> and cuts the rest mid-word.
+TITLE_MAX = 60
+
+# A clause boundary is a place a title can be cut and still read as a finished
+# phrase. Below _CLAUSE_FLOOR characters the remainder is too short to describe
+# the page, so a word-boundary trim of the full headline beats it.
+_CLAUSE_RE = re.compile(r'[,:;]|\s[-–—]\s')
+_CLAUSE_FLOOR = 30
+
+# Words that open a phrase rather than close one. A title ending on one reads as
+# cut off ("... Section 63 Sources, Conditions &").
+_DANGLING = ('and', 'the', 'a', 'an', 'of', 'for', 'in', 'on', 'to', 'with', '&')
+
+
+def shorten_title(text, maxlen=TITLE_MAX):
+    """Cut a long headline down to the width Google displays, ending on a
+    complete phrase wherever possible.
+
+    Prefers the last clause boundary — comma, colon, or spaced dash — because
+    cutting there finishes a thought. Falls back to a word-boundary trim, which
+    can strand the first word of a phrase ("... ADT-1, Sections"); nothing in the
+    string distinguishes a dangling 'Raise' from a fine 'Removal', so the pages
+    that matter carry a hand-written title in SEO_TITLES instead."""
+    text = ' '.join(str(text or '').split())
+    if len(text) <= maxlen:
+        return text
+
+    boundary = None
+    for m in _CLAUSE_RE.finditer(text):
+        if _CLAUSE_FLOOR <= m.start() <= maxlen:
+            boundary = m.start()
+    if boundary is not None:
+        return text[:boundary].rstrip(' ,;:-–—&')
+
+    cut = text[:maxlen]
+    if ' ' in cut:
+        cut = cut[:cut.rindex(' ')]
+    cut = cut.rstrip(' ,;:-–—&')
+    while True:
+        head, _, last = cut.rpartition(' ')
+        if head and last.lower() in _DANGLING:
+            cut = head.rstrip(' ,;:-–—&')
+            continue
+        return cut
+
+
+@app.template_filter('fit')
+def fit(base, *extras, maxlen=TITLE_MAX):
+    """Build a <title> from a base plus optional suffixes, keeping the whole
+    thing inside the width Google displays.
+
+    Each extra is appended only if it still fits; one that doesn't is skipped
+    rather than ending the chain, so a short brand can still land when a long
+    value-proposition suffix cannot. Order them most valuable first."""
+    out = shorten_title(base, maxlen)
+    for extra in extras:
+        if len(out) + len(extra) <= maxlen:
+            out += extra
+    return out
+
+
 @app.template_filter('seotitle')
-def seotitle(article, brand=' - Law Minded', maxlen=60):
+def seotitle(article, brand=' - Law Minded', maxlen=TITLE_MAX):
     """Build a search-friendly <title>. Uses the article's explicit seo_title
     when set; otherwise shortens the long editorial headline (preferring the
     lead before a colon, else trimming on a word boundary). The ' - Law Minded'

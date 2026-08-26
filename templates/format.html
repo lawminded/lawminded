@@ -1,7 +1,11 @@
 {% extends "base.html" %}
 {% from '_icons.html' import icon %}
 
-{% block title %}{{ fmt['title'] }} — Free Word Format Download | Law Minded{% endblock %}
+{# 'Download | Law Minded' cost 21 characters and pushed 54 of 55 of these past
+   the width Google displays, so the end of every document name — the part
+   people actually search — was being cut off. The document name comes first
+   now, and each suffix is added only while the whole title still fits. #}
+{% block title %}{{ fmt['title']|fit(' — Free Word Format', ' | Law Minded') }}{% endblock %}
 {% block meta_desc %}{{ fmt['description'] }} Free, editable Word (.docx) format — no signup required.{% endblock %}
 
 {% block head_extra %}

@@ -7,6 +7,7 @@ quote kills the whole block), and the Article schema going missing from a
 page type.
 """
 import collections
+import html
 import json
 import re
 
@@ -16,6 +17,8 @@ import content as C
 
 DESC_RE = re.compile(r'<meta name="description" content="(.*?)">', re.S)
 LD_RE = re.compile(r'<script type="application/ld\+json">(.*?)</script>', re.S)
+TITLE_RE = re.compile(r'<title>(.*?)</title>', re.S)
+TITLE_MAX = 60
 
 
 def _page(client, path):
@@ -36,6 +39,31 @@ def _blocks(html, path):
         except json.JSONDecodeError as e:
             raise AssertionError(f'{path}: invalid JSON-LD ({e}): {txt[:200]}')
     return out
+
+
+def test_title_length(client, paths):
+    """Google shows roughly 60 characters of a <title>. Anything longer it cuts
+    off itself, mid-word, and the result reads as a broken page.
+
+    Article titles go through the `seotitle` filter, which already respects the
+    limit. Every other page type builds its title by string concatenation in the
+    template, where nothing enforces it — which is how 54 of 55 format pages
+    ended up averaging 79 characters."""
+    too_long = []
+    for path in paths:
+        r = client.get(path, base_url=SITE_URL)
+        if r.status_code != 200:
+            continue
+        m = TITLE_RE.search(r.get_data(as_text=True))
+        assert m, f'{path} renders no <title>'
+        title = html.unescape(m.group(1).strip())
+        if len(title) > TITLE_MAX:
+            too_long.append((len(title), path, title))
+    assert not too_long, (
+        f'{len(too_long)} pages render a <title> over {TITLE_MAX} chars, which '
+        'Google truncates mid-word:\n' + '\n'.join(
+            f'  {n} chars  {p}\n    {t}'
+            for n, p, t in sorted(too_long, reverse=True)[:10]))
 
 
 def _types(blocks):
@@ -73,6 +101,8 @@ def main():
              + [f'/topic/{t["slug"]}' for t in C.TOPICS.values()]
              + [f'/judgment/{j["slug"]}' for j in C.JUDGMENTS]
              + [f'/article/{s}' for s in slugs])
+
+    test_title_length(client, paths)
 
     long_descs, checked = [], 0
     for p in paths:
