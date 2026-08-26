@@ -270,7 +270,22 @@ mapping was consistent across sources but the current penalty amount wasn't
 confirmed clearly enough to state a figure, and it wasn't essential to a
 how-to-apply article.
 
-No hero image: Gemini returned HTTP 429 ("prepayment credits are depleted"), a
-billing issue rather than a transient error, and no Pexels key is configured. The
-article ships without one; `_article_image_url` returns None and the page falls
-back to the site default.
+Hero image, added 26 August 2026 on the owner's ask, after the article had already
+been published. Gemini is still returning HTTP 429 ("prepayment credits are
+depleted") — a billing state, not a transient error, so it will keep failing for
+every article until the Google project is topped up. A Pexels key is configured
+now, so the licensed-photograph fallback answered instead.
+
+The photograph is Pexels 7382460 by Polina Tankilevitch
+(https://www.pexels.com/photo/person-in-white-dress-shirt-using-smartphone-7382460/),
+centre-cropped to the 1200x630 WebP the site expects. The Pexels licence permits
+commercial use and modification with no attribution required, which is what makes
+it safe on a monetised site; the credit above is recorded for provenance, not
+because the licence demands it.
+
+Chosen over the closer keyword matches deliberately. Pexels' "tax document" and
+"application form" results are US Form 1040s and paper forms — the wrong country,
+covered in readable text, and contradicting the one thing the article is about,
+which is that the e-PAN route is online and paperless. This frame is hands
+entering something on a phone over a laptop keyboard: the Aadhaar mobile-OTP step,
+with no text, no logos, no government emblems and no faces.
