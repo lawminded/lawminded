@@ -134,10 +134,16 @@ one of the 49 target pages therefore gets a hand-written entry, and after the
 rule lands, all remaining rendered titles are reviewed and any that still read
 broken are hand-written too.
 
-**Tests.** `test_seo.py` gains: no rendered title exceeds 60 characters; no
-title ends on a connector or a dangling opener; every `SEO_TITLES` key matches a
-live article slug (the same guard `INTERNAL_LINKS` already has, so a slug rename
-fails the build rather than silently going stale).
+**Tests.** `test_seo.py` gains: no rendered title on any page type exceeds 60
+characters; the shortener produces the expected output for a fixed table of real
+headlines, including the two it now fixes and the one it cannot; every
+`SEO_TITLES` key matches a live article slug (the same guard `INTERNAL_LINKS`
+already has, so a slug rename fails the build rather than silently going stale).
+
+A test asserting "no title ends on a dangling word" is deliberately *not*
+written. As the table above shows, that property is not decidable — `Removal` is
+a fine ending and `Raise` is not, and nothing in the string distinguishes them.
+The table of known cases is the honest guard.
 
 **Deployment.** Staged locally, tests run, before/after title list shown to the
 owner for approval, then `git push` and `./deploy/update.sh`.
