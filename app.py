@@ -33,7 +33,8 @@ from database import (get_db, init_db, seed_articles, seed_documents, seed_forma
                       apply_content_migrations, DB_PATH)
 import content as C
 import formats as F
-from seo_meta import SEO_DESCRIPTIONS, SEO_TITLES, INTERNAL_LINKS, RETIRED_ARTICLES
+from seo_meta import (SEO_DESCRIPTIONS, SEO_TITLES, SEARCH_META_CHANGED,
+                      INTERNAL_LINKS, RETIRED_ARTICLES)
 
 # Production flag: enables HTTPS enforcement, HSTS, and Secure cookies on the live
 # server. Stays off locally so http://localhost development still works.
@@ -1652,7 +1653,32 @@ def sitemap_xml():
     deploy — no manual editing of this list is ever needed. A brand-new *category*
     only needs adding to CATEGORY_MAP in content.py (it rides on the /blogs URL).
     robots.txt advertises this file; the human-facing index is /sitemap."""
-    # Static pages
+    def freshest(*dates):
+        """The latest of the dates given, ignoring blanks. ISO dates sort
+        lexicographically, so max() is the whole comparison."""
+        return max((d[:10] for d in dates if d), default=None)
+
+    # Read the article rows once: they date the articles, and the topic hub and
+    # index pages are dated by the newest article they list.
+    db = get_db()
+    article_rows = db.execute(
+        'SELECT slug, category, updated_at FROM articles WHERE published=1 '
+        'ORDER BY updated_at DESC').fetchall()
+    format_rows = db.execute(
+        'SELECT slug, updated_at FROM formats ORDER BY sort_order, id').fetchall()
+    db.close()
+
+    newest_article = freshest(*(r['updated_at'] or '' for r in article_rows))
+    newest_format = freshest(*(r['updated_at'] or '' for r in format_rows))
+    by_category = {}
+    for r in article_rows:
+        by_category.setdefault(r['category'], []).append(r['updated_at'] or '')
+
+    # Static pages. A lastmod is given only where a real date backs it: the
+    # listing pages are dated by what they list, and the two whose own markup
+    # changed in the metadata revision carry that date. The rest — terms,
+    # privacy, contact — have no date we can honestly state, and an invented one
+    # is worse than none.
     pages = [
         ('index', 'weekly', '1.0'),
         ('about', 'monthly', '0.7'),
@@ -1667,25 +1693,35 @@ def sitemap_xml():
         ('privacy', 'yearly', '0.3'),
         ('sitemap_page', 'yearly', '0.3'),
     ]
+    static_lastmod = {
+        'index': freshest(newest_article, SEARCH_META_CHANGED),
+        'blogs': newest_article,
+        'templates_page': freshest(newest_format, SEARCH_META_CHANGED),
+        'judgments': JUDGMENTS_PUBLISHED,
+    }
     urls = []
     for endpoint, freq, prio in pages:
-        urls.append((SITE_URL + url_for(endpoint), freq, prio, None))
+        urls.append((SITE_URL + url_for(endpoint), freq, prio,
+                     static_lastmod.get(endpoint)))
 
-    # Topic hub pages — one per category, added automatically with the category
-    for t in C.TOPICS.values():
-        urls.append((SITE_URL + url_for('topic', slug=t['slug']), 'weekly', '0.8', None))
+    # Topic hub pages — one per category, added automatically with the category.
+    # A hub lists its category's articles, so it genuinely changes whenever the
+    # newest of them does.
+    for cat, t in C.TOPICS.items():
+        urls.append((SITE_URL + url_for('topic', slug=t['slug']), 'weekly', '0.8',
+                     freshest(*by_category.get(cat, []))))
 
     # One URL per act comparison — these are the pages that can actually rank
     # for "x vs y" queries; /compare alone never could.
     for c in C.COMPARISON_TABLES:
-        urls.append((SITE_URL + url_for('compare_one', slug=c['slug']), 'monthly', '0.7', None))
+        urls.append((SITE_URL + url_for('compare_one', slug=c['slug']), 'monthly',
+                     '0.7', SEARCH_META_CHANGED))
 
     # One URL per document format, for the same reason: "board resolution
     # format" is a real query and /templates alone could never answer it.
-    db = get_db()
-    for r in db.execute('SELECT slug FROM formats ORDER BY sort_order, id').fetchall():
-        urls.append((SITE_URL + url_for('format_page', slug=r['slug']), 'yearly', '0.6', None))
-    db.close()
+    for r in format_rows:
+        urls.append((SITE_URL + url_for('format_page', slug=r['slug']), 'yearly', '0.6',
+                     freshest(r['updated_at'] or '', SEARCH_META_CHANGED)))
 
     # Resolution library pages
     for rtype in DOC_LIST_TITLE:
@@ -1694,17 +1730,14 @@ def sitemap_xml():
     # Landmark judgment briefs
     for jd in C.JUDGMENTS:
         urls.append((SITE_URL + url_for('judgment', slug=jd['slug']), 'monthly', '0.6',
-                     JUDGMENTS_PUBLISHED))
+                     freshest(JUDGMENTS_PUBLISHED, SEARCH_META_CHANGED)))
 
-    # Published articles (with last-modified)
-    db = get_db()
-    rows = db.execute(
-        'SELECT slug, updated_at FROM articles WHERE published=1 ORDER BY updated_at DESC'
-    ).fetchall()
-    db.close()
-    for r in rows:
-        lastmod = (r['updated_at'] or '')[:10] or None
-        urls.append((SITE_URL + url_for('article', slug=r['slug']), 'monthly', '0.8', lastmod))
+    # Published articles. The body's own date, unless the title and description
+    # Google displays were rewritten more recently — the page a crawler fetches
+    # changed on that later date even though the article text did not.
+    for r in article_rows:
+        urls.append((SITE_URL + url_for('article', slug=r['slug']), 'monthly', '0.8',
+                     freshest(r['updated_at'] or '', SEARCH_META_CHANGED)))
 
     xml = ['<?xml version="1.0" encoding="UTF-8"?>',
            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']

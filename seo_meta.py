@@ -15,6 +15,20 @@ ordinary `git push` — no migration, no script run against the production DB.
 `test_seo.py` fails if any rendered description exceeds the limit.
 """
 
+# The date this file's titles and descriptions were last revised, as a plain
+# ISO date. The sitemap uses it as a floor for <lastmod>: a page whose rendered
+# title changed on this date genuinely changed, even though its article body did
+# not, and Google has no other way to learn that.
+#
+# It is deliberately NOT the article's `updated_at`. That column drives
+# `dateModified` in the Article schema, and moving it would claim the legal
+# content was revised — the wrong thing to overstate on a compliance site.
+#
+# Bump this ONLY when the titles or descriptions below actually change. It is a
+# freshness signal, not a way to nudge the crawler; a date that moves without
+# the page moving is the kind of thing Google learns to distrust.
+SEARCH_META_CHANGED = '2026-08-26'
+
 # Hand-written <title> tags, keyed by article slug, for the pages that carry the
 # traffic. Same reasoning as SEO_DESCRIPTIONS below, and the same deployment
 # story: a plain module ships with `git push`, no migration.

@@ -13,7 +13,8 @@ import re
 
 from app import (app, JUDGMENTS_PUBLISHED, autolink, seotitle, SITE_URL,
                  TITLE_MAX)
-from seo_meta import SEO_DESCRIPTIONS, SEO_TITLES, RETIRED_ARTICLES
+from seo_meta import (SEO_DESCRIPTIONS, SEO_TITLES, SEARCH_META_CHANGED,
+                      RETIRED_ARTICLES)
 import content as C
 
 DESC_RE = re.compile(r'<meta name="description" content="(.*?)">', re.S)
@@ -127,6 +128,42 @@ def test_seo_title_wins(client):
         f'/article/{slug} rendered {got!r}, expected it to start with {expected!r}')
 
 
+def test_sitemap_lastmod(client, slugs):
+    """Every URL whose freshness we can honestly establish carries a lastmod.
+
+    A sitemap that omits lastmod, or reports one that never moves when the page
+    does, tells Google there is nothing to re-crawl. Before this guard, all 55
+    format pages, the comparisons and the topic hubs carried none at all, and the
+    articles reported a date drawn from the article body — which does not move
+    when the title Google displays is rewritten."""
+    xml = client.get('/sitemap.xml', base_url=SITE_URL).get_data(as_text=True)
+    urls = re.findall(r'<url>(.*?)</url>', xml, re.S)
+    entries = {}
+    for block in urls:
+        loc = re.search(r'<loc>([^<]+)</loc>', block).group(1)
+        lm = re.search(r'<lastmod>([^<]+)</lastmod>', block)
+        entries[loc.replace(SITE_URL, '')] = lm.group(1) if lm else None
+
+    for kind in ('/article/', '/format/', '/compare/', '/topic/', '/judgment/'):
+        missing = [p for p, lm in entries.items() if p.startswith(kind) and not lm]
+        assert not missing, (
+            f'{len(missing)} {kind} URLs have no <lastmod>, so Google has no '
+            f'signal to re-crawl them: {missing[:5]}')
+
+    for path, lm in entries.items():
+        if lm:
+            assert re.fullmatch(r'\d{4}-\d{2}-\d{2}', lm), \
+                f'{path}: lastmod {lm!r} is not a plain ISO date'
+
+    # The metadata revision is a real change to what these pages serve, so no
+    # page may report a date earlier than it.
+    stale = [(p, lm) for p, lm in entries.items()
+             if lm and p.startswith(('/article/', '/format/')) and lm < SEARCH_META_CHANGED]
+    assert not stale, (
+        f'{len(stale)} pages report a lastmod older than the metadata revision '
+        f'({SEARCH_META_CHANGED}): {stale[:5]}')
+
+
 def _types(blocks):
     types = set()
     for b in blocks:
@@ -167,6 +204,7 @@ def main():
     test_seotitle_cases()
     test_seo_titles_valid(slugs)
     test_seo_title_wins(client)
+    test_sitemap_lastmod(client, slugs)
 
     long_descs, checked = [], 0
     for p in paths:
