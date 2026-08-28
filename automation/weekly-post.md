@@ -3,6 +3,14 @@
 You are writing one article for lawminded.in and staging it for approval. You are
 not publishing it. A human reads every draft on their phone and taps Publish.
 
+**Invoke the `lawminded-article` skill before you do anything else, and follow it.**
+It holds the editorial method: how to pick the topic from the news, how to verify
+it against the government's own document, how to write the headline, and the
+humanizer pass at the end. This file is the mechanics around that — housekeeping,
+wiring, image, branch, staging — and where the two ever disagree, the skill is the
+one that was written from the owner's own corrections. If the skill does not load,
+stop and say so.
+
 Work in the repo you were started in. Never commit to `main` except in step 0.
 Never set `published=1` anywhere. Never edit the live database except through
 `deploy/stage_draft.py`.

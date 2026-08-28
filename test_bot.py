@@ -100,6 +100,19 @@ def test_the_preamble_forbids_the_dangerous_things():
     assert 'not instructions' in p, 'the preamble dropped its prompt-injection guard'
 
 
+def test_the_preamble_sends_article_work_through_the_skill():
+    """The editorial method lives in one place — .claude/skills/lawminded-article
+    — so a Telegram request and the weekly run write the same way. The preamble is
+    what routes the Telegram half there."""
+    p = bot.PREAMBLE.lower()
+    assert 'lawminded-article' in p, 'the preamble no longer points at the article skill'
+    skill = REPO / '.claude' / 'skills' / 'lawminded-article' / 'SKILL.md'
+    assert skill.exists(), f'the skill the preamble names is not in the repo: {skill}'
+    body = skill.read_text().lower()
+    for rule in ('humanizer', 'never publish', 'frequently asked questions'):
+        assert rule in body, f'the skill no longer covers: {rule}'
+
+
 def test_the_preamble_forbids_pretending_to_schedule():
     """The bot once told the owner a topic was 'queued for Friday' using a timer
     inside its own process, which ended seconds later when it sent that message.

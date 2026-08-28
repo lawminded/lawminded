@@ -18,7 +18,15 @@ instance/
 *.swp
 .idea/
 .vscode/
-.claude/
+
+# Local Claude state (worktrees, settings) stays out. The project's own skills
+# do not: they have to reach the writer box, and copying skills by hand is
+# exactly how the first automated run silently wrote an article without the
+# humanizer. Anything under .claude/skills/lawminded-* is part of the repo.
+.claude/*
+!.claude/skills/
+.claude/skills/*
+!.claude/skills/lawminded-*/
 
 # Local SEO audit artefacts (large, not part of the site)
 SEO Audit/
