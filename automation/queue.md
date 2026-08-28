@@ -18,12 +18,14 @@ The history of what was asked for is worth keeping.
 
 ## Pending
 
-- [ ] 2026-08-28 | PMGEP scheme — what the benefits are, who can avail them, and the
-      special benefits for women, SC/ST and other reserved categories
-      *asked for 2026-08-17; the request was lost before the queue existed;
-      first queued for 2026-08-22, moved to Friday 2026-08-28 on the owner's ask*
-
 ## Written
 
 - [x] 2026-08-17 | HUF (Hindu Undivided Family) — formation, taxation, partition
       *asked for 2026-08-15, written 2026-08-17*
+- [x] 2026-08-28 | PMGEP scheme — what the benefits are, who can avail them, and the
+      special benefits for women, SC/ST and other reserved categories
+      *asked for 2026-08-17; the request was lost before the queue existed;
+      first queued for 2026-08-22, moved to Friday 2026-08-28 on the owner's ask;
+      written 2026-08-28 as PMEGP (Prime Minister's Employment Generation
+      Programme) — no scheme called "PMGEP" exists, and the description matches
+      PMEGP's actual subsidy structure exactly*

@@ -376,3 +376,74 @@ the FAQ "What is the difference between lifting the veil and a personal
 guarantee?". Eight FAQs are now seven; `faqs()` in app.py parses all seven, so
 the FAQPage schema is still populated. Nothing in the fact-check table above
 depended on the guarantee — it was a general contract point, not a sourced claim.
+
+## blog_seed14.py — PMEGP scheme, owner-requested, 28 August 2026
+
+Owner named this topic in `automation/queue.md` on 2026-08-17 (lost before the
+queue file existed, re-queued 2026-08-22, moved to 28 August on the owner's own
+ask): "PMGEP scheme — what the benefits are, who can avail them, and the special
+benefits for women, SC/ST and other reserved categories."
+
+No scheme called "PMGEP" exists. Every web search for the term returns results
+for PMEGP, the Prime Minister's Employment Generation Programme, and the queue
+entry's own description — a subsidy, with named benefits for women and SC/ST
+applicants — matches PMEGP's actual subsidy structure exactly. Treated as a typo
+for PMEGP throughout. Checked the 135 published slugs first: nothing on the site
+covers PMEGP. Genuine gap, evergreen guide.
+
+`kviconline.gov.in`, the scheme's own portal and PDF guidelines host, was
+unreachable from this box on every attempt (DNS timeout, not a 403), so the
+scheme's central guidelines were verified through a state government mirror
+instead and cross-checked against two PIB releases.
+
+| Claim verified | Source | Result |
+|---|---|---|
+| Margin money subsidy: 25% rural / 15% urban (General), 35% rural / 25% urban (Special: SC/ST/OBC/Minorities/Women/Ex-servicemen/PwD/Transgender/NER/Hill and Border areas/Aspirational Districts) | PIB Delhi, Ministry of MSME, Release ID 2079789, 2 Dec 2024, "Expansion of Micro, Small and Medium Enterprises (MSMEs)" | Confirmed — fetched directly (curl with a browser user-agent; WebFetch itself returns 403 on pib.gov.in, consistent with prior sessions' notes on gov.in domains from this box), quoted verbatim |
+| Max project cost Rs 50 lakh manufacturing, Rs 20 lakh service; balance above that fundable by a bank without subsidy | Same PIB release | Confirmed |
+| Second (upgradation) loan: 15% subsidy for all categories, 20% in NER/Hill states; capped Rs 1 crore manufacturing, Rs 25 lakh service | Same PIB release | Confirmed |
+| No collateral security for bank loans up to Rs 10 lakh, per RBI guidelines, reemphasised by the Ministry to banks | PIB Delhi, Ministry of MSME, Release ID 2222116, 2 Feb 2026 | Confirmed — fetched directly, same method. Independent, more recent written reply than the Dec 2024 release, corroborating rather than contradicting it |
+| No educational qualification needed for projects up to Rs 10 lakh manufacturing / Rs 5 lakh service | Same Feb 2026 PIB release | Confirmed, and consistent with the Dec 2024 release and the DKVIB guidelines below — unchanged across three sources of different vintages |
+| Beneficiary's own contribution: 10% General / 5% Special; bank finances 90% General / 95% Special of project cost | Delhi Khadi & Village Industries Board (Government of NCT of Delhi), "Salient Features of Revised Scheme Guidelines of PMEGP," dkvib.delhi.gov.in, page last updated 21 August 2026 | Confirmed — a state government page reproducing the central scheme guidelines in full, fetched directly |
+| 3-year lock-in before margin money is adjusted against the loan; if actual spending at that point falls short of the sanctioned loan amount, the shortfall in subsidy is refunded to KVIC | Same DKVIB page | Confirmed. Note: an earlier draft paragraph said the subsidy "can be clawed back" on default or early closure — not stated anywhere in the source. Corrected to state only the underspend-refund rule that is actually there |
+| Working capital capped at 40% of project cost for manufacturing, 60% for service/trading | Same DKVIB page | Confirmed |
+| One PMEGP application per family (self and spouse only) | Same DKVIB page | Confirmed |
+| Trading/retail restrictions: standalone trading only in NER, LWE-affected districts and A&N Islands; retail selling KVIC/village-industry or PMEGP/SFURTI-cluster products, or backed by the applicant's own manufacturing/service work, permitted nationwide; all trading and retail together capped at 10% of a state's yearly PMEGP allocation | Same DKVIB page | Confirmed |
+| Documents required: Aadhaar (or enrolment number, or an alternate ID such as PAN in NER/J&K where Aadhaar coverage is thin), caste certificate, special category certificate where relevant, rural area certificate, project report, education/training certificate; exemption from EDP/skill training if already trained at least 10 days offline or 60 hours online | Same DKVIB page | Confirmed |
+
+Not used: the claim, repeated across several secondary/aggregator sites, that
+Udyam or MSME registration is a precondition for a PMEGP application. Neither PIB
+release nor the DKVIB guidelines list Udyam registration among the eligibility
+conditions or the documents required to apply, so the FAQ states plainly that it
+isn't required — an absence-based claim grounded in what the primary guidelines
+actually list, not a guess.
+
+The worked example in the "What this actually looks like" section (a woman
+setting up a Rs 12 lakh unit versus a general-category applicant doing the same)
+uses invented names-free, illustrative numbers to show the formula, not a
+reported case — consistent with how illustrative examples are used elsewhere on
+the site (LLP capital contribution, HUF guides) and not the kind of narrative
+case study that needs the fiction-disclaimer treatment from `automation/notes.md`.
+
+Sentence length checked against the owner's 2026-08-26 standing note: average
+17.0 words, longest sentence 39 words, nothing over 40.
+
+`INTERNAL_LINKS` entries added for 'pmegp', 'margin money subsidy' and 'khadi
+and village industries commission', pointing here. None of the site's existing
+articles currently contain those phrases, so — honestly — this doesn't yet pull
+an inbound autolink from anywhere; it only takes effect for future articles that
+use these terms. No existing article had a phrase that fit this topic without
+forcing a mismatched link (checked "micro enterprise," "collateral-free,"
+"Scheduled Caste," and "self-employment," each already anchored to a different,
+unrelated meaning in its existing context), so none of those were repurposed.
+Two links were added in the body instead, hand-written rather than via autolink:
+to `msme-udyam-registration-guide` and `msme-1-half-yearly-return`, where the
+"Common mistakes" section explains how PMEGP differs from Udyam registration.
+
+Hero image: Gemini returned HTTP 429 ("prepayment credits are depleted"), the
+same billing failure recorded for every article since blog_seed11. Fell back to
+a licensed Pexels photograph (ID 38178433, by Ashutosh Kumar, a picture-framing
+shop owner in Jodhpur) after checking the first search result for a different
+query ("small business workshop tailoring india") and rejecting it — a tailor
+photo with a distracting bare-feet close-up in the foreground, unsuitable for a
+hero image regardless of licence. The framing-shop photo is dignified, on-topic
+for a small-business-owner subsidy article, and free of text or logos.
