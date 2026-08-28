@@ -60,3 +60,23 @@ Standing preferences and corrections. Read before writing; append when told some
   Crore, Settled for Rs 6.5 Crore: What the NCLT Order Actually Says". Where an
   editorial headline like that runs past Google's display width, add a shorter
   SEO_TITLES entry in seo_meta.py rather than blunting the headline on the page.
+
+- Pick the topic from the news, then answer it from the official document. The
+  owner's words, on the Subhash Chandra article: "we wanted to pick the topic
+  from the hot news and hot headlines... in this case it only took from
+  government website, no headline or anything was introduced, so it was not
+  spicy at all to get read by the people... take headlines, numbers, names,
+  each and everything from current news, but verify it from official source and
+  give the verdict of official source, and not just make the blog on the
+  listen-hear-and-say news."
+
+  One instruction with two halves, both compulsory. What it corrects is not
+  inaccuracy — the PMEGP and Subhash drafts were both sourced properly. It is
+  that the run started from a scheme page or a gazette instead of from what
+  people were reading that week, so nothing in the headline matched what anyone
+  would type into a search box. A correctly sourced article nobody searches for
+  is still a wasted week.
+
+  Written into automation/weekly-post.md section 1 and 3, and into the Telegram
+  preamble in automation/telegram_bot.py, so it applies to the weekly run and to
+  anything asked for over Telegram.
