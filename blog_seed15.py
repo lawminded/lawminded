@@ -74,26 +74,23 @@ BLOG_ARTICLES_15 = [
      '12 min read',
      "Rs 6.25 crore against admitted claims of Rs 22,006.57 crore is a haircut of 99.97 per cent, or under three paise in every hundred rupees. Here is where that number comes from, what the 144-page NCLT order actually held, and what it means for anyone who has signed a personal guarantee.",
 
-     "<p><em>If you have signed a personal guarantee for your company's loan, this case is about you. A media promoter facing claims of Rs 22,006 crore has been allowed to settle them for Rs 6.5 crore. The reason has little to do with who he is. It has a lot to do with how the law treats a guarantor who has run out of assets.</em></p>"
+     "<p><em>If you have signed a personal guarantee for your company's loan, this case is about you. A media promoter facing claims of Rs 22,006 crore has been allowed to settle them for Rs 6.5 crore. Who he is had very little to do with it. What decided the case is how the law treats a guarantor whose assets have run out.</em></p>"
 
      "<p><strong>On 25 August 2026 the third member of the National Company Law Tribunal held that Dr Subhash Chandra's repayment plan deserves approval under Section 114 of the Insolvency and Bankruptcy Code, 2016. The plan puts up Rs 6.5 crore in total. Rs 25 lakh of that goes to the cost of the process, leaving Rs 6.25 crore for creditors whose admitted claims come to about Rs 22,006.57 crore. That is the 99.97 per cent haircut in the headlines.</strong></p>"
 
-     "<blockquote><p><strong>The bottom line</strong></p>"
-     "<p><strong>What it settles:</strong> Dr Chandra's own liability as a guarantor. Once a discharge order follows, the creditors named in the plan cannot come back at him personally for those debts.</p>"
-     "<p><strong>What it does not settle:</strong> the loans. The companies that borrowed the money still owe every rupee. Section 119(4) says a discharge order does not release any other person.</p>"
-     "<p><strong>What it is not yet:</strong> a final order. This is a third member's opinion. It goes back to the original two-member bench, which has to pass the actual order.</p></blockquote>"
+     "<blockquote><strong>Bottom line:</strong> what gets settled here is Dr Chandra's own liability as a guarantor, so once a discharge order follows, the creditors named in the plan cannot come back at him personally for those debts. The loans themselves are untouched. The companies that borrowed the money still owe every rupee, because Section 119(4) says a discharge order does not release anybody else. And this is not the final order. It is a third member's opinion, and it goes back to the original two-member bench for the actual order to be passed.</blockquote>"
 
      "<h2>Where the 99.97 per cent and the three paise come from</h2>"
 
      "<p>The headline number is one division. Rs 6.25 crore divided by Rs 22,006.57 crore is 0.028 per cent. Turn it around and creditors give up 99.97 per cent of what they have claimed.</p>"
 
-     "<p>In rupees it lands harder. For every Rs 100 claimed, a creditor gets back about 2.8 paise. Most reports round that to three paise, and that is fair.</p>"
+     "<p>In rupees it lands harder. For every Rs 100 claimed, a creditor gets back about 2.8 paise, which the headlines round to three.</p>"
 
      "<p>One lender makes it real. LIC Housing Finance has an admitted claim of Rs 1,322.39 crore. Its share under the plan is Rs 38,09,294.</p>"
 
-     "<p>The figure set off a public row within two days. Opposition politicians attacked the government over it. Government sources quoted in the press pushed back with one line: this settles one man's liability as a guarantor, and no bank has written off Rs 22,000 crore of loans.</p>"
+     "<p>Within two days the figure was a political fight. Business Today carried the government's answer to it on 27 August: what is being settled is one man's liability as a guarantor, and no bank has written off Rs 22,000 crore of loans.</p>"
 
-     "<p>That line is not spin. It is what Section 119(4) of the Code says, and this article comes back to it below. But the 99.97 per cent is real too. It is real for the reason the order spends 144 pages on, which is that there was almost nothing left to take.</p>"
+     "<p>Section 119(4) of the Code says the same thing, and this article comes back to it below. The 99.97 per cent is real as well. It is that low for the reason the order spends 144 pages on, which is that there was almost nothing left to take.</p>"
 
      "<h2>First, the words you need</h2>"
 
@@ -119,8 +116,6 @@ BLOG_ARTICLES_15 = [
 
      "<h2>How a promoter ends up in NCLT personally</h2>"
 
-     "<p>This part surprises people, so it is worth being precise about it.</p>"
-
      "<p>Part III of the Insolvency and Bankruptcy Code deals with individuals. Most of it is still not in force. But on 15 November 2019 the Ministry of Corporate Affairs issued notification S.O. 4126(E). It brought Sections 94 to 187 into force from 1 December 2019, <em>only in so far as they relate to personal guarantors to corporate debtors</em>.</p>"
 
      "<p>So an ordinary individual who cannot pay a personal loan still has nowhere to go under the Code. A promoter who guaranteed his company's loan does. And so does his bank.</p>"
@@ -142,9 +137,7 @@ BLOG_ARTICLES_15 = [
      "<p>That flat is mortgaged. Dr Chandra deposited the title deeds with STCI Finance Limited to secure roughly Rs 250 crore of loans made in March 2018 to Essel Corporate Resources Private Limited and Jayneer Infrapower &amp; Multiventures Private Limited. STCI's dues are far larger than the flat is worth.</p>"
      "<p>STCI did not vote on the plan. Under Section 110 of the Code a secured creditor who stays out of the vote keeps its right to sell its security. So the flat sits outside the plan, and STCI can still enforce against it.</p>"
 
-     "<p>Rs 31.79 crore minus Rs 25 crore leaves about Rs 6.79 crore. The offer was Rs 6.5 crore, of which Rs 25 lakh covers the cost of the process. That is how you get Rs 6.25 crore for creditors.</p>"
-
-     "<p>What it means for one lender makes the arithmetic real. LIC Housing Finance had an admitted claim of Rs 1,322.39 crore. Its share under the plan is Rs 38,09,294. That is about 0.028 per cent of what it says it is owed.</p>"
+     "<p>Rs 31.79 crore minus Rs 25 crore leaves about Rs 6.79 crore. The offer was Rs 6.5 crore, of which Rs 25 lakh covers the cost of the process. That is how you get Rs 6.25 crore for creditors, and how LIC Housing Finance ends up with Rs 38,09,294 against a claim of Rs 1,322.39 crore.</p>"
 
      "<h2>The vote that decided it</h2>"
 
@@ -158,13 +151,13 @@ BLOG_ARTICLES_15 = [
 
      "<h2>Why the banks' best argument failed</h2>"
 
-     "<p>The banks did not just say the money was too little. They said the winning votes should never have been counted.</p>"
+     "<p>The banks attacked the vote itself. They said the winning votes should never have been counted.</p>"
 
      "<p>Section 109(4)(b) bars an <em>associate</em> of the debtor from voting. The banks argued that Veena Investments, Direct Media Distribution Ventures, World Crest Advisors, Lemonade Capital Advisors and Corpcall Capital Advisors were all associates of Dr Chandra. Strip out their votes and the plan collapses.</p>"
 
      "<p>The argument turned on the definition. Section 79(2)(g) says a company is an associate of the debtor where the debtor, alone or with his associates, <em>owns more than fifty per cent of the share capital, or controls the appointment of the board of directors</em>.</p>"
 
-     "<p>The third member held that this test has to be met on its own terms. Family connection is not enough. A business relationship is not enough. Commercial closeness is not enough. Alleged indirect influence is not enough. Where neither the shareholding threshold nor board control is shown, the entity is not an associate, and its vote counts. The banks had also relied on a SEBI interim order dated 12 June 2023. That did not change the answer.</p>"
+     "<p>The third member held that this test has to be met on its own terms. Family connection does not meet it, and neither does a business relationship, commercial closeness, or an allegation of indirect influence. Where neither the shareholding threshold nor board control is shown, the entity is not an associate, and its vote counts. The banks had also relied on a SEBI interim order dated 12 June 2023. That did not change the answer.</p>"
 
      "<p>The tribunal held the objecting creditors had failed to establish that these entities were associates. Their votes stood.</p>"
 
@@ -180,19 +173,17 @@ BLOG_ARTICLES_15 = [
 
      "<h2>The Rs 45,888 crore question</h2>"
 
-     "<p>This is the part that made the case notorious, and the part the order handles most carefully.</p>"
-
      "<p>A net worth certificate given to RBL Bank in 2017 put Dr Chandra's net worth at USD 7.17 billion, roughly Rs 45,888 crore. Another given to Canara Bank in 2018 put it at Rs 40,562 crore. He now declares Rs 31.79 crore. The banks wanted a forensic auditor and an asset-tracing agency appointed before anything was approved.</p>"
 
-     "<p>The third member's answer had three parts. The gap between those certificates and today's figure certainly justified asking questions. But old certificates do not by themselves prove that assets were hidden or moved. And the Code does not make a forensic audit a precondition to considering a repayment plan.</p>"
+     "<p>The gap between those certificates and today's figure certainly justified asking questions, the third member accepted. But old certificates do not by themselves prove that assets were hidden or moved. And nothing in the Code makes a forensic audit a precondition to considering a repayment plan.</p>"
 
      "<p>Suspicion, the order says, is not proof. Insolvency proceedings cannot become an open-ended investigation into a debtor's financial history because a minority of creditors is unhappy. Without material showing concealment, the RP's decision not to order an investigation was not a breach of duty.</p>"
 
-     "<p>The order does leave a door open, and it is a real one. Approval gives Dr Chandra no immunity for fraud, concealment or misrepresentation. If a substantial asset surfaces later, the creditors can apply to recall both the approval order and the discharge order. An order obtained by fraud is a nullity in law, and a tribunal has inherent power to set aside its own tainted orders. What the tribunal will not do is hold up a decision on suspicion alone.</p>"
+     "<p>The order does leave a door open. Approval gives Dr Chandra no immunity for fraud, concealment or misrepresentation. If a substantial asset surfaces later, the creditors can apply to recall both the approval order and the discharge order. An order obtained by fraud is a nullity in law, and a tribunal has inherent power to set aside its own tainted orders. What the tribunal will not do is hold up a decision on suspicion alone.</p>"
 
      "<h2>Why a 99.97 per cent haircut is not a Rs 22,006 crore loss for the banks</h2>"
 
-     "<p>The 99.97 per cent figure in the headlines is arithmetically correct and financially misleading. Here is why.</p>"
+     "<p>The 99.97 per cent figure in the headlines is arithmetically correct and financially misleading.</p>"
 
      "<p>Every rupee of that Rs 22,006.57 crore is a claim against Dr Chandra <em>as a guarantor</em>. None of it is money he borrowed himself. The companies that borrowed it are separate debtors, and their debts are untouched by this order.</p>"
 
@@ -212,7 +203,7 @@ BLOG_ARTICLES_15 = [
 
      "<h2>What has not happened yet</h2>"
 
-     "<p>Read the last clauses of the order and you will see that this is not the end of the file.</p>"
+     "<p>The last clauses of the order show that the file is still open.</p>"
 
      "<p>The third member's job under Section 419(5) of the Companies Act, 2013 is limited. He is not sitting in appeal over the two members who disagreed. He answers the questions referred to him, and his opinion decides which way the majority falls. Clause (d) of the operative part directs that the matter be placed before the original division bench, which then passes the actual order in terms of the majority opinion.</p>"
 
@@ -220,7 +211,7 @@ BLOG_ARTICLES_15 = [
 
      "<h2>What this means if you have signed a personal guarantee</h2>"
 
-     "<p>Strip away the size of the numbers and the case teaches five things.</p>"
+     "<p>Strip away the size of the numbers and what is left applies to any guarantee anyone signs.</p>"
 
      "<p>Your guarantee outlives the company's insolvency. That is <em>Lalit Kumar Jain</em>, and it has been settled law since May 2021.</p>"
 

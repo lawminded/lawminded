@@ -586,6 +586,46 @@ over 40 words. Page renders with the new `<title>` (50 chars), description (142)
 FAQPage schema carrying all ten questions, 13 in-body article links and no
 self-link. `test_seo.py` passes.
 
+### Humanizer pass, run afterwards
+
+The owner asked whether the draft had been through the `humanizer` skill. Nothing
+in this entry said it had, and the sections added during the retitle were written
+without it, so the honest answer was no and the skill was run over the whole body.
+
+Vocabulary was already clean — a scan for the flagged list (delve, robust,
+crucial, pivotal, landscape, showcase, underscore, Additionally, Moreover, and
+the rest) returned nothing, and sentence length already ranged from 1 to 39
+words. Every tell that survived was structural:
+
+* The "bottom line" box was three bolded inline headers with a colon each, which
+  is one of the most recognisable shapes in model output. Rewritten as a prose
+  blockquote, which is also what the PMEGP article does.
+* Negative parallelism, four times. "The reason has little to do with who he is.
+  It has a lot to do with…", "That line is not spin. It is what Section 119(4)
+  says", "The banks did not just say the money was too little", and the four
+  stacked "X is not enough" sentences in the associate test.
+* Announced enumerations: "The third member's answer had three parts", "the case
+  teaches five things". The content stayed; the counting went.
+* Didactic asides: "This part surprises people, so it is worth being precise
+  about it", "Here is why", "Read the last clauses and you will see".
+* Significance filler: "This is the part that made the case notorious", "and it
+  is a real one".
+* "Most reports round that to three paise" and "Government sources quoted in the
+  press" name nobody. The first is now the article's own claim about the
+  headlines; the second is attributed to Business Today, 27 August.
+* One duplication fixed while in there: LIC Housing Finance's Rs 38,09,294
+  against Rs 1,322.39 crore appeared in full twice, once in the new opening
+  section and again lower down. The second is now a clause on the end of the
+  arithmetic rather than its own paragraph.
+
+Kept deliberately, against the checklist: "Not three-fourths of all creditors.
+Three-fourths of the value of the votes actually cast." That is the misreading
+readers actually arrive with, so the correction is doing real work. Same for "He
+is not the debtor's lawyer and he is not the bank's agent."
+
+3,722 words after the pass, average sentence 14.6, longest 39. Ten FAQ pairs
+still parse for the schema. `test_seo.py` passes.
+
 ### Hero image replaced with a courthouse, on the owner's ask
 
 "Use some court image like NCLT or Supreme Court or anything." Gemini is still
