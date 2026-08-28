@@ -22,6 +22,8 @@ import telegram_bot as bot  # noqa: E402
 
 ALLOWED = bot.ALLOWED_CHAT
 REAL_QUICK_ANSWER = bot.quick_answer
+# Other tests swap run_claude for a stub; the session tests need the real one.
+REAL_RUN_CLAUDE = bot.run_claude
 STRANGER = '999999999'
 
 
@@ -269,6 +271,101 @@ def test_a_second_request_is_told_it_is_queued():
     finally:
         with bot.CURRENT_LOCK:
             bot.CURRENT['text'] = None
+
+
+class FakeRun:
+    """Stands in for subprocess.run so the command line can be inspected without
+    spending a Claude run."""
+    def __init__(self, *results):
+        self.results, self.calls = list(results), []
+
+    def __call__(self, cmd, **kw):
+        self.calls.append(cmd)
+        code, out, err = self.results[min(len(self.calls) - 1, len(self.results) - 1)]
+        return type('P', (), {'returncode': code, 'stdout': out, 'stderr': err})()
+
+
+def _session_sandbox():
+    bot.SESSION_FILE = Path(tempfile.mkdtemp()) / '.bot_session'
+    return bot.SESSION_FILE
+
+
+def test_the_first_message_starts_a_session_and_remembers_its_id():
+    """Every message used to be its own session, so "make it longer" arrived at a
+    process that had never seen the article. The id has to survive the run."""
+    f = _session_sandbox()
+    real = bot.subprocess.run
+    bot.subprocess.run = FakeRun((0, '{"result": "wrote it", "session_id": "abc-123"}', ''))
+    try:
+        reply, status = REAL_RUN_CLAUDE('write about EPFO')
+    finally:
+        bot.subprocess.run = real
+
+    assert (reply, status) == ('wrote it', 'ok'), f'unpacked wrongly: {reply!r}'
+    assert f.read_text() == 'abc-123', 'the session id was not saved'
+
+
+def test_the_next_message_resumes_that_session():
+    f = _session_sandbox()
+    f.write_text('abc-123')
+    real = bot.subprocess.run
+    spy = FakeRun((0, '{"result": "done", "session_id": "abc-123"}', ''))
+    bot.subprocess.run = spy
+    try:
+        REAL_RUN_CLAUDE('make it longer')
+    finally:
+        bot.subprocess.run = real
+
+    cmd = spy.calls[0]
+    assert '--resume' in cmd and cmd[cmd.index('--resume') + 1] == 'abc-123', \
+        f'the stored session was not resumed: {cmd}'
+    prompt = cmd[cmd.index('-p') + 1]
+    assert prompt.startswith(bot.RESUME_NOTE), 'a resumed turn should not resend the whole preamble'
+    assert 'make it longer' in prompt
+
+
+def test_a_vanished_session_falls_back_to_a_fresh_one():
+    """A cleaned-up transcript must not wedge the bot into replying with an error
+    to every message from then on."""
+    f = _session_sandbox()
+    f.write_text('gone-456')
+    real = bot.subprocess.run
+    spy = FakeRun((1, '', 'No conversation found with session ID gone-456'),
+                  (0, '{"result": "started over", "session_id": "new-789"}', ''))
+    bot.subprocess.run = spy
+    try:
+        reply, status = REAL_RUN_CLAUDE('carry on')
+    finally:
+        bot.subprocess.run = real
+
+    assert status == 'ok' and reply == 'started over', f'did not recover: {status} {reply!r}'
+    assert '--resume' not in spy.calls[1], 'the retry should start a fresh session'
+    assert spy.calls[1][spy.calls[1].index('-p') + 1].startswith(bot.PREAMBLE), \
+        'a fresh session must carry the full preamble'
+    assert f.read_text() == 'new-789', 'the new session id was not stored'
+
+
+def test_plain_text_output_is_still_shown_to_the_owner():
+    """If the CLI crashes before emitting JSON, the owner should see whatever it
+    did say, not a parse error."""
+    _session_sandbox()
+    real = bot.subprocess.run
+    bot.subprocess.run = FakeRun((0, 'not json at all', ''))
+    try:
+        reply, status = REAL_RUN_CLAUDE('anything')
+    finally:
+        bot.subprocess.run = real
+    assert reply == 'not json at all' and status == 'ok'
+
+
+def test_new_starts_a_fresh_thread_without_a_claude_run():
+    f = _session_sandbox()
+    f.write_text('old-session')
+    s2 = Spy().install()
+    bot.handle(_msg(ALLOWED, '/new'))
+    assert s2.ran == [], '/new should not spend a Claude run'
+    assert f.read_text() == '', 'the session was not cleared'
+    assert 'fresh' in s2.sent[0].lower()
 
 
 if __name__ == '__main__':
