@@ -52,3 +52,11 @@ Standing preferences and corrections. Read before writing; append when told some
   1,200-1,800 house band, deliberately, and stayed at a 15.7-word average
   sentence. The word band in automation/weekly-post.md is a default for the
   weekly run, not a cap on what the owner asks for by name.
+
+- The owner asked for "a hot tag line super seo" on the Subhash Chandra NCLT
+  request. Read as a headline preference: lead the title with the concrete
+  number or the named thing a person would actually type into Google, not with
+  a category label. The headline that went out was "Subhash Chandra's Rs 22,006
+  Crore, Settled for Rs 6.5 Crore: What the NCLT Order Actually Says". Where an
+  editorial headline like that runs past Google's display width, add a shorter
+  SEO_TITLES entry in seo_meta.py rather than blunting the headline on the page.
