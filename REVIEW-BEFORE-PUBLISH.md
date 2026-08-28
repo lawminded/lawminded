@@ -586,6 +586,33 @@ over 40 words. Page renders with the new `<title>` (50 chars), description (142)
 FAQPage schema carrying all ten questions, 13 in-body article links and no
 self-link. `test_seo.py` passes.
 
+### Hero image replaced with a courthouse, on the owner's ask
+
+"Use some court image like NCLT or Supreme Court or anything." Gemini is still
+returning RESOURCE_EXHAUSTED, and the Mac's `.env` has no `PEXELS_API_KEY` — the
+writer box (92.4.76.145) does, so `gen_image.py` was run there and the WebP
+copied back. Worth noting for next time: image work needs the writer box, not the
+Mac.
+
+Four candidates were pulled and looked at rather than taking the first hit:
+
+* **Pexels 38958649** — sandstone colonnade, Delhi. **Used.** Indian, dignified,
+  no text, no logos, no people, warm stone that sits in the site's cream/gold
+  palette.
+* Pexels 4267308 — rejected. The alt text calls it a government building in
+  Lucknow; it is the UP-112 emergency helpline building, with a large "112" logo
+  across the frame. Text in the image, and the wrong institution.
+* Pexels 795602 — rejected. A domed campus-style building with a logo on the
+  facade. Not a court.
+* Pexels 13038593 — rejected, though it is genuinely a courthouse (neoclassical,
+  European). The house style asks for Indian context and this was the one
+  candidate that had it going against it.
+
+The US Supreme Court photographs that "supreme court india" returns were not
+considered. On an article about an Indian tribunal order they would be plainly
+wrong, in the same category as the "INNOCENT" stamp rejected for the first
+version of this image.
+
 `SEARCH_META_CHANGED` deliberately **not** bumped. It is a floor for every
 article's `<lastmod>` in the sitemap, and only this one unpublished slug's title
 changed; moving it would claim 135 other pages were revised today.
