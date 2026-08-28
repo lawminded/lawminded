@@ -350,6 +350,9 @@ SEO_DESCRIPTIONS = {
     'online-fraud-remedies':
         "Scammed online? The first hour matters most. How to report it, freeze the "
         "transaction, and give yourself the best chance of getting money back.",
+    'pmegp-scheme-subsidy-guide':
+        "PMEGP gives new entrepreneurs a 15-35% subsidy to start a business, higher "
+        "for women and SC/ST applicants. What it covers, and how to apply.",
     'private-placement-section-42':
         "Private placement under Section 42: the special resolution, PAS-4, a separate "
         "bank account, allotment in 60 days, and the 200-person cap.",
@@ -579,6 +582,9 @@ INTERNAL_LINKS = {
     'udyam registration': 'msme-udyam-registration-guide',
     'msefc': 'msme-development-amendment-bill-2026',
     'facilitation council': 'msme-development-amendment-bill-2026',
+    'pmegp': 'pmegp-scheme-subsidy-guide',
+    'margin money subsidy': 'pmegp-scheme-subsidy-guide',
+    'khadi and village industries commission': 'pmegp-scheme-subsidy-guide',
     'private placement': 'private-placement-section-42',
     'section 42': 'private-placement-section-42',
     'pas-4': 'private-placement-section-42',
