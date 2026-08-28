@@ -40,3 +40,15 @@ Standing preferences and corrections. Read before writing; append when told some
   regex in app.py, which only reads <p><strong>question?</strong> answer</p>.
   Invented names matter here: "Meridian Weaves" or "Mehta Fabrics" are ordinary
   enough that a real business could be carrying one.
+
+## 2026-08-28
+
+- "Detailed" and "for laymen" are one instruction, not two competing ones. The
+  SEBI request came in as "make a detailed brief blog for laymen remember its
+  for laymen but make it full detailed". Plain English is not a licence to
+  write short. Cover the subject fully, in short sentences, with every term
+  explained on first use. Where the two pull against each other, add sections
+  rather than compress sentences: the SEBI guide ran 2,672 words against the
+  1,200-1,800 house band, deliberately, and stayed at a 15.7-word average
+  sentence. The word band in automation/weekly-post.md is a default for the
+  weekly run, not a cap on what the owner asks for by name.
