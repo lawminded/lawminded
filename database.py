@@ -1465,6 +1465,13 @@ def seed_articles():
     except Exception:
         pass
 
+    # Owner-requested plain-English SEBI guide for investors, 28 Aug 2026.
+    try:
+        from blog_seed15 import BLOG_ARTICLES_15
+        articles = articles + list(BLOG_ARTICLES_15)
+    except Exception:
+        pass
+
     # DPT-3 is seeded from article_rewrites rather than blog_seed3, because the
     # evergreen rewrite (migration 6) is the current text and the old seed tuple
     # was a stale copy under the retired slug. Keeping one source stops the two

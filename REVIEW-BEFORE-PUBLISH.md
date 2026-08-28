@@ -447,3 +447,146 @@ query ("small business workshop tailoring india") and rejecting it — a tailor
 photo with a distracting bare-feet close-up in the foreground, unsuitable for a
 hero image regardless of licence. The framing-shop photo is dignified, on-topic
 for a small-business-owner subsidy article, and free of text or logos.
+
+---
+
+## SEBI Explained in Plain English (`what-is-sebi-plain-english-guide`), 28 August 2026
+
+Owner-requested over Telegram: "Go for sebi and make a detailed brief blog for
+laymen remember its for laymen but make it full detailed."
+
+Topic choice: the site already had six SEBI articles and every one of them
+faces the issuer or the compliance officer (`sebi-lodr-explained`,
+`sebi-pit-insider-trading-explained`, `sebi-pit-compliance-solutions-founders-kmp`,
+`ipo-sebi-icdr-eligibility-process`, `fpo-further-public-offer-explained`,
+`sebi-sast-takeover-code-open-offer`). Nothing explained SEBI itself to the
+person who owns the shares. Checked against the full published-slug list from
+the live database before drafting. No overlap.
+
+### Claims and where each was verified
+
+**SEBI Act, 1992**, read from SEBI's own consolidated text at
+`sebi.gov.in/sebi_data/attachdocs/mar-2019/1552282367672.pdf` (43 pages,
+extracted with pdftotext; India Code returns HTTP 403 to this box, and
+`sebi.gov.in/acts/act15.pdf` is an older consolidation missing the 2013-14
+amendments, so the March 2019 consolidation was used instead).
+
+| Claim in the article | Provision |
+|---|---|
+| Deemed in force 30 January 1992 | s.1(3) |
+| Head office in Mumbai | s.3(3) ("Bombay") |
+| Chairman, two finance/company-law ministry members, one RBI member, five others of whom at least three whole-time | s.4(1)(a)-(d) |
+| Duty to protect investors, promote and regulate the securities market | s.11(1) |
+| Civil-court powers to summon, examine on oath, order production | s.11(3) |
+| Suspend trading; bar a person from the market; impound proceeds; attach property up to 90 days with Special Court confirmation | s.11(4)(a),(b),(d),(e) |
+| Disgorged amounts go to the Investor Protection and Education Fund | s.11(5) |
+| Power to issue directions, including to disgorge wrongful gain or loss averted | s.11B and its Explanation |
+| Power to order an investigation on reasonable grounds | s.11C(1) |
+| Cease and desist orders | s.11D |
+| Brokers, merchant bankers, portfolio managers, investment advisers etc. cannot deal in securities without registration | s.12(1) |
+| Rs 1 lakh per day, max Rs 1 crore, for failing to redress an investor grievance after being called on in writing | s.15C |
+| Insider trading: Rs 25 crore or three times the profit, whichever higher | s.15G |
+| Fraudulent and unfair trade practices: same figure | s.15HA |
+| Residual penalty up to Rs 1 crore | s.15HB |
+| Appeal to SAT within 45 days, condonable for sufficient cause | s.15T(3) |
+| Civil courts have no jurisdiction; no injunctions | s.15Y |
+| Appeal to Supreme Court within 60 days on a question of law, plus 60 condonable | s.15Z |
+| Imprisonment up to 10 years or fine up to Rs 25 crore or both; minimum one month for non-payment | s.24(1), s.24(2) |
+| Courts take cognizance only on SEBI's complaint | s.26(1) |
+
+**SCORES timelines** — SCORES 2.0 FAQs on SEBI's own platform,
+`scores.sebi.gov.in/faqs`, corroborated by `investor.sebi.gov.in/sebi_scores.html`:
+entity uploads the Action Taken Report within 21 calendar days; investor may
+seek first review within 15 calendar days of the ATR; designated body responds
+within 10 calendar days; second review to SEBI within 15 calendar days. The
+excluded complaint types (anonymous, undocumented, sub judice, unlisted/delisted
+companies, other regulators, market-intelligence reports) are from the same FAQ.
+
+Note: `investor.sebi.gov.in/securities-resolvedispute.html` still says 30 days.
+That page is stale against SCORES 2.0; the 21-day figure from the SCORES
+platform itself and from SEBI's own SCORES landing page was used.
+
+**SMART ODR** — SEBI Master Circular for Online Resolution of Disputes in the
+Indian Securities Market, 28 December 2023 (attachment
+`sebi_data/attachdocs/dec-2023/1703763993735.pdf`, 29 pages, read as text):
+MII review within 21 calendar days (para 16(c)); conciliator appointed within
+5 days and conciliation within 21 calendar days, extendable by 10 with consent
+(para 18); sole arbitrator, three arbitrators where claims and counter-claims
+together exceed Rs 30 lakh (para 21); award within 30 calendar days, extendable
+by 30, and document-only arbitration for claims of Rs 1 lakh or below (para 22);
+interim release to the investor of up to Rs 5 lakh from the market participant's
+deposit, against an undertaking, with a trading bar and demat/mutual-fund freeze
+if it is not returned (para 20(b)).
+
+A draft amendment circular was put out for comment in April 2025. The December
+2023 master circular is still the operative instrument on SEBI's site, so it is
+what the article states, and the article does not claim the figures are
+permanent.
+
+**Association with unregistered advisers ("finfluencers")** — SEBI circular
+SEBI/HO/MIRSD/MIRSD-PoD-1/P/CIR/2024/143 dated 22 October 2024, read in full:
+paras 2(i) and 2(ii) (advice or recommendations without registration; claims of
+returns or performance without permission), the 26 August 2024 notification date
+for the underlying Intermediaries Regulations amendment, the three-month
+termination window in para 5, and the investor-education carve-out in para 4.
+
+**Validated UPI handles** — SEBI circular SEBI/HO/DEPA-II/DEPA-II_SRG/P/CIR/2025/86
+dated 11 June 2025, read in full: the "@valid" handle combined with the bank name
+and the `abc.brk@validhdfc` / `xyz.mf@validhdfc` examples (para 2.1); the
+"thumbs-up inside a green triangle" icon and SEBI's own reasoning that its
+absence should caution investors (para 2.2); mandatory for intermediaries to
+obtain and offer, optional for investors to use (para 1.3); available to
+investors with effect from 1 October 2025 (para 8).
+
+### Deliberately left out
+
+- Sections 15EA, 15EB and 15HAA. The consolidation used predates them and no
+  current consolidated text could be opened from this box, so no figure was
+  asserted for them. Nothing in the article depends on those sections.
+- Any claim that the Investor Protection and Education Fund pays compensation
+  to individual complainants. s.11(5) directs disgorged money into the fund and
+  leaves utilisation to regulations; the IPEF Regulations could not be retrieved
+  (the SEBI attachment URL returned HTML, not the PDF), so the article says only
+  that the money goes to the fund rather than to the complainant, which is what
+  s.11(5) itself states.
+- The current SEBI Chairman and Board membership. Composition is quoted from
+  s.4(1); no names are given, keeping the article evergreen.
+- Anything from `investor.sebi.gov.in/Investor-charter.html` phrased as a list
+  of things SEBI "does not guarantee". The fetch of that page returned that
+  framing as summary rather than as quoted charter text, so it was not relied on.
+  The equivalent point in the article rests on s.11(5) and on the SCORES
+  exclusions instead.
+
+### Style and checks
+
+Written to the standing plain-English note in `automation/notes.md` (14 and
+26 August 2026): average sentence length 15.7 words, longest sentence 39 words,
+every legal term explained on first use. Flesch Reading Ease 48.8, which is the
+most readable of the recent set (PMEGP 46.6, HUF 44.8, e-PAN 45.4) and well
+clear of the existing `sebi-pit-insider-trading-explained` at 32.2.
+
+Length is 2,672 words against the 1,200-1,800 house band. The owner asked for it
+"full detailed"; the corporate veil case study ran 4,642 words on the same basis.
+
+`humanizer` skill loaded and applied at drafting, then again on revision.
+
+`test_seo.py` and `test_draft.py` both pass. JSON-LD checked on the rendered
+page: Organization, WebSite, Article (author, datePublished, image, publisher all
+populated), BreadcrumbList with 4 items, and FAQPage with all 8 questions and
+answers parsed. No relative URLs, no deprecated types.
+
+`SEO_DESCRIPTIONS` entry added (140 characters). `INTERNAL_LINKS` entries added
+for 'sebi act, 1992', 'section 11b' and 'investor protection' — each phrase was
+checked to occur in at least one existing published article before being added,
+so each pulls a real inbound autolink. Bare 'sebi' was deliberately not added:
+it appears in every SEBI article and would have linked the term to itself
+dozens of times. Three hand-written outbound links in the body, to
+`sebi-pit-insider-trading-explained`, `sebi-lodr-explained` and
+`ipo-sebi-icdr-eligibility-process`.
+
+Hero image: Gemini returned HTTP 429 ("prepayment credits are depleted"), the
+same billing failure recorded since blog_seed11. Fell back to a licensed Pexels
+photograph, an investor placing a trade on a phone with a chart on a laptop
+behind it. The first fallback attempt (Pexels 7651751, "Return on Investment"
+worksheet) was rejected and regenerated because the document text was large and
+legible in frame, against the house rule of no text in a hero image.

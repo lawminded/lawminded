@@ -461,6 +461,9 @@ SEO_DESCRIPTIONS = {
     'hindu-undivided-family-huf-tax-guide':
         "An HUF is a separate taxpayer under Indian law. What it saves in tax, how to "
         "set one up, and why moving your own property into it usually backfires.",
+    'what-is-sebi-plain-english-guide':
+        "SEBI explained for investors: what it regulates, the fines it can impose, "
+        "how to check a registration, and the free SCORES route to complain.",
 }
 
 
@@ -597,6 +600,11 @@ INTERNAL_LINKS = {
     'rights issue': 'rights-issue-procedure-section-62',
     'lodr': 'sebi-lodr-explained',
     'insider trading': 'sebi-pit-insider-trading-explained',
+    # Aug 2026: the six existing SEBI guides all face the issuer. These three
+    # phrases occur in them and send the reader to the investor-side explainer.
+    'sebi act, 1992': 'what-is-sebi-plain-english-guide',
+    'section 11b': 'what-is-sebi-plain-english-guide',
+    'investor protection': 'what-is-sebi-plain-english-guide',
     'secretarial audit': 'secretarial-audit-mr-3-section-204',
     'mr-3': 'secretarial-audit-mr-3-section-204',
     'section 204': 'secretarial-audit-mr-3-section-204',
