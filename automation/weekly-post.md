@@ -46,20 +46,49 @@ news search entirely. The owner named that topic deliberately; it outranks
 anything you would turn up yourself. Move the entry to Written with today's date,
 and commit that change on your branch along with the article.
 
-Only if the queue holds nothing due, find something genuinely new.
+Only if the queue holds nothing due, go and find what people are actually
+reading about this week.
 
-Search for Indian legal and compliance developments from the last 7 days. Cover:
+**Start from the news, then go behind it.** This is the order that matters, and
+getting it backwards is the single most common failure of this run. A gazette
+notification nobody is discussing produces an article nobody searches for. Search
+the last 7 days of Indian business, legal and general news for the story people
+are arguing about: the tribunal order in the headlines, the tax demand everyone
+is posting about, the judgment with a name attached, the figure being repeated on
+every front page.
 
-MCA circulars and notifications · CBDT / income tax · GST Council and CBIC ·
-SEBI · RBI · EPFO and ESIC · labour codes · consumer protection · DPDP Act
-rollout · Supreme Court and High Court judgments with practical consequences
+**Take the names, the numbers and the words from the coverage.** "99.97% haircut",
+"three paise for every Rs 100", "Rs 22,006 crore" — those are what a person types
+into Google, and a headline that leads with them is a headline people can find.
+An article that leads with "Recent developments in personal insolvency" is one
+nobody will ever read.
+
+**Then find the document and let it decide what is true.** The coverage tells you
+what to write about. It never tells you what to write. Get the order, the
+notification, the circular, the judgment — the actual instrument — and build the
+article out of what it says. Where the reporting and the document disagree, the
+document wins and the article says so plainly. That gap is the most valuable
+thing this site can offer, because everyone else is repeating the same summary.
+
+So: hot topic, official verdict. Not one or the other.
+
+Sources worth watching for the story: MCA · CBDT / income tax · GST Council and
+CBIC · SEBI · RBI · EPFO and ESIC · labour codes · consumer protection · DPDP Act
+rollout · NCLT / NCLAT · Supreme Court and High Court judgments.
 
 You are writing for founders, small business owners, HR and finance staff, and
-individuals — not for lawyers. A development is worth an article when it changes
-what a reader must actually **do**: a new form, a moved deadline, a changed
-threshold, a new liability, a right they can now exercise.
+individuals — not for lawyers. A story is worth an article when a reader would
+plausibly search for it **and** there is a document behind it you can read and
+explain. Either half alone is not enough.
 
-Skip: political commentary, pure litigation gossip, anything with no action in it.
+Skip: party politics as a subject, and speculation about what a court will do
+next. A politically charged case is still fair game — write the law in it, report
+what each side argued as argument rather than as fact, and leave the verdict to
+the document.
+
+If a week genuinely has no story with a readable document behind it, fall back to
+the evergreen gap article described in section 3. That is the fallback, not the
+default.
 
 ## 2. Do not repeat the site
 
@@ -92,6 +121,20 @@ If you cannot confirm a figure, leave it out. Do not hedge it into the text
 ("reportedly around…"); a compliance site that hedges is worse than one that is
 silent. If a scheme has been announced but not notified, say exactly that and
 explain what it means for the reader.
+
+**A headline number is a claim like any other.** The percentage on every front
+page still has to be arithmetic you can do yourself from figures in the document,
+or a figure the document itself states. Where it is, use it — in the headline, in
+the summary, in the first paragraph, in the FAQ, in the words the coverage used,
+because those are the words being searched. Where the press has rounded, say what
+the exact figure is and note the rounding.
+
+**Say what the document says that the coverage does not.** Almost every story has
+a detail the reporting dropped: a condition attached to an approval, an order that
+is not final, a liability that survives. Find it and give it a section. Also name
+who said what — "the government said", "the bank argued" — rather than folding a
+contested claim into your own voice. An assertion by an official is not a finding
+by a tribunal, and the article must not blur the two.
 
 If nothing this week clears this bar, **do not invent news.** Fall back to writing
 an evergreen guide on a genuine gap in the site's coverage — an obligation, right

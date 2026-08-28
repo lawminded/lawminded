@@ -26,3 +26,4 @@ automation/logs/
 
 # Bot retry queue — transient state, not history.
 automation/.bot_retry.json
+automation/.bot_session
