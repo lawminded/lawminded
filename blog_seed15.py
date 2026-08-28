@@ -53,25 +53,47 @@
 # Per automation/notes.md (2026-08-26), personal guarantees are kept away from
 # veil-lifting: that subject stays in its own article and is not linked here.
 #
+# Retitled and reframed later the same day, on the owner's ask: the coverage had
+# settled on "99.97% haircut" and "three paise for every Rs 100", and the draft
+# led on the two rupee figures instead. Both headline numbers are arithmetic on
+# figures already verified from the order -- 6.25 / 22,006.57 = 0.028%, so 2.8
+# paise per Rs 100, which the press rounds to three. Nothing new was taken from
+# the coverage except the fact of the public row itself: opposition criticism and
+# a government pushback, both widely reported (Free Press Journal, Business
+# Today, 27 Aug 2026). No figure attributed to unnamed officials was used, for
+# the same reason the Rs 2,574 crore claim was left out above.
+#
 # Format matches the earlier seeds: (title, slug, category, act, read_time,
 # summary, content).
 BLOG_ARTICLES_15 = [
 
-    ("Subhash Chandra's Rs 22,006 Crore, Settled for Rs 6.5 Crore: What the NCLT Order Actually Says",
+    ("Subhash Chandra's 99.97% Haircut: Why Lenders Get 3 Paise for Every Rs 100",
      'subhash-chandra-nclt-order-personal-guarantee',
      'acts',
      'Insolvency and Bankruptcy Code, 2016',
      '12 min read',
-     "The NCLT's third member has cleared a repayment plan paying creditors Rs 6.25 crore against admitted claims of Rs 22,006.57 crore. The 144-page order is really about personal guarantees, and it decides several things that matter to anyone who has signed one.",
+     "Rs 6.25 crore against admitted claims of Rs 22,006.57 crore is a haircut of 99.97 per cent, or under three paise in every hundred rupees. Here is where that number comes from, what the 144-page NCLT order actually held, and what it means for anyone who has signed a personal guarantee.",
 
      "<p><em>If you have signed a personal guarantee for your company's loan, this case is about you. A media promoter facing claims of Rs 22,006 crore has been allowed to settle them for Rs 6.5 crore. The reason has little to do with who he is. It has a lot to do with how the law treats a guarantor who has run out of assets.</em></p>"
 
-     "<p><strong>On 25 August 2026 the third member of the National Company Law Tribunal held that Dr Subhash Chandra's repayment plan deserves approval under Section 114 of the Insolvency and Bankruptcy Code, 2016. The plan puts up Rs 6.5 crore in total. Rs 25 lakh of that goes to the cost of the process, leaving Rs 6.25 crore for creditors whose admitted claims come to about Rs 22,006.57 crore.</strong></p>"
+     "<p><strong>On 25 August 2026 the third member of the National Company Law Tribunal held that Dr Subhash Chandra's repayment plan deserves approval under Section 114 of the Insolvency and Bankruptcy Code, 2016. The plan puts up Rs 6.5 crore in total. Rs 25 lakh of that goes to the cost of the process, leaving Rs 6.25 crore for creditors whose admitted claims come to about Rs 22,006.57 crore. That is the 99.97 per cent haircut in the headlines.</strong></p>"
 
      "<blockquote><p><strong>The bottom line</strong></p>"
      "<p><strong>What it settles:</strong> Dr Chandra's own liability as a guarantor. Once a discharge order follows, the creditors named in the plan cannot come back at him personally for those debts.</p>"
      "<p><strong>What it does not settle:</strong> the loans. The companies that borrowed the money still owe every rupee. Section 119(4) says a discharge order does not release any other person.</p>"
      "<p><strong>What it is not yet:</strong> a final order. This is a third member's opinion. It goes back to the original two-member bench, which has to pass the actual order.</p></blockquote>"
+
+     "<h2>Where the 99.97 per cent and the three paise come from</h2>"
+
+     "<p>The headline number is one division. Rs 6.25 crore divided by Rs 22,006.57 crore is 0.028 per cent. Turn it around and creditors give up 99.97 per cent of what they have claimed.</p>"
+
+     "<p>In rupees it lands harder. For every Rs 100 claimed, a creditor gets back about 2.8 paise. Most reports round that to three paise, and that is fair.</p>"
+
+     "<p>One lender makes it real. LIC Housing Finance has an admitted claim of Rs 1,322.39 crore. Its share under the plan is Rs 38,09,294.</p>"
+
+     "<p>The figure set off a public row within two days. Opposition politicians attacked the government over it. Government sources quoted in the press pushed back with one line: this settles one man's liability as a guarantor, and no bank has written off Rs 22,000 crore of loans.</p>"
+
+     "<p>That line is not spin. It is what Section 119(4) of the Code says, and this article comes back to it below. But the 99.97 per cent is real too. It is real for the reason the order spends 144 pages on, which is that there was almost nothing left to take.</p>"
 
      "<h2>First, the words you need</h2>"
 
@@ -168,7 +190,7 @@ BLOG_ARTICLES_15 = [
 
      "<p>The order does leave a door open, and it is a real one. Approval gives Dr Chandra no immunity for fraud, concealment or misrepresentation. If a substantial asset surfaces later, the creditors can apply to recall both the approval order and the discharge order. An order obtained by fraud is a nullity in law, and a tribunal has inherent power to set aside its own tainted orders. What the tribunal will not do is hold up a decision on suspicion alone.</p>"
 
-     "<h2>Why this is not a Rs 22,006 crore loss for the banks</h2>"
+     "<h2>Why a 99.97 per cent haircut is not a Rs 22,006 crore loss for the banks</h2>"
 
      "<p>The 99.97 per cent figure in the headlines is arithmetically correct and financially misleading. Here is why.</p>"
 
@@ -222,6 +244,8 @@ BLOG_ARTICLES_15 = [
      "</ul>"
 
      "<h2>Frequently asked questions</h2>"
+
+     "<p><strong>Is it true that lenders get only 3 paise for every Rs 100?</strong> Yes, measured against the admitted claims. Rs 6.25 crore against Rs 22,006.57 crore is 0.028 per cent, which is about 2.8 paise in every hundred rupees and rounds to three. That is a haircut of 99.97 per cent on the claims made against Dr Chandra personally, not on the loans themselves.</p>"
 
      "<p><strong>Did the NCLT waive Rs 22,000 crore of bank loans?</strong> No. Every one of those claims is against Dr Chandra as a guarantor. The companies that actually borrowed the money still owe it, and Section 119(4) of the Code says a discharge order does not release any other person from liability for the same debt.</p>"
 

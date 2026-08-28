@@ -546,3 +546,46 @@ run: `test_seo.py` fails on a local checkout whose `instance/lawminded.db` still
 holds the pending SEBI draft, because that article's `seo_meta.py` entry lives on
 `post/what-is-sebi-plain-english-guide` and not on main. Deleting the local DB so
 it reseeds from main clears it. Nothing to do with this article.
+
+### Retitled the same evening, on the owner's ask
+
+The owner asked for the trending framing to lead: "99.97 point something haircut
+… three paise for every hundred rupees, whatever the headlines are going on".
+Checked what the coverage is actually running before rewriting the headline —
+Free Press Journal ("Creditors Face 99.97% Haircut On ₹22,006 Crore Claims"),
+NewsDrum ("Why are lenders getting just 3 paise per Rs 100"), Business Standard,
+and Business Today's counter-piece of 27 Aug ("Why ₹22,006 crore claims do not
+mean a 99.97% bank haircut, govt explains"). Both phrases are live query terms,
+so both now appear in the H1, the SERP title, the description and an FAQ.
+
+| Change | Was | Now |
+|---|---|---|
+| Headline | Subhash Chandra's Rs 22,006 Crore, Settled for Rs 6.5 Crore: What the NCLT Order Actually Says | Subhash Chandra's 99.97% Haircut: Why Lenders Get 3 Paise for Every Rs 100 |
+| `SEO_TITLES` | Subhash Chandra NCLT Order: Rs 6.5 Crore Settlement (50) | Subhash Chandra 99.97% Haircut: 3 Paise Per Rs 100 (50) |
+| `SEO_DESCRIPTIONS` | led on the two rupee figures | leads on 99.97% and 3 paise (142 chars) |
+| New section | — | "Where the 99.97 per cent and the three paise come from", placed before the glossary |
+| New FAQ | — | "Is it true that lenders get only 3 paise for every Rs 100?", now first of ten |
+| Section heading | Why this is not a Rs 22,006 crore loss for the banks | Why a 99.97 per cent haircut is not a Rs 22,006 crore loss for the banks |
+
+No new facts were taken from the coverage. Both headline numbers are arithmetic
+on figures already verified from the order: 6.25 / 22,006.57 = 0.028 per cent,
+so 2.8 paise per Rs 100, which the press rounds to three. The article says 2.8
+and notes the rounding, rather than repeating the rounded figure as its own.
+
+The one thing added from the coverage is the existence of the public row —
+opposition criticism, and a government pushback that this settles one man's
+guarantee rather than writing off Rs 22,000 crore of bank loans. Reported by
+both Free Press Journal and Business Today on 27 Aug. Written as the fact of a
+row, with no figure attributed to unnamed officials, for the same reason the
+Rs 2,574 crore claim was left out above. The article immediately grounds the
+government's line in s.119(4), which it can verify, instead of leaving it as an
+assertion by officials.
+
+Re-checked after the edit: 3,815 words, average sentence 14.0 words, nothing
+over 40 words. Page renders with the new `<title>` (50 chars), description (142),
+FAQPage schema carrying all ten questions, 13 in-body article links and no
+self-link. `test_seo.py` passes.
+
+`SEARCH_META_CHANGED` deliberately **not** bumped. It is a floor for every
+article's `<lastmod>` in the sitemap, and only this one unpublished slug's title
+changed; moving it would claim 135 other pages were revised today.

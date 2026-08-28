@@ -134,8 +134,10 @@ SEO_TITLES = {
     # No Search Console history: published 28 Aug 2026, three days after the
     # order. The editorial headline leads on the two numbers, which is right on
     # the page and too long for the SERP, so the query terms come first here.
+    # "99.97% haircut" and "3 paise" are what the coverage is running and what
+    # people are typing; the name carries the rest.
     'subhash-chandra-nclt-order-personal-guarantee':
-        'Subhash Chandra NCLT Order: Rs 6.5 Crore Settlement',
+        'Subhash Chandra 99.97% Haircut: 3 Paise Per Rs 100',
 }
 
 
@@ -468,8 +470,8 @@ SEO_DESCRIPTIONS = {
         "An HUF is a separate taxpayer under Indian law. What it saves in tax, how to "
         "set one up, and why moving your own property into it usually backfires.",
     'subhash-chandra-nclt-order-personal-guarantee':
-        "NCLT cleared a plan paying Rs 6.25 crore against Rs 22,006 crore of claims on "
-        "Subhash Chandra's guarantee. What the order held, and why banks lost.",
+        "Rs 6.25 crore against Rs 22,006 crore of claims: a 99.97% haircut, about 3 paise "
+        "per Rs 100. What the NCLT order held, and why the banks lost.",
 }
 
 
