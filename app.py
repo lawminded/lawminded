@@ -737,10 +737,21 @@ def faqs(content, limit=10):
 
 def _article_image_url(slug):
     """Static URL of an article's header image if the file exists, else None.
-    Used for the article hero, og:image, and the blog-listing card thumbnails."""
-    if slug and os.path.exists(os.path.join(app.static_folder, 'img', 'articles', f'{slug}.webp')):
-        return url_for('static', filename=f'img/articles/{slug}.webp')
-    return None
+    Used for the article hero, og:image, and the blog-listing card thumbnails.
+
+    The URL carries the file's mtime because nginx serves /static with a 30-day
+    max-age. Replace a hero photo and every browser that had already loaded the
+    page keeps showing the old one for a month — Telegram's link-preview cache
+    keeps it far longer. A new file is a new URL, so the swap is visible at once.
+    Same path for all three callers, so a hero and its og:image never disagree."""
+    if not slug:
+        return None
+    try:
+        stamp = int(os.stat(os.path.join(
+            app.static_folder, 'img', 'articles', f'{slug}.webp')).st_mtime)
+    except OSError:
+        return None
+    return url_for('static', filename=f'img/articles/{slug}.webp', v=stamp)
 
 
 app.jinja_env.globals['article_image'] = _article_image_url
