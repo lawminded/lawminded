@@ -447,3 +447,102 @@ query ("small business workshop tailoring india") and rejecting it — a tailor
 photo with a distracting bare-feet close-up in the foreground, unsuitable for a
 hero image regardless of licence. The framing-shop photo is dignified, on-topic
 for a small-business-owner subsidy article, and free of text or logos.
+
+---
+
+## Subhash Chandra's Rs 22,006 Crore, Settled for Rs 6.5 Crore: What the NCLT Order Actually Says
+`subhash-chandra-nclt-order-personal-guarantee` · category `acts` · staged 28 August 2026
+
+Owner-requested by name over Telegram on 28 August 2026: "Write a proper blog
+with detailed nclt order of Subhash Chandra's loan settlement. Give a hot tag
+line super seo." Not a queued topic, so `automation/queue.md` is untouched.
+
+Written from the order, not from the coverage. The 144-page order was downloaded
+from the IBBI order database (row dated 25 Aug 2026, subject "Approval of
+Repayment Plan in PG case") and read in full:
+https://ibbi.gov.in/uploads/order/4ca65f75be889080e510bb4f21ea5d95.pdf
+
+| Claim in the article | Source | Status |
+|---|---|---|
+| Cause title: IA-5505/ND/2024 and connected IAs in CP(IB)-97(ND)/2022, Indiabulls Housing Finance Ltd v. Dr Subhash Chandra, NCLT New Delhi Special Bench (Single Member), Nilesh Sharma Member (Judicial), pronounced 25.08.2026 | Order, cause title and coram, pp. 1-6 | Confirmed |
+| Petition filed 2022 under s.95; RP Raj Kamal Saraogi appointed 30.05.2022; SC interim order 05.08.2022 in WP(C) 567/2022; report kept in abeyance 18.08.2022; SC vacated 22.04.2024 and petition admitted same day; Shiv Nandan Sharma replaced Saraogi 27.05.2024 | Order, opening narrative | Confirmed |
+| Loan agreement dated 13.12.2016 with Vivek Infracon Pvt Ltd; Indiabulls' petition against the borrower, CP (IB)-236 of 2022, withdrawn 23.05.2023 on settlement | Order, PG's contentions VIII | Confirmed |
+| Reference to a third member under s.419(5) Companies Act 2013 r/w Rule 60(2) & (3) NCLT Rules 2016, made by the NCLT President on 09.02.2026, on the split between Ashok Kumar Bhardwaj (J) and Reena Sinha Puri (T) | Order, first paragraph under ORDER | Confirmed |
+| Admitted claims ~Rs 22,006.57 crore; plan value Rs 6.50 crore; Rs 25 lakh IRP cost; Rs 6.25 crore to creditors | Order, LICHFL submissions and the answer to Issue II(f) | Confirmed |
+| PG's assets as on 31.07.2024: Rs 31,79,49,981, including jewellery Rs 9,81,329 and Rs 9,85,033 in Subhash Chandra & Sons; less the Rs 25 crore Jolly Maker I flat | Order, answer to Issue II(f), citing pp. 58-62 of the plan | Confirmed |
+| Jolly Maker I, Cuffe Parade flat plus two garages mortgaged to STCI Finance against ~Rs 250 crore lent March 2018 to Essel Corporate Resources and Jayneer Infrapower; STCI did not vote, so s.110 leaves its security intact and the flat sits outside the plan | Order, STCI's IA-274/2025 and the answer to Issue II(f) | Confirmed |
+| Voting closed 12:01 pm 01.11.2024 at 80.814%; World Crest 28.49%, Lemonade 16.85%, Catalyst (CINDA FPI) 11.85%, Corpcall 10.30%; LIC HF 6.09%, IDBI Trusteeship (Franklin Templeton) 3.36%, HDFC 3.17%, Axis 2.86%, Canara 1.60%, Union Bank (UK) 0.76%, RBL 0.55% against; IndusInd 1.11% did not vote; banks' combined share put at 19.186% | Order, voting table reproduced from para 4.6 of Canara Bank's IA-6125/2024 | Confirmed |
+| LIC Housing Finance: admitted claim Rs 1,322.39 crore, plan payout Rs 38,09,294, ~0.028% | Order, LICHFL's post-hearing written submissions | Confirmed |
+| Net worth certificates: RBL 2017 USD 7.17 bn (~Rs 45,888 crore), Canara 2018 Rs 40,562 crore, against Rs 31.79 crore declared | Order, objectors' case and Issue II(c) | Confirmed |
+| Associate test: s.79(2)(g) needs >50% of share capital or control of board appointments; family/business/commercial proximity insufficient; entities not shown to be associates, so no s.109(4)(b) violation | Order, answers to Member (J) Q11 and Member (T) Q1(b); s.79(2)(g) checked against the bare Act | Confirmed |
+| RP lapses established: admitting claims filed through Mr Anil Kumar (960 individuals) and Mr Sunil Jain (300 individuals) without supporting material, and breach of the s.106(4)(a) / s.107(1) timelines (six days' notice given; creditors had resolved to cut it to five) | Order, paras 89-90 and 97-100 | Confirmed |
+| Approval expressly made subject to excluding those two sets of claims and redistributing their share | Order, para 113 and operative clauses (a) and (b) | Confirmed |
+| Approval does not immunise fraud; approval and discharge orders can be recalled if concealed assets surface, an order obtained by fraud being a nullity | Order, paras 45, 50 and 51 | Confirmed |
+| s.115 binds assenting and dissenting creditors alike; the tribunal cannot apply it selectively | Order, answers to Member (J) Q4-Q8, and operative clause (c) | Confirmed |
+| The order is a third member's opinion; the matter goes back to the original division bench to pass orders on the majority view | Order, operative clause (d) | Confirmed |
+| s.60(2), 79(2)(g), 79(14), 95(4)(b), 96, 100, 101, 105, 106(4)(a), 107(1), 109(4)(b), 110, 111, 112, 114, 115, 119(4) as described | IBC bare Act, IBBI copy amended upto 18-03-2020: https://ibbi.gov.in/uploads/legalframwork/547c9c2af074c90ac5919fa8a5c60bd4.pdf — Part III has not been amended since | Confirmed |
+| MCA notification S.O. 4126(E) dated 15.11.2019 brought ss.94-187 into force from 1 December 2019 only so far as they relate to personal guarantors to corporate debtors | Notification reproduced verbatim at para 63 of the Supreme Court judgment PDF on IBBI: https://ibbi.gov.in/uploads/order/8cff46ae7049df781ad8ce6c4694dcfd.pdf | Confirmed |
+| Lalit Kumar Jain v. Union of India, decided 21 May 2021: approval of a resolution plan does not ipso facto discharge a personal guarantor; s.128 Contract Act makes the surety's liability co-extensive | Same judgment, paras 111-112, and s.128 as quoted in it | Confirmed |
+
+Left out on purpose:
+
+* **"Rs 170 crore loan to Vivek Infracon."** Widely reported (Bar & Bench among
+  others) and not in the order. The order gives the loan agreement date, so the
+  article uses that and no figure.
+* **"Only ~Rs 2,574 crore was guaranteed at origination."** Reported by IANS and
+  Business Today, sourced to unnamed government officials, with no instrument
+  behind it. The same point is made instead from s.119(4) of the Code, which is
+  verifiable.
+* **The PG's own defences** (guarantee obtained by misrepresentation; released on
+  a Rs 225 crore payment in June 2020; Rs 3,992 crore is the real claim figure).
+  These are pleadings and public statements, not findings, and the third member
+  did not decide them.
+* **The Rs 1,494 crore "already repaid by principal borrowers"** figure in the
+  coverage. In the order it appears as a *proposal by the PG to facilitate*
+  payment through entities he says are unrelated to him, and it appears there as
+  something the Technical Member objected to. Reporting it as money recovered
+  would invert its meaning.
+
+Deliberately not covered: veil-lifting, per the owner's standing note of
+2026-08-26 that personal guarantees and veil-lifting must not sit side by side.
+Nothing in the body mentions it and no in-body link points at the case study.
+(The related-articles module on the rendered page is category-driven and outside
+this article's control.)
+
+Sentence length against the owner's 2026-08-26 and 2026-08-28 standing notes:
+3,542 words, average sentence 14.1 words, Flesch reading ease 63.3, grade 7.9.
+The three sentences over 35 words are comma-separated lists of vote shares and a
+near-verbatim rendering of s.79(2)(g), not stacked clauses. Length is over the
+1,200-1,800 house band on purpose: the owner asked for "a proper blog" and
+"detailed", and the 2026-08-28 note says the band is a default for the weekly
+run, not a cap on what the owner asks for by name.
+
+`INTERNAL_LINKS` entries added for 'personal guarantee' and 'personal
+guarantees', pointing here. Verified these actually pull inbound autolinks from
+`director-duties`, `indemnity-vs-guarantee` and `vendor-supplier-agreement`.
+Four links hand-placed in the body: `indemnity-vs-guarantee`, `director-duties`,
+`companies-act-2013-guide` and `common-contract-mistakes`. A fifth fires
+automatically on "demand notice" to `how-to-send-legal-notice`, which is apt. An
+earlier draft accidentally triggered `notice-period-termination-settlement` (an
+employment article) on the phrase "notice period"; reworded to "that
+requirement" so the stray link no longer fires.
+
+Schema checked on the rendered page: Organization/WebSite graph, Article,
+BreadcrumbList (Home / Knowledge Hub / Legal Acts Explained / title) and FAQPage
+with all nine questions populated.
+
+Hero image: Gemini returned HTTP 429 ("prepayment credits are depleted"), the
+same billing failure recorded since blog_seed11. Fell back to a licensed Pexels
+photograph. The first fallback result was rejected outright — a sheet of paper
+rubber-stamped "INNOCENT" beside a gavel, which on an article about a named
+living person's civil insolvency would imply a criminal acquittal that has not
+happened, quite apart from the house rule against text in the frame. Re-ran with
+"accountant desk paperwork ledger" and took the replacement: hands working
+through stamped financial documents with a calculator, no legible or misleading
+text, on-topic for a piece about claims and figures.
+
+`python3 test_seo.py` and `python3 test_draft.py` both pass. Note for the next
+run: `test_seo.py` fails on a local checkout whose `instance/lawminded.db` still
+holds the pending SEBI draft, because that article's `seo_meta.py` entry lives on
+`post/what-is-sebi-plain-english-guide` and not on main. Deleting the local DB so
+it reseeds from main clears it. Nothing to do with this article.
