@@ -447,3 +447,212 @@ query ("small business workshop tailoring india") and rejecting it — a tailor
 photo with a distracting bare-feet close-up in the foreground, unsuitable for a
 hero image regardless of licence. The framing-shop photo is dignified, on-topic
 for a small-business-owner subsidy article, and free of text or logos.
+
+---
+
+## Subhash Chandra's Rs 22,006 Crore, Settled for Rs 6.5 Crore: What the NCLT Order Actually Says
+`subhash-chandra-nclt-order-personal-guarantee` · category `acts` · staged 28 August 2026
+
+Owner-requested by name over Telegram on 28 August 2026: "Write a proper blog
+with detailed nclt order of Subhash Chandra's loan settlement. Give a hot tag
+line super seo." Not a queued topic, so `automation/queue.md` is untouched.
+
+Written from the order, not from the coverage. The 144-page order was downloaded
+from the IBBI order database (row dated 25 Aug 2026, subject "Approval of
+Repayment Plan in PG case") and read in full:
+https://ibbi.gov.in/uploads/order/4ca65f75be889080e510bb4f21ea5d95.pdf
+
+| Claim in the article | Source | Status |
+|---|---|---|
+| Cause title: IA-5505/ND/2024 and connected IAs in CP(IB)-97(ND)/2022, Indiabulls Housing Finance Ltd v. Dr Subhash Chandra, NCLT New Delhi Special Bench (Single Member), Nilesh Sharma Member (Judicial), pronounced 25.08.2026 | Order, cause title and coram, pp. 1-6 | Confirmed |
+| Petition filed 2022 under s.95; RP Raj Kamal Saraogi appointed 30.05.2022; SC interim order 05.08.2022 in WP(C) 567/2022; report kept in abeyance 18.08.2022; SC vacated 22.04.2024 and petition admitted same day; Shiv Nandan Sharma replaced Saraogi 27.05.2024 | Order, opening narrative | Confirmed |
+| Loan agreement dated 13.12.2016 with Vivek Infracon Pvt Ltd; Indiabulls' petition against the borrower, CP (IB)-236 of 2022, withdrawn 23.05.2023 on settlement | Order, PG's contentions VIII | Confirmed |
+| Reference to a third member under s.419(5) Companies Act 2013 r/w Rule 60(2) & (3) NCLT Rules 2016, made by the NCLT President on 09.02.2026, on the split between Ashok Kumar Bhardwaj (J) and Reena Sinha Puri (T) | Order, first paragraph under ORDER | Confirmed |
+| Admitted claims ~Rs 22,006.57 crore; plan value Rs 6.50 crore; Rs 25 lakh IRP cost; Rs 6.25 crore to creditors | Order, LICHFL submissions and the answer to Issue II(f) | Confirmed |
+| PG's assets as on 31.07.2024: Rs 31,79,49,981, including jewellery Rs 9,81,329 and Rs 9,85,033 in Subhash Chandra & Sons; less the Rs 25 crore Jolly Maker I flat | Order, answer to Issue II(f), citing pp. 58-62 of the plan | Confirmed |
+| Jolly Maker I, Cuffe Parade flat plus two garages mortgaged to STCI Finance against ~Rs 250 crore lent March 2018 to Essel Corporate Resources and Jayneer Infrapower; STCI did not vote, so s.110 leaves its security intact and the flat sits outside the plan | Order, STCI's IA-274/2025 and the answer to Issue II(f) | Confirmed |
+| Voting closed 12:01 pm 01.11.2024 at 80.814%; World Crest 28.49%, Lemonade 16.85%, Catalyst (CINDA FPI) 11.85%, Corpcall 10.30%; LIC HF 6.09%, IDBI Trusteeship (Franklin Templeton) 3.36%, HDFC 3.17%, Axis 2.86%, Canara 1.60%, Union Bank (UK) 0.76%, RBL 0.55% against; IndusInd 1.11% did not vote; banks' combined share put at 19.186% | Order, voting table reproduced from para 4.6 of Canara Bank's IA-6125/2024 | Confirmed |
+| LIC Housing Finance: admitted claim Rs 1,322.39 crore, plan payout Rs 38,09,294, ~0.028% | Order, LICHFL's post-hearing written submissions | Confirmed |
+| Net worth certificates: RBL 2017 USD 7.17 bn (~Rs 45,888 crore), Canara 2018 Rs 40,562 crore, against Rs 31.79 crore declared | Order, objectors' case and Issue II(c) | Confirmed |
+| Associate test: s.79(2)(g) needs >50% of share capital or control of board appointments; family/business/commercial proximity insufficient; entities not shown to be associates, so no s.109(4)(b) violation | Order, answers to Member (J) Q11 and Member (T) Q1(b); s.79(2)(g) checked against the bare Act | Confirmed |
+| RP lapses established: admitting claims filed through Mr Anil Kumar (960 individuals) and Mr Sunil Jain (300 individuals) without supporting material, and breach of the s.106(4)(a) / s.107(1) timelines (six days' notice given; creditors had resolved to cut it to five) | Order, paras 89-90 and 97-100 | Confirmed |
+| Approval expressly made subject to excluding those two sets of claims and redistributing their share | Order, para 113 and operative clauses (a) and (b) | Confirmed |
+| Approval does not immunise fraud; approval and discharge orders can be recalled if concealed assets surface, an order obtained by fraud being a nullity | Order, paras 45, 50 and 51 | Confirmed |
+| s.115 binds assenting and dissenting creditors alike; the tribunal cannot apply it selectively | Order, answers to Member (J) Q4-Q8, and operative clause (c) | Confirmed |
+| The order is a third member's opinion; the matter goes back to the original division bench to pass orders on the majority view | Order, operative clause (d) | Confirmed |
+| s.60(2), 79(2)(g), 79(14), 95(4)(b), 96, 100, 101, 105, 106(4)(a), 107(1), 109(4)(b), 110, 111, 112, 114, 115, 119(4) as described | IBC bare Act, IBBI copy amended upto 18-03-2020: https://ibbi.gov.in/uploads/legalframwork/547c9c2af074c90ac5919fa8a5c60bd4.pdf — Part III has not been amended since | Confirmed |
+| MCA notification S.O. 4126(E) dated 15.11.2019 brought ss.94-187 into force from 1 December 2019 only so far as they relate to personal guarantors to corporate debtors | Notification reproduced verbatim at para 63 of the Supreme Court judgment PDF on IBBI: https://ibbi.gov.in/uploads/order/8cff46ae7049df781ad8ce6c4694dcfd.pdf | Confirmed |
+| Lalit Kumar Jain v. Union of India, decided 21 May 2021: approval of a resolution plan does not ipso facto discharge a personal guarantor; s.128 Contract Act makes the surety's liability co-extensive | Same judgment, paras 111-112, and s.128 as quoted in it | Confirmed |
+
+Left out on purpose:
+
+* **"Rs 170 crore loan to Vivek Infracon."** Widely reported (Bar & Bench among
+  others) and not in the order. The order gives the loan agreement date, so the
+  article uses that and no figure.
+* **"Only ~Rs 2,574 crore was guaranteed at origination."** Reported by IANS and
+  Business Today, sourced to unnamed government officials, with no instrument
+  behind it. The same point is made instead from s.119(4) of the Code, which is
+  verifiable.
+* **The PG's own defences** (guarantee obtained by misrepresentation; released on
+  a Rs 225 crore payment in June 2020; Rs 3,992 crore is the real claim figure).
+  These are pleadings and public statements, not findings, and the third member
+  did not decide them.
+* **The Rs 1,494 crore "already repaid by principal borrowers"** figure in the
+  coverage. In the order it appears as a *proposal by the PG to facilitate*
+  payment through entities he says are unrelated to him, and it appears there as
+  something the Technical Member objected to. Reporting it as money recovered
+  would invert its meaning.
+
+Deliberately not covered: veil-lifting, per the owner's standing note of
+2026-08-26 that personal guarantees and veil-lifting must not sit side by side.
+Nothing in the body mentions it and no in-body link points at the case study.
+(The related-articles module on the rendered page is category-driven and outside
+this article's control.)
+
+Sentence length against the owner's 2026-08-26 and 2026-08-28 standing notes:
+3,542 words, average sentence 14.1 words, Flesch reading ease 63.3, grade 7.9.
+The three sentences over 35 words are comma-separated lists of vote shares and a
+near-verbatim rendering of s.79(2)(g), not stacked clauses. Length is over the
+1,200-1,800 house band on purpose: the owner asked for "a proper blog" and
+"detailed", and the 2026-08-28 note says the band is a default for the weekly
+run, not a cap on what the owner asks for by name.
+
+`INTERNAL_LINKS` entries added for 'personal guarantee' and 'personal
+guarantees', pointing here. Verified these actually pull inbound autolinks from
+`director-duties`, `indemnity-vs-guarantee` and `vendor-supplier-agreement`.
+Four links hand-placed in the body: `indemnity-vs-guarantee`, `director-duties`,
+`companies-act-2013-guide` and `common-contract-mistakes`. A fifth fires
+automatically on "demand notice" to `how-to-send-legal-notice`, which is apt. An
+earlier draft accidentally triggered `notice-period-termination-settlement` (an
+employment article) on the phrase "notice period"; reworded to "that
+requirement" so the stray link no longer fires.
+
+Schema checked on the rendered page: Organization/WebSite graph, Article,
+BreadcrumbList (Home / Knowledge Hub / Legal Acts Explained / title) and FAQPage
+with all nine questions populated.
+
+Hero image: Gemini returned HTTP 429 ("prepayment credits are depleted"), the
+same billing failure recorded since blog_seed11. Fell back to a licensed Pexels
+photograph. The first fallback result was rejected outright — a sheet of paper
+rubber-stamped "INNOCENT" beside a gavel, which on an article about a named
+living person's civil insolvency would imply a criminal acquittal that has not
+happened, quite apart from the house rule against text in the frame. Re-ran with
+"accountant desk paperwork ledger" and took the replacement: hands working
+through stamped financial documents with a calculator, no legible or misleading
+text, on-topic for a piece about claims and figures.
+
+`python3 test_seo.py` and `python3 test_draft.py` both pass. Note for the next
+run: `test_seo.py` fails on a local checkout whose `instance/lawminded.db` still
+holds the pending SEBI draft, because that article's `seo_meta.py` entry lives on
+`post/what-is-sebi-plain-english-guide` and not on main. Deleting the local DB so
+it reseeds from main clears it. Nothing to do with this article.
+
+### Retitled the same evening, on the owner's ask
+
+The owner asked for the trending framing to lead: "99.97 point something haircut
+… three paise for every hundred rupees, whatever the headlines are going on".
+Checked what the coverage is actually running before rewriting the headline —
+Free Press Journal ("Creditors Face 99.97% Haircut On ₹22,006 Crore Claims"),
+NewsDrum ("Why are lenders getting just 3 paise per Rs 100"), Business Standard,
+and Business Today's counter-piece of 27 Aug ("Why ₹22,006 crore claims do not
+mean a 99.97% bank haircut, govt explains"). Both phrases are live query terms,
+so both now appear in the H1, the SERP title, the description and an FAQ.
+
+| Change | Was | Now |
+|---|---|---|
+| Headline | Subhash Chandra's Rs 22,006 Crore, Settled for Rs 6.5 Crore: What the NCLT Order Actually Says | Subhash Chandra's 99.97% Haircut: Why Lenders Get 3 Paise for Every Rs 100 |
+| `SEO_TITLES` | Subhash Chandra NCLT Order: Rs 6.5 Crore Settlement (50) | Subhash Chandra 99.97% Haircut: 3 Paise Per Rs 100 (50) |
+| `SEO_DESCRIPTIONS` | led on the two rupee figures | leads on 99.97% and 3 paise (142 chars) |
+| New section | — | "Where the 99.97 per cent and the three paise come from", placed before the glossary |
+| New FAQ | — | "Is it true that lenders get only 3 paise for every Rs 100?", now first of ten |
+| Section heading | Why this is not a Rs 22,006 crore loss for the banks | Why a 99.97 per cent haircut is not a Rs 22,006 crore loss for the banks |
+
+No new facts were taken from the coverage. Both headline numbers are arithmetic
+on figures already verified from the order: 6.25 / 22,006.57 = 0.028 per cent,
+so 2.8 paise per Rs 100, which the press rounds to three. The article says 2.8
+and notes the rounding, rather than repeating the rounded figure as its own.
+
+The one thing added from the coverage is the existence of the public row —
+opposition criticism, and a government pushback that this settles one man's
+guarantee rather than writing off Rs 22,000 crore of bank loans. Reported by
+both Free Press Journal and Business Today on 27 Aug. Written as the fact of a
+row, with no figure attributed to unnamed officials, for the same reason the
+Rs 2,574 crore claim was left out above. The article immediately grounds the
+government's line in s.119(4), which it can verify, instead of leaving it as an
+assertion by officials.
+
+Re-checked after the edit: 3,815 words, average sentence 14.0 words, nothing
+over 40 words. Page renders with the new `<title>` (50 chars), description (142),
+FAQPage schema carrying all ten questions, 13 in-body article links and no
+self-link. `test_seo.py` passes.
+
+### Humanizer pass, run afterwards
+
+The owner asked whether the draft had been through the `humanizer` skill. Nothing
+in this entry said it had, and the sections added during the retitle were written
+without it, so the honest answer was no and the skill was run over the whole body.
+
+Vocabulary was already clean — a scan for the flagged list (delve, robust,
+crucial, pivotal, landscape, showcase, underscore, Additionally, Moreover, and
+the rest) returned nothing, and sentence length already ranged from 1 to 39
+words. Every tell that survived was structural:
+
+* The "bottom line" box was three bolded inline headers with a colon each, which
+  is one of the most recognisable shapes in model output. Rewritten as a prose
+  blockquote, which is also what the PMEGP article does.
+* Negative parallelism, four times. "The reason has little to do with who he is.
+  It has a lot to do with…", "That line is not spin. It is what Section 119(4)
+  says", "The banks did not just say the money was too little", and the four
+  stacked "X is not enough" sentences in the associate test.
+* Announced enumerations: "The third member's answer had three parts", "the case
+  teaches five things". The content stayed; the counting went.
+* Didactic asides: "This part surprises people, so it is worth being precise
+  about it", "Here is why", "Read the last clauses and you will see".
+* Significance filler: "This is the part that made the case notorious", "and it
+  is a real one".
+* "Most reports round that to three paise" and "Government sources quoted in the
+  press" name nobody. The first is now the article's own claim about the
+  headlines; the second is attributed to Business Today, 27 August.
+* One duplication fixed while in there: LIC Housing Finance's Rs 38,09,294
+  against Rs 1,322.39 crore appeared in full twice, once in the new opening
+  section and again lower down. The second is now a clause on the end of the
+  arithmetic rather than its own paragraph.
+
+Kept deliberately, against the checklist: "Not three-fourths of all creditors.
+Three-fourths of the value of the votes actually cast." That is the misreading
+readers actually arrive with, so the correction is doing real work. Same for "He
+is not the debtor's lawyer and he is not the bank's agent."
+
+3,722 words after the pass, average sentence 14.6, longest 39. Ten FAQ pairs
+still parse for the schema. `test_seo.py` passes.
+
+### Hero image replaced with a courthouse, on the owner's ask
+
+"Use some court image like NCLT or Supreme Court or anything." Gemini is still
+returning RESOURCE_EXHAUSTED, and the Mac's `.env` has no `PEXELS_API_KEY` — the
+writer box (92.4.76.145) does, so `gen_image.py` was run there and the WebP
+copied back. Worth noting for next time: image work needs the writer box, not the
+Mac.
+
+Four candidates were pulled and looked at rather than taking the first hit:
+
+* **Pexels 38958649** — sandstone colonnade, Delhi. **Used.** Indian, dignified,
+  no text, no logos, no people, warm stone that sits in the site's cream/gold
+  palette.
+* Pexels 4267308 — rejected. The alt text calls it a government building in
+  Lucknow; it is the UP-112 emergency helpline building, with a large "112" logo
+  across the frame. Text in the image, and the wrong institution.
+* Pexels 795602 — rejected. A domed campus-style building with a logo on the
+  facade. Not a court.
+* Pexels 13038593 — rejected, though it is genuinely a courthouse (neoclassical,
+  European). The house style asks for Indian context and this was the one
+  candidate that had it going against it.
+
+The US Supreme Court photographs that "supreme court india" returns were not
+considered. On an article about an Indian tribunal order they would be plainly
+wrong, in the same category as the "INNOCENT" stamp rejected for the first
+version of this image.
+
+`SEARCH_META_CHANGED` deliberately **not** bumped. It is a floor for every
+article's `<lastmod>` in the sitemap, and only this one unpublished slug's title
+changed; moving it would claim 135 other pages were revised today.

@@ -130,6 +130,14 @@ SEO_TITLES = {
         'Mergers & Amalgamations Under the Companies Act 2013',  # 24 · 30.7
     'limitation-act-1963-guide':
         'Limitation Act 1963: Time Limits to File a Case in India',  # 23 · 50.0
+
+    # No Search Console history: published 28 Aug 2026, three days after the
+    # order. The editorial headline leads on the two numbers, which is right on
+    # the page and too long for the SERP, so the query terms come first here.
+    # "99.97% haircut" and "3 paise" are what the coverage is running and what
+    # people are typing; the name carries the rest.
+    'subhash-chandra-nclt-order-personal-guarantee':
+        'Subhash Chandra 99.97% Haircut: 3 Paise Per Rs 100',
 }
 
 
@@ -461,6 +469,9 @@ SEO_DESCRIPTIONS = {
     'hindu-undivided-family-huf-tax-guide':
         "An HUF is a separate taxpayer under Indian law. What it saves in tax, how to "
         "set one up, and why moving your own property into it usually backfires.",
+    'subhash-chandra-nclt-order-personal-guarantee':
+        "Rs 6.25 crore against Rs 22,006 crore of claims: a 99.97% haircut, about 3 paise "
+        "per Rs 100. What the NCLT order held, and why the banks lost.",
 }
 
 
@@ -667,6 +678,13 @@ INTERNAL_LINKS = {
     'legal notice': 'how-to-send-legal-notice',
     'termination clause': 'how-to-terminate-a-contract',
     'indemnity': 'indemnity-vs-guarantee',
+    # Four published guides mention a personal guarantee in passing and none of
+    # them explains what happens when one is actually enforced. Both forms are
+    # listed because the plural is what director-duties and the veil case study
+    # happen to use. 'indemnity' still points at indemnity-vs-guarantee, so the
+    # two targets do not compete for the same phrase.
+    'personal guarantee': 'subhash-chandra-nclt-order-personal-guarantee',
+    'personal guarantees': 'subhash-chandra-nclt-order-personal-guarantee',
     'master service agreement': 'msa-vs-sow',
     'statement of work': 'msa-vs-sow',
     'non-disclosure agreement': 'nda-key-clauses',
