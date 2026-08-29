@@ -656,3 +656,79 @@ version of this image.
 `SEARCH_META_CHANGED` deliberately **not** bumped. It is a floor for every
 article's `<lastmod>` in the sitemap, and only this one unpublished slug's title
 changed; moving it would claim 135 other pages were revised today.
+
+## blog_seed16.py — ITR due date, weekly news post, 29 August 2026
+
+`itr-due-date-31-august-2026` · category `tax` · staged 29 August 2026
+
+Topic picked from the news, not from a scheme page: the 31 August ITR due date
+for non-audit business/professional taxpayers was trending across tax-advisory
+coverage all week, with the deadline two days out at the time of writing.
+Checked the live DB (`SELECT slug, title, category FROM articles WHERE
+published=1`, 149 rows) before committing to the topic — no article on the site
+covers ITR due dates as its own subject.
+
+| Claim in the article | Source | Status |
+|---|---|---|
+| 31 August 2026 due date for business/professional income where accounts are not required to be audited; full four-row table (30 Nov / 31 Oct / 31 Aug / 31 Jul) | Finance Act, 2026, Section 5, amending Explanation 2 to s.139(1) of the Income-tax Act, 1961. Read from the actual notified Gazette of India, Extraordinary, Part II Section 1, dated 31.03.2026, CG-DL-E-31032026-271439: https://egazette.gov.in/WriteReadData/2026/271439.pdf | Confirmed |
+| The amendment is given effect from 1 March 2026 — before the Finance Act itself was notified — making it retrospective for this filing season rather than a future-year change | Same gazette PDF, opening line of Section 5 | Confirmed |
+| Gazette text is identical to the Bill as introduced, so nothing changed during passage | Cross-checked against Finance Bill, 2026 (as introduced in Lok Sabha): https://www.indiabudget.gov.in/doc/Finance_Bill.pdf | Confirmed |
+| Old (pre-amendment) Explanation 2 had three categories only, with non-audit business bundled into "any other assessee" alongside salaried taxpayers, both at 31 July | Same gazette PDF, the amendment's "for Explanation 2 ... substituted" clause names what it replaces | Confirmed |
+| Revised-return window (s.139(5)) extended to the end of the relevant assessment year (31 March 2027 for AY 2026-27), from a narrower earlier window | Same gazette PDF, Section 5(b) | Confirmed |
+| AY 2026-27 stays governed by the Income-tax Act, 1961, not the Income-tax Act, 2025, even though returns are filed after the new Act's 1 April 2026 commencement — this is the basis for the article's central "it's Section 139, not Section 263" correction | Income Tax Department's own page on the new Act's scope: https://www.incometax.gov.in/iec/foportal/help/all-topics/e-filing-services/objective-and-scope-new-act | Confirmed |
+| Section 234F late fee: ₹5,000 generally, capped at ₹1,000 where total income does not exceed ₹5 lakh | Bare-text reproduction of s.234F: https://www.incometaxindia.gov.in/w/section-234f | Confirmed |
+| Tax audit thresholds: ₹1 crore turnover (₹10 crore at ≥95% digital receipts/payments) for business; ₹50 lakh gross receipts (₹75 lakh at the same digital condition) for professionals | Confirmed unchanged in this Finance Act (no amendment to s.44AB in the same gazette text); cross-checked against current secondary guidance and against the figures already used in the published `income-tax-freelancers` article | Confirmed |
+| 7+ crore ITRs filed for AY 2026-27 as of 27 August 2026, cited to the Income Tax Department's own statement | The Tribune, 27 August 2026, quoting the Department directly — attributed in-text rather than folded into the site's own voice; not used as a load-bearing figure | Confirmed, attributed |
+
+Left out on purpose:
+
+* **"Section 263 of the Income-tax Act, 2025" as the legal basis.** A large share
+  of the secondary coverage cites this. It is wrong for AY 2026-27 returns —
+  confirmed against the Income Tax Department's own transition guidance above —
+  and the article says so directly rather than repeating the error or hedging
+  around it.
+* Any claim that this is a "CBDT extension." It reads that way in some coverage
+  because a due-date change close to a deadline usually is administrative. This
+  one is a permanent statutory amendment with retrospective effect from 1 March
+  2026, not a circular, and the article states that distinction plainly.
+* The ₹10,000 late-fee tier that Section 234F's text still carries ("in any
+  other case"). Section 139(4)'s belated-return window closes 31 December, so
+  there is no practical "later" filing this tier could apply to under current
+  law; including it would have implied a filing path that doesn't exist. Left
+  out rather than explained away.
+
+**Important finding, flagged for a separate fix:** the published
+`income-tax-freelancers` article (`blog_seed2.py`) currently states, in both its
+FAQ and its checklist, that the ITR due date for freelancers is "31 July 2026."
+That is now wrong for anyone filing under presumptive taxation (44ADA) or
+otherwise not required to audit their accounts — per the amendment verified
+above, they get 31 August. This is a live, indexed, published page carrying an
+incorrect date two days before it matters. Not corrected in this run: per
+`automation/weekly-post.md`, updating a live article needs a
+`_apply_content_migrations` block in `database.py`, a deliberate, separate job,
+not something to bundle into a new-article run. Surfaced here and in the run's
+final report so it gets picked up.
+
+Also fixed while in there: the site-wide `INTERNAL_LINKS` phrase `'section 139'`
+(pointing at `auditor-appointment-rotation-removal`, a Companies Act guide) would
+otherwise have auto-linked this article's first "Section 139(1)" mention to the
+wrong Act's wrong provision, since the autolink regex matches "Section 139" as a
+standalone phrase inside "Section 139(1)" (the character after "139" is `(`,
+which satisfies the phrase-boundary lookahead). Added longer, more specific
+phrases — `'section 139(1)'`, `'section 139(4)'`, `'section 139(5)'` — which
+outrank the shorter entry under the "longer phrase wins" rule and route to this
+article instead. Verified by running `autolink()` directly against the rendered
+content: it now links to `income-tax-freelancers` (via "presumptive taxation"),
+`tds-compliance-guide` (via "TDS") and `income-tax-act-2025-what-changed` (via
+"Income-tax Act, 2025") — not to the auditor-rotation article.
+
+1,354 words. Average sentence 16.6 words (excluding table cells and heading
+line-breaks, which the naive splitter miscounts), longest genuine sentence 39
+words, none over 40. `faqs()` confirmed to return all 5 FAQ pairs correctly
+(verified via direct call, not just visual inspection) for the FAQPage schema.
+`test_seo.py` and `test_draft.py` both pass.
+
+Hero image: Gemini returned `RESOURCE_EXHAUSTED` (prepayment credits depleted),
+so `gen_image.py` fell back to its documented Pexels path automatically. Not
+manually reviewed against alternates the way the NCLT article's replacement
+image was; flagged here in case the owner wants a second look before publishing.

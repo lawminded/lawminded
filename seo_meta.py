@@ -138,6 +138,12 @@ SEO_TITLES = {
     # people are typing; the name carries the rest.
     'subhash-chandra-nclt-order-personal-guarantee':
         'Subhash Chandra 99.97% Haircut: 3 Paise Per Rs 100',
+
+    # No Search Console history: published 29 Aug 2026, two days before the
+    # deadline it explains. The date itself is the query term people are
+    # typing this week, so it leads.
+    'itr-due-date-31-august-2026':
+        'ITR Due Date 31 August 2026: Who Gets the Extra Month',
 }
 
 
@@ -472,6 +478,9 @@ SEO_DESCRIPTIONS = {
     'subhash-chandra-nclt-order-personal-guarantee':
         "Rs 6.25 crore against Rs 22,006 crore of claims: a 99.97% haircut, about 3 paise "
         "per Rs 100. What the NCLT order held, and why the banks lost.",
+    'itr-due-date-31-august-2026':
+        "ITR due date for non-audit business income is 31 August 2026, not 31 July - a "
+        "Finance Act 2026 change to the old law, not the new one.",
 }
 
 
@@ -829,6 +838,17 @@ INTERNAL_LINKS = {
     'perquisites': 'perquisite-valuation-rules-2026-salaried',
     'hra': 'perquisite-valuation-rules-2026-salaried',
     'house rent allowance': 'perquisite-valuation-rules-2026-salaried',
+    'itr due date': 'itr-due-date-31-august-2026',
+    'itr filing deadline': 'itr-due-date-31-august-2026',
+    'belated return': 'itr-due-date-31-august-2026',
+    # These three outrank the bare 'section 139' entry above (longer phrase
+    # wins), which points at the Companies Act auditor-rotation guide — a
+    # different Section 139 in a different Act. Without these, the first
+    # "Section 139(1)" in this income-tax article would silently link to the
+    # wrong page.
+    'section 139(1)': 'itr-due-date-31-august-2026',
+    'section 139(4)': 'itr-due-date-31-august-2026',
+    'section 139(5)': 'itr-due-date-31-august-2026',
 }
 
 
