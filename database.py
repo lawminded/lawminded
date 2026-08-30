@@ -1495,6 +1495,13 @@ def seed_articles():
     except Exception:
         pass
 
+    # News-driven weekly post, 30 Aug 2026 (into blog_seed17.py).
+    try:
+        from blog_seed17 import BLOG_ARTICLES_17
+        articles = articles + list(BLOG_ARTICLES_17)
+    except Exception:
+        pass
+
     # Only insert slugs that aren't already in the table (never overwrite),
     # and never re-seed a retired (de-duplicated) article.
     to_insert = [a for a in articles if a[1] not in existing and a[1] not in RETIRED_SLUGS]

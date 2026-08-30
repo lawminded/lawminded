@@ -732,3 +732,84 @@ Hero image: Gemini returned `RESOURCE_EXHAUSTED` (prepayment credits depleted),
 so `gen_image.py` fell back to its documented Pexels path automatically. Not
 manually reviewed against alternates the way the NCLT article's replacement
 image was; flagged here in case the owner wants a second look before publishing.
+
+## blog_seed17.py — SEBI bars Goenka and Chandra, weekly news post, 30 August 2026
+
+`sebi-bars-goenka-chandra-zee-land-pledge-order` · category `sebi` · staged 30
+August 2026
+
+Topic picked from the news, not from a regulator's document list: SEBI's order
+against Zee Entertainment, Punit Goenka and Subhash Chandra was the live
+corporate-governance story through August 2026 — the order itself, then the SAT
+appeal, then the interim relief on the warrant issue kept it in the coverage all
+month. Checked the live DB (`SELECT slug, title, category FROM articles WHERE
+published=1`, 150 rows) before committing: the site already has one Subhash
+Chandra article (`subhash-chandra-nclt-order-personal-guarantee`), but that
+covers his personal insolvency plan under the IBC — a different law, a
+different tribunal, a different set of lenders. Confirmed neither "Zee",
+"ZEEL", "Punit Goenka" nor "Hyderabad" appears anywhere in that article's body,
+so the two do not overlap or need cross-editing.
+
+Every figure, date and finding below is read directly from the primary source —
+the actual 150-page SEBI order — not from secondary coverage.
+
+| Claim in the article | Source | Status |
+|---|---|---|
+| Order dated 31 July 2026; Zee Entertainment restrained from the securities market for 2 months, Punit Goenka and Subhash Chandra for 12 months each | SEBI final order, "DIRECTIONS" section, para 438(a), p.147 | Confirmed, read directly from the PDF |
+| Penalties: Zee ₹30 lakh, Goenka ₹58 lakh, Chandra ₹60 lakh — total ₹1.48 crore | Same order, penalty tables, paras 438(c), pp.148-149. Arithmetic checked by hand: 30+58+60 = 148 lakh | Confirmed |
+| Of the individual penalties, ₹30 lakh (Goenka) and ₹40 lakh (Chandra) is specifically under Section 15HA (the PFUTP/fraud provision); Zee's own ₹30 lakh carries no Section 15HA line at all | Same penalty tables — checked row-by-row which penal provision (15A(b), 15HB or 15HA) each amount sits under | Confirmed. This distinction (fraud vs. disclosure-only) is not clearly made in most secondary coverage, which reports "₹1.48 crore fine" as one undifferentiated figure |
+| Hyderabad land: Road No. 78, Jubilee Hills, Shaikpet village, 17,639.64 sq m, owned by ZEEL | Same order, para 3.1, p.2 | Confirmed |
+| Four loans totalling ₹726 crore (₹116cr + ₹170cr + ₹230cr + ₹210cr) from IHFL to four Essel Group entities (Gnex Projects, Vivek Infracon, Gnex Infrabuild, Renu Realtech) on 13 December 2016, Essel Home as co-borrower | Same order, paras 3.1-3.2, p.2 | Confirmed. Sum checked by hand: 116+170+230+210 = 726 |
+| 27 December 2018: Subhash Chandra signed the "Declaration and Acknowledgment" on ZEEL's behalf, depositing the original title deeds and creating a first-ranking mortgage | Same order, para 3.7, p.3 | Confirmed |
+| No prior approval of ZEEL's audit committee, board or shareholders for the mortgage | Same order, para 3.10, p.4 | Confirmed, direct quote of the finding |
+| Clause 18 of the 2018 declaration stated all requisite permissions/approvals had been obtained | Same order, para 3.9, p.3 | Confirmed, phrase quoted verbatim |
+| ZEEL's April 2024 email stating management/board had no knowledge of the mortgage | Same order, para 3.11, p.4 | Confirmed |
+| Deloitte Haskins & Sells' CARO report, 17 May 2019, flagging missing title deeds; Goenka's management representation letter to auditors, same date | Same order, paras 3.16-3.17, p.5 | Confirmed |
+| Goenka's CEO-CFO certificates for FY 2018-19 and FY 2019-20 found false; Regulation 17(8) LODR violation | Same order, paras 412-418, pp.141-142 | Confirmed |
+| IHFL's Section 9 arbitration application, Delhi HC interim protection granted 1 May 2019, not disclosed to exchanges; non-disposal undertaking; title deeds released 1 June 2020 | Same order, paras 3.14-3.15 (p.4-5) and para 407 (p.140) | Confirmed |
+| Fraud finding against Goenka and Chandra under Section 12A SEBI Act and PFUTP Regulations, 2003; direct quotes on "misused his position and authority" / "at risk for his personal benefit" / "abuse of position and authority for personal benefit while risking the interest of the listed company and its shareholders" | Same order, paras 422-425, pp.143-144 | Confirmed, all three fragments quoted verbatim |
+| Goenka and Chandra NOT liable under Section 27 SEBI Act for the original December 2018 non-disclosure (pre-amendment), but ARE liable under the post-amendment Section 27 for ZEEL's post-8 March 2019 failure to disclose the litigation, undertaking and deed release | Same order, paras 406-411, pp.139-141 | Confirmed. This is the finding most of the secondary coverage skipped entirely — flagged in the article's own "What the order found that most of the coverage didn't mention" section |
+| SAT hearing 12 August 2026; SAT questioned SEBI's basis for ZEEL's 2-month ban | Business Standard, reported and attributed in-text, not the site's own voice | Attributed, not independently verified against a SAT order (not published on a site searched) |
+| SAT's partial interim relief permitting a ~₹3,143.5 crore preferential warrant issue, conditional on ZEEL and Goenka depositing their ₹30 lakh / ₹58 lakh SEBI penalties within a week | India Legal, reported and attributed in-text | Attributed, not independently verified against a SAT order |
+
+Left out on purpose:
+
+* **Chandra's personal guarantee** (Deed of Personal Guarantee, 5 December
+  2018, discussed at order para 421) securing the same borrowers' loans. It's
+  a genuine finding in the order but tangential to this article's central
+  story about board approval and disclosure; including it risked pulling the
+  piece toward personal-guarantee territory the way the corporate-veil case
+  study did, which `automation/notes.md` specifically flagged as confusing
+  when combined with a different legal concept in one article.
+* Exact figures on what portion of the SAT's warrant-issue relief has actually
+  been paid or completed as of this writing — the secondary reporting gives
+  the conditions SAT imposed, not confirmation the payment was made.
+
+1,681 words. Average sentence 15.2 words (regex-based count, adjusted to treat
+a quotation mark after terminal punctuation as part of the same boundary),
+longest genuine sentence 48 words — the direct quote from order para 422-425,
+allowed under the house rule for verbatim quotes from a judgment/order.
+`faqs()` confirmed to return all 5 FAQ pairs correctly via direct call (not
+just visual inspection) for the FAQPage schema; JSON round-tripped through
+`json.dumps`/`json.loads` to confirm valid output. `test_seo.py` and
+`test_draft.py` both pass.
+
+Also fixed while in there: the site-wide `INTERNAL_LINKS` bare phrase
+`'section 27'` (pointing at `non-compete-clause-enforceability-india`, i.e.
+Section 27 of the Indian Contract Act) would otherwise have auto-linked this
+article's own bare mentions of "Section 27" — meaning Section 27 of the SEBI
+Act, an unrelated provision — to the wrong Act's wrong page. Same bug class as
+the ITR article's Section 139 fix two weeks earlier. Fixed two ways: added a
+longer, more specific `'section 27 of the sebi act'` phrase entry, and edited
+the article's own text so every mention of "Section 27" is followed by "of the
+SEBI Act," so the bare phrase never appears standalone. Verified by running
+`autolink()` directly against the rendered content in an app context: it now
+links to `sebi-lodr-explained`, `board-committees-audit-nrc-stakeholders`,
+`appointment-of-kmp-section-203`, `related-party-transactions-section-188` and
+`subhash-chandra-nclt-order-personal-guarantee` — not to the non-compete
+article.
+
+Hero image: Gemini again returned `RESOURCE_EXHAUSTED` (prepayment credits
+still depleted as of this run), so `gen_image.py` fell back to its documented
+Pexels path automatically, same as the ITR article. Confirmed the output is a
+valid 1200×630 WebP.
