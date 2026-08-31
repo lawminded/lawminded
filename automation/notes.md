@@ -80,3 +80,28 @@ Standing preferences and corrections. Read before writing; append when told some
   Written into automation/weekly-post.md section 1 and 3, and into the Telegram
   preamble in automation/telegram_bot.py, so it applies to the weekly run and to
   anything asked for over Telegram.
+
+## 2026-08-31
+
+- When the owner reports a government announcement that cannot be found, ask
+  him for the link in the same reply as the refusal. On 31 August he said MCA
+  had extended CCFS-2026 to 15 September. Nothing existed on mca.gov.in,
+  TaxGuru, Taxscan, CAclubindia or ICSI at 8pm IST, so the run declined to
+  write it and queued it instead. That was the right call on the facts, but the
+  reply stopped at "I could not verify it" and left the next move to him. He
+  sent the circular, and it was real: General Circular No. 04/2026 dated
+  31 August 2026. Refusing to write an unverified claim is correct and does not
+  change. Ending the message without asking for the source costs an hour.
+
+- **mca.gov.in returns HTTP 403 to every direct fetch**, from this box and from
+  the web server, with any user agent. It is not down and it is not the key.
+  Route MCA PDFs through the reader proxy instead:
+
+      https://r.jina.ai/<the fully percent-encoded MCA URL>
+
+  Encode the whole target URL, including the `%` signs inside the `mds=`
+  parameter, or the proxy normalises the double encoding and MCA hands back an
+  empty file. This worked on all three CCFS circulars and is how the article of
+  31 August was sourced. Same trick reaches icsi.edu representations. A
+  `share.google/...` link resolves by fetching it and reading the redirect
+  chain: it goes to google.com first, then to the real mca.gov.in document.

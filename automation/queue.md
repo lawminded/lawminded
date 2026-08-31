@@ -18,18 +18,15 @@ The history of what was asked for is worth keeping.
 
 ## Pending
 
-- [ ] any | CCFS-2026 extension beyond 31 August 2026 — write it only once MCA
-      issues the circular. *Asked for 2026-08-31: the owner had heard the scheme
-      was extended to 15 September. Checked that evening against MCA, ICSI,
-      TaxGuru, Taxscan and CAclubindia — no such circular existed. What did exist
-      was ICSI's letter of 28 August 2026 asking MCA for one more month, to 30
-      September. If a circular lands, the angle is the new deadline and the days
-      left; note that the site already has
-      /article/ccfs-2026-companies-compliance-facilitation-scheme, which says the
-      scheme closes on 31 August, so an extension needs a
-      `_apply_content_migrations` update to that article rather than a duplicate.*
-
 ## Written
+
+- [x] 2026-08-31 | CCFS-2026 extension beyond 31 August 2026
+      *Asked for 2026-08-31. Queued the same evening rather than written: the
+      owner had heard the scheme was extended to 15 September, and no circular
+      existed on MCA, ICSI, TaxGuru, Taxscan or CAclubindia at the time. The
+      owner then sent the circular itself. It is real — General Circular No.
+      04/2026 dated 31 August 2026, extending CCFS-2026 to 15 September 2026 —
+      and the article was written and staged the same night.*
 
 - [x] 2026-08-17 | HUF (Hindu Undivided Family) — formation, taxation, partition
       *asked for 2026-08-15, written 2026-08-17*
