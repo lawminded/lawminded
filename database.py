@@ -160,7 +160,7 @@ def apply_content_migrations():
 # `git push` + restart — there is no separate migration runner. PRAGMA
 # user_version makes each block run exactly once, so an article the owner later
 # edits through the admin UI is never silently overwritten on the next restart.
-_SCHEMA_VERSION = 7
+_SCHEMA_VERSION = 8
 
 
 # ─── Real publication dates ──────────────────────────────────────────────────
@@ -526,6 +526,74 @@ def _apply_content_migrations(c):
         # helpful-content guidance flags, so the two agree here.
         for slug, body in _humanized_articles():
             c.execute('UPDATE articles SET content = ? WHERE slug = ?', (body, slug))
+
+    if version < 8:
+        # CCFS-2026 was extended a second time, to 15 September 2026, by MCA
+        # General Circular No. 04/2026 dated 31 August 2026 — issued on the day
+        # the scheme was due to close. The evergreen guide carried "31 August"
+        # in its title, its summary and five places in the body, and two of its
+        # paragraphs argued that no further extension was coming. All of that is
+        # now wrong, and a wrong deadline on a compliance site is the one defect
+        # worth a migration on its own.
+        #
+        # The news article about the extension is a separate piece
+        # (blog_seed18.py); this block only stops the guide contradicting it.
+        c.execute(
+            "UPDATE articles SET title = ?, summary = ? WHERE slug = ?",
+            ('CCFS-2026: The MCA Scheme That Cuts Late-Filing Penalties by 90%, '
+             'and Closes on 15 September',
+             'The Companies Compliance Facilitation Scheme lets a company clear '
+             'years of overdue ROC filings for 10% of the additional fees. '
+             'Nearly 93,000 companies have used it. It shuts on 15 September 2026.',
+             'ccfs-2026-companies-compliance-facilitation-scheme'))
+
+        for old, new in (
+            ("It closes on 31 August 2026, and it is unlikely to come back.",
+             "It closes on 15 September 2026, and it is unlikely to come back."),
+
+            ("The scheme ends 31 August 2026.",
+             "The scheme ends 15 September 2026."),
+
+            # Replaces the paragraph that read the July extension as a one-off
+            # repayment of days lost to the data centre fire. A second
+            # extension has since happened, on different stated grounds.
+            ("<p>That history matters for one reason. The extension was "
+             "compensation for lost filing days, so treating it as a sign that "
+             "further extensions will follow is a bad bet.</p>",
+             "<p>It was then extended a second time, on the day it was due to "
+             "close. <strong>General Circular No. 04/2026 dated 31 August "
+             "2026</strong> moved the last date to <strong>15 September "
+             "2026</strong>, citing representations received from stakeholders "
+             "rather than any technical failure, and left every other term of "
+             "the scheme unchanged. What that circular says, and what the "
+             "scheme's own text says happens once it closes, is covered in "
+             "<a href=\"/article/ccfs-2026-extended-15-september-2026\">CCFS-2026 "
+             "extended to 15 September 2026</a>.</p>"),
+
+            ("the useful deadline is not 31 August but whatever date the "
+             "auditor needs to start.",
+             "the useful deadline is not 15 September but whatever date the "
+             "auditor needs to start."),
+
+            ("<strong>What is the last date for CCFS-2026?</strong> 31 August "
+             "2026, extended from 15 July 2026 by General Circular No. 03/2026.",
+             "<strong>What is the last date for CCFS-2026?</strong> 15 September "
+             "2026, under General Circular No. 04/2026 dated 31 August 2026. The "
+             "scheme originally ran to 15 July 2026, then to 31 August 2026."),
+
+            ("<li><strong>Waiting for another extension.</strong> The July "
+             "extension replaced days lost to the data centre fire. That reason "
+             "has expired.</li>",
+             "<li><strong>Waiting for a third extension.</strong> There have "
+             "been two. ICSI, which asked for the second, told the ministry in "
+             "the same letter that it would not be making any further proposals "
+             "on the scheme.</li>"),
+        ):
+            c.execute(
+                "UPDATE articles SET content = REPLACE(content, ?, ?) WHERE slug = ?",
+                (old, new, 'ccfs-2026-companies-compliance-facilitation-scheme'))
+
+        _touch(c, 'ccfs-2026-companies-compliance-facilitation-scheme')
 
         c.execute(f'PRAGMA user_version = {_SCHEMA_VERSION}')
 
@@ -1499,6 +1567,14 @@ def seed_articles():
     try:
         from blog_seed17 import BLOG_ARTICLES_17
         articles = articles + list(BLOG_ARTICLES_17)
+    except Exception:
+        pass
+
+    # Owner-requested news article, 31 Aug 2026: CCFS-2026 extended to
+    # 15 September by General Circular 04/2026 (into blog_seed18.py).
+    try:
+        from blog_seed18 import BLOG_ARTICLES_18
+        articles = articles + list(BLOG_ARTICLES_18)
     except Exception:
         pass
 
