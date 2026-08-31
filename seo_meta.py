@@ -144,6 +144,12 @@ SEO_TITLES = {
     # typing this week, so it leads.
     'itr-due-date-31-august-2026':
         'ITR Due Date 31 August 2026: Who Gets the Extra Month',
+
+    # No Search Console history: published 30 Aug 2026. Query terms people are
+    # actually typing this month are the names and the two headline figures,
+    # so both go in the title rather than a generic "SEBI order" framing.
+    'sebi-bars-goenka-chandra-zee-land-pledge-order':
+        "SEBI Bars Chandra, Goenka: Zee's ₹726 Cr Land Pledge",
 }
 
 
@@ -481,6 +487,9 @@ SEO_DESCRIPTIONS = {
     'itr-due-date-31-august-2026':
         "ITR due date for non-audit business income is 31 August 2026, not 31 July - a "
         "Finance Act 2026 change to the old law, not the new one.",
+    'sebi-bars-goenka-chandra-zee-land-pledge-order':
+        "SEBI barred Subhash Chandra and Punit Goenka for a year and fined Zee ₹1.48 "
+        "crore, over a ₹726 crore Hyderabad land pledge with no board approval.",
 }
 
 
@@ -841,6 +850,23 @@ INTERNAL_LINKS = {
     'itr due date': 'itr-due-date-31-august-2026',
     'itr filing deadline': 'itr-due-date-31-august-2026',
     'belated return': 'itr-due-date-31-august-2026',
+    # Added 30 Aug 2026 with the SEBI/Zee land-pledge article. Bare "Subhash
+    # Chandra" is deliberately left unmapped — the site now has two articles
+    # about him (this one and the NCLT personal-guarantee case), so the bare
+    # name is ambiguous between them. These phrases are specific to the SEBI
+    # matter only, and neither appears anywhere in the NCLT article (checked).
+    'punit goenka': 'sebi-bars-goenka-chandra-zee-land-pledge-order',
+    'zee entertainment': 'sebi-bars-goenka-chandra-zee-land-pledge-order',
+    'hyderabad land pledge': 'sebi-bars-goenka-chandra-zee-land-pledge-order',
+    'ceo-cfo certificate': 'sebi-bars-goenka-chandra-zee-land-pledge-order',
+    'regulation 23(2)': 'sebi-bars-goenka-chandra-zee-land-pledge-order',
+    # The bare 'section 27' entry below points at Section 27 of the Indian
+    # Contract Act (restraint of trade). This article's "Section 27" is
+    # Section 27 of the SEBI Act — an unrelated provision. This longer phrase
+    # outranks the shorter one so the article's own first mention doesn't
+    # silently link to the wrong Act, same bug class as the ITR article's
+    # Section 139 fix.
+    'section 27 of the sebi act': 'sebi-bars-goenka-chandra-zee-land-pledge-order',
     # These three outrank the bare 'section 139' entry above (longer phrase
     # wins), which points at the Companies Act auditor-rotation guide — a
     # different Section 139 in a different Act. Without these, the first
