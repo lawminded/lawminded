@@ -892,3 +892,53 @@ arrive with.
 Gemini returned HTTP 429 (prepaid credits depleted on the account behind
 `GEMINI_API_KEY`), so `gen_image.py` fell back to a licensed Pexels photograph,
 which is the documented fallback. Worth topping up before the next run.
+
+### CCFS extension page, review pass 1 September 2026
+
+Owner asked for a full AI-marks, humanizer and SEO pass on this page, published
+the previous evening, with the scheme's last date now fourteen days away.
+
+**AI marks:** none found. Scanned the stored HTML for invisible and format
+characters (Cf/Co/Cs categories, zero-width space, ZWNJ, ZWJ, word joiner, BOM):
+zero. No smart quotes or en/em dashes either. The `remove-ai-marks` skill's
+service was not reachable from this machine, so its automated inspect/clean was
+not run and nothing is claimed on its behalf beyond the character scan above.
+
+**Humanizer:** the article already passed. The bottom-line box is prose rather
+than the stacked `<strong>Label:</strong>` shape, headings are varied, average
+sentence 14.4 words, no flagged vocabulary, no announced enumerations, no
+didactic asides. The two sentences a naive scan flags as over 40 words are a
+statutory quote running into the next heading, not real sentences. One change
+made: "the part of CCFS-2026 that most summaries leave out" attributed a claim to
+unnamed sources, and is now the site's own statement.
+
+Kept deliberately: "A company that stopped filing four years ago is not facing a
+fine. It is facing a meter." That is negative parallelism, and it corrects a
+misconception readers genuinely hold about additional fees.
+
+**SEO — the real finding.** The branch carrying this article and the SEBI Zee
+order had never been merged, although both were published on 30 and 31 August.
+Live consequences, all now fixed by merging and deploying:
+
+* The hand-written `SEO_TITLES` and `SEO_DESCRIPTIONS` entries were not deployed,
+  so Google was being served an auto-shortened title and a description **cut off
+  mid-phrase** — "Everything else about the".
+* The evergreen CCFS guide still told readers, in its `<title>` and its `<h1>`,
+  that the scheme closed on 31 August. Migration 8 was sitting unmerged on the
+  same branch. Both articles now agree on 15 September, and the guide links to
+  this one.
+* Neither article existed in a seed file, so a database reset would have lost
+  both.
+
+One title changed on top of that: `CCFS-2026 Extended to 15 September 2026: 15
+Days Left` became `CCFS-2026 Extended: New Last Date 15 September 2026`. A
+countdown in a `<title>` is wrong by the next morning and Google can keep serving
+a cached copy of it; "last date" is also the query people actually type.
+
+`SEARCH_META_CHANGED` bumped to 2026-09-01, which is what it is for — three
+entries genuinely changed today.
+
+Verified live after deploy: title and description as written, FAQPage schema
+carrying all eight questions, Article/BreadcrumbList/Person/ImageObject present,
+hero image serving, sitemap `lastmod` 2026-09-01, and the guide no longer saying
+31 August anywhere.
