@@ -27,7 +27,7 @@ ordinary `git push` — no migration, no script run against the production DB.
 # Bump this ONLY when the titles or descriptions below actually change. It is a
 # freshness signal, not a way to nudge the crawler; a date that moves without
 # the page moving is the kind of thing Google learns to distrust.
-SEARCH_META_CHANGED = '2026-08-26'
+SEARCH_META_CHANGED = '2026-09-01'
 
 # Hand-written <title> tags, keyed by article slug, for the pages that carry the
 # traffic. Same reasoning as SEO_DESCRIPTIONS below, and the same deployment
@@ -107,7 +107,13 @@ SEO_TITLES = {
     'dpdp-rules-2025-compliance-timeline':
         'DPDP Rules 2025: The Full Compliance Deadline Calendar',  # 34 · 8.2
     'ccfs-2026-companies-compliance-facilitation-scheme':
-        'CCFS-2026: Cut ROC Late Fees by 90% Before 31 August',  # 33 · 14.2
+        'CCFS-2026: Cut ROC Late Fees by 90% Before 15 September',  # 33 · 14.2
+    'ccfs-2026-extended-15-september-2026':
+        # Not "15 Days Left": a countdown in a <title> is wrong by the next
+        # morning and Google may serve a cached copy of it for days. The last
+        # date is the query — "ccfs 2026 last date", "ccfs extension date" —
+        # and it stays true until the scheme closes.
+        'CCFS-2026 Extended: New Last Date 15 September 2026',
     'statutory-registers-and-records':
         'Statutory Registers Every Indian Company Must Keep',  # 33 · 48.1
     'share-transfer-private-company-sh4':
@@ -468,7 +474,10 @@ SEO_DESCRIPTIONS = {
         "composition. Below ten, complaints go to the Local Committee instead.",
     'ccfs-2026-companies-compliance-facilitation-scheme':
         "Clear overdue ROC filings for 10% of the additional fees under CCFS-2026. "
-        "What it covers, who is excluded, and why 31 August 2026 is the real cliff.",
+        "What it covers, who is excluded, and why 15 September 2026 is the cliff.",
+    'ccfs-2026-extended-15-september-2026':
+        "MCA Circular 04/2026 extends CCFS-2026 to 15 September 2026. The 10% "
+        "additional-fee deal is unchanged. What the fortnight is worth in rupees.",
     'income-tax-act-2025-what-changed':
         "The Income-tax Act, 2025 replaced the 1961 Act on 1 April 2026. The tax year "
         "concept, the renumbering, and why your tax bill probably did not move.",
@@ -875,6 +884,15 @@ INTERNAL_LINKS = {
     'section 139(1)': 'itr-due-date-31-august-2026',
     'section 139(4)': 'itr-due-date-31-august-2026',
     'section 139(5)': 'itr-due-date-31-august-2026',
+
+    # The bare 'ccfs' and 'ccfs-2026' entries above still point at the evergreen
+    # guide, which is the right destination for someone meeting the scheme for
+    # the first time. These longer phrases win over them (longer phrase wins)
+    # and go to the news piece, because anyone writing them means the deadline.
+    'ccfs extension': 'ccfs-2026-extended-15-september-2026',
+    'ccfs-2026 extension': 'ccfs-2026-extended-15-september-2026',
+    'ccfs deadline': 'ccfs-2026-extended-15-september-2026',
+    'general circular no. 04/2026': 'ccfs-2026-extended-15-september-2026',
 }
 
 

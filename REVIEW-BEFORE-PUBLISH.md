@@ -813,3 +813,82 @@ Hero image: Gemini again returned `RESOURCE_EXHAUSTED` (prepayment credits
 still depleted as of this run), so `gen_image.py` fell back to its documented
 Pexels path automatically, same as the ITR article. Confirmed the output is a
 valid 1200×630 WebP.
+
+## blog_seed18.py — CCFS-2026 extended to 15 September 2026, owner-requested, 31 August 2026
+
+Asked for over Telegram on the evening of 31 August: the owner had heard MCA had
+extended CCFS-2026 to 15 September and wanted a "last opportunity, 15 days left"
+piece. The first reply that evening **declined to write it**, because no circular
+could be found. `mca.gov.in` returns HTTP 403 to every fetch from this box and
+from the web server, and TaxGuru, Taxscan, CAclubindia and ICSI's own site all
+still showed 31 August as the closing date at around 8pm IST. The only live
+development was ICSI's representation asking for an extension. The topic was
+queued in `automation/queue.md` instead, conditional on a circular appearing.
+
+The owner then sent the circular. It is real. Retrieved by following the
+`share.google` wrapper to its MCA destination and reading the PDF through
+`r.jina.ai`, which reaches `mca.gov.in` where direct fetches do not. Every
+document below was read in full that way.
+
+| Claim verified | Source | Result |
+|---|---|---|
+| CCFS-2026 extended to **15 September 2026** by **General Circular No. 04/2026 dated 31 August 2026**, F.No. Policy-02/2/2020-CL-V-MCA, signed Nupur Aishwarya, Deputy Director (Policy) | The circular PDF itself (`mca.gov.in/bin/dms/getdocument?mds=yUMlZDLGsXa%252BZT6QKuxDag%253D%253D`) | Confirmed, quoted verbatim |
+| "in view of the representations received from various stakeholders" and "All other terms and conditions of the Scheme shall remain unchanged" | Same circular, paragraph 3 | Confirmed, quoted verbatim. The circular gives **no** technical or operational reason, unlike July's |
+| Scheme introduced by **General Circular No. 01/2026 dated 24 February 2026**, in force 15.04.2026 to 15.07.2026, under section 460 read with section 403 | General Circular No. 01/2026, 5 pages (`mca.gov.in/bin/ebook/dms/getdocument?doc=NjM4NTY0NzE1`) | Confirmed |
+| Rs 100 per day additional fee on late annual returns and financial statements since **1 July 2018**, with no upper limit | Circular 01/2026, paragraph 1 | Confirmed, stated in the circular's own words |
+| 10% of additional fees; MSC-1 dormancy at one-half of normal fee; STK-2 strike-off at 25% of filing fees | Circular 01/2026, paragraphs 4 and 5(iv) | Confirmed |
+| Five excluded categories (final strike-off notice issued, strike-off already applied for, dormancy applied for before the scheme, dissolved by amalgamation, vanishing companies) | Circular 01/2026, paragraph 5(iii) | Confirmed |
+| Immunity: section 92 / 137 proceedings concluded and no penalty leviable only if filed before the adjudicating officer's notice, or within 30 days of it; an adjudication order already passed is unaffected | Circular 01/2026, paragraph 5(v)(a), which cites the proviso to section 454(3) | Confirmed, including the carve-out |
+| **Paragraph 6:** "At the conclusion of the Scheme, the Registrars of Companies concerned shall take necessary action under the Act against the companies who have not availed this Scheme and are in default of filing these documents in a timely manner." | Circular 01/2026, paragraph 6 | Confirmed, quoted verbatim. This is the under-reported part and gets its own section |
+| Previous extension to 31 August 2026 by **General Circular No. 03/2026 dated 8 July 2026**, reason given as the data centre fire of 05.06.2026 | Circular 03/2026 PDF | Confirmed |
+| ICSI asked for an extension "preferably up to 30 September 2026" by letter **G&CL: MCA: AUG:08/2026 dated 28 August 2026** to MCA Secretary Dr Pallavi Jain Govil, following an earlier letter of 20.08.2026 | The ICSI letter itself, on icsi.edu (`/media/webmodules/GCL/submitted.pdf`) | Confirmed. MCA gave 15 September, half of what was asked |
+| ICSI's five grounds (open income-tax/audit work, tracing old records, inactive DINs needing KYC / DSC renewal / reactivation, the August-September tax-audit and GST crunch, companies simultaneously seeking section 252 restoration before the NCLT) | Same ICSI letter, pages 1-2 | Confirmed |
+| "We shall not be giving any further proposals with respect to extension for this scheme." | Same ICSI letter, closing paragraph | Confirmed, quoted verbatim |
+| 15 September 2026 is a Tuesday; 1-15 September is fifteen days containing two weekends | Calendar | Confirmed |
+
+The rupee example (six forms, ~4,500 days of aggregate delay, Rs 4,50,000 of
+additional fees becoming Rs 45,000) is arithmetic on the circular's own
+Rs 100/day/form figure, presented as an illustration rather than as a reported
+case.
+
+### Deliberately left out
+
+- **Section 164(2) director disqualification.** It would have strengthened the
+  "what happens on 16 September" section, but `indiacode.nic.in` returned an
+  empty document and the `ca2013.com` reproduction came back visibly corrupted,
+  rendering "shall be eligible" where the statute reads "shall not be eligible".
+  The point stays in the existing CCFS guide, which verified it when written and
+  which this article links to.
+- **The 92,859 uptake figure** and the statement in Lok Sabha Unstarred Question
+  No. 3496 (answered 10 August 2026) that no further extension was proposed —
+  which the 31 August circular has since overtaken. Both are sourced only to
+  secondary reproductions; the sansad.in PDF could not be reached.
+
+### Migration 8: the existing guide was corrected, not duplicated
+
+`ccfs-2026-companies-compliance-facilitation-scheme` is the evergreen guide to
+how the scheme works and stays that. But its title, its summary and five places
+in its body said 31 August, and two of its paragraphs argued that a further
+extension was not coming. Migration 8 in `database.py` fixes the title, the
+summary, the opening, the blockquote, the worked example, the FAQ, and rewrites
+those two paragraphs, one of which now links forward to this article. The three
+remaining "31 August 2026" strings in that body were checked individually and are
+all correct history (the July circular's target date, and 04/2026's own date).
+
+### Readability and humanizer
+
+Drafted inside the `humanizer` skill, then revised against it. 1,821 words,
+126 sentences, **average sentence length 14.5 words**. Two sentences exceed 40
+words and both are verbatim quotations, one from Circular 01/2026 paragraph 6
+and one from the ICSI letter. One didactic aside ("One difference from July is
+worth noticing") was cut on the revision pass. The "not a fine, a meter" line is
+deliberate negative parallelism: it corrects a misconception readers actually
+arrive with.
+
+`test_seo.py` and `test_draft.py` both pass. FAQPage parses to 8 questions.
+
+### Hero image
+
+Gemini returned HTTP 429 (prepaid credits depleted on the account behind
+`GEMINI_API_KEY`), so `gen_image.py` fell back to a licensed Pexels photograph,
+which is the documented fallback. Worth topping up before the next run.
