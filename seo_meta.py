@@ -27,7 +27,7 @@ ordinary `git push` — no migration, no script run against the production DB.
 # Bump this ONLY when the titles or descriptions below actually change. It is a
 # freshness signal, not a way to nudge the crawler; a date that moves without
 # the page moving is the kind of thing Google learns to distrust.
-SEARCH_META_CHANGED = '2026-08-26'
+SEARCH_META_CHANGED = '2026-09-01'
 
 # Hand-written <title> tags, keyed by article slug, for the pages that carry the
 # traffic. Same reasoning as SEO_DESCRIPTIONS below, and the same deployment
@@ -109,7 +109,11 @@ SEO_TITLES = {
     'ccfs-2026-companies-compliance-facilitation-scheme':
         'CCFS-2026: Cut ROC Late Fees by 90% Before 15 September',  # 33 · 14.2
     'ccfs-2026-extended-15-september-2026':
-        'CCFS-2026 Extended to 15 September 2026: 15 Days Left',
+        # Not "15 Days Left": a countdown in a <title> is wrong by the next
+        # morning and Google may serve a cached copy of it for days. The last
+        # date is the query — "ccfs 2026 last date", "ccfs extension date" —
+        # and it stays true until the scheme closes.
+        'CCFS-2026 Extended: New Last Date 15 September 2026',
     'statutory-registers-and-records':
         'Statutory Registers Every Indian Company Must Keep',  # 33 · 48.1
     'share-transfer-private-company-sh4':

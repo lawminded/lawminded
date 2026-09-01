@@ -113,7 +113,7 @@ BLOG_ARTICLES_18 = [
 
      "<p>The founding circular answered this in February, and nothing since has withdrawn it. Paragraph 6 of General Circular No. 01/2026 reads: \"At the conclusion of the Scheme, the Registrars of Companies concerned shall take necessary action under the Act against the companies who have not availed this Scheme and are in default of filing these documents in a timely manner.\"</p>"
 
-     "<p>That is an instruction to the Registrars, written into the scheme itself. It is also the part of CCFS-2026 that most summaries leave out. The scheme is a discount window, and it is the notice period before enforcement.</p>"
+     "<p>That is an instruction to the Registrars, written into the scheme itself. It is the part of CCFS-2026 worth reading twice. The scheme is a discount window, and it is the notice period before enforcement.</p>"
 
      "<p>Enforcement here means adjudication under Section 454 for the Section 92 and Section 137 defaults, with penalties falling on the company and on the officers in default. That is the same Section 454 machinery the scheme's own immunity clause is built on. Until 15 September, filing switches it off. After that, filing is just filing, late and at full price.</p>"
 
