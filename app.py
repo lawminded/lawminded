@@ -456,7 +456,14 @@ def _deliver(msg):
         RESEND_ENDPOINT,
         data=json.dumps(_resend_payload(msg)).encode(),
         headers={'Authorization': f'Bearer {RESEND_API_KEY}',
-                 'Content-Type': 'application/json'})
+                 'Content-Type': 'application/json',
+                 'Accept': 'application/json',
+                 # Resend sits behind Cloudflare, which rejects urllib's default
+                 # "Python-urllib/3.x" with a 403 and Cloudflare error 1010 —
+                 # nothing to do with the API key or the domain, and the body
+                 # says neither. Same trap as Pexels in automation/gen_image.py.
+                 # Verified: identical request, default UA 403, this UA 200.
+                 'User-Agent': 'LawMindedBot/1.0 (+https://lawminded.in)'})
     try:
         with urllib.request.urlopen(req, timeout=20) as r:
             json.load(r)

@@ -103,6 +103,36 @@ def test_a_resend_error_says_what_resend_said():
         A.RESEND_API_KEY, A.urllib.request.urlopen = real_key, real_open
 
 
+def test_the_request_identifies_itself():
+    """Resend is behind Cloudflare, which answers urllib's default
+    "Python-urllib/3.x" with 403 and Cloudflare error 1010 — a body that
+    mentions neither the key nor the domain, so it reads like an auth failure.
+    The first live send hit exactly this."""
+    captured = {}
+    real_key, real_open = A.RESEND_API_KEY, A.urllib.request.urlopen
+
+    def capture(req, *a, **k):
+        captured['headers'] = {k.lower(): v for k, v in req.header_items()}
+        class R:
+            def read(self): return b'{"id":"test"}'
+            def __enter__(self): return self
+            def __exit__(self, *a): return False
+        return R()
+
+    A.RESEND_API_KEY = 're_test_key'
+    A.urllib.request.urlopen = capture
+    try:
+        with A.app.app_context():
+            A._deliver(_msg())
+    finally:
+        A.RESEND_API_KEY, A.urllib.request.urlopen = real_key, real_open
+
+    ua = captured['headers'].get('User-agent'.lower(), '')
+    assert ua and 'python-urllib' not in ua.lower(), \
+        f'request would be blocked by Cloudflare with this User-Agent: {ua!r}'
+    assert 'lawminded' in ua.lower(), f'the caller should say who it is: {ua!r}'
+
+
 def test_the_key_is_never_hardcoded():
     """A key in the repo is a key in every clone and on GitHub."""
     import re
