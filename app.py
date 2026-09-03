@@ -6,6 +6,8 @@ import base64
 import hmac
 import threading
 import time
+import urllib.error
+import urllib.request
 from io import BytesIO
 from datetime import date, datetime, timedelta, timezone, timedelta
 from functools import wraps, lru_cache
@@ -387,6 +389,87 @@ def _email_html(heading, body_html, unsub=None):
     )
 
 
+# ─── Delivery ────────────────────────────────────────────────────────────────
+# Two ways out: Resend's HTTP API when RESEND_API_KEY is set, SMTP otherwise.
+#
+# Why bother: the SMTP path opens a TCP connection, does STARTTLS, authenticates
+# and sends, for every single message, to a server we do not control. That is
+# seconds of a web request the visitor is waiting on, and the newsletter loop
+# repeats the whole conversation per subscriber. One HTTPS POST is faster and
+# fails faster, which matters more than it sounds — a hung SMTP handshake holds
+# a gunicorn worker.
+#
+# Why no `resend` package: this is one POST with a JSON body. A dependency for
+# that is a dependency to keep patched, on a 1 GB box.
+RESEND_API_KEY = os.getenv('RESEND_API_KEY')
+RESEND_ENDPOINT = 'https://api.resend.com/emails'
+# Resend needs a From it has verified, and rejects the send with a confusing
+# error if it is empty. Prefer the same address SMTP already uses, so switching
+# over does not silently change who the mail appears to come from; fall back to
+# the site's own address rather than sending None.
+RESEND_FROM = (os.getenv('RESEND_FROM')
+               or app.config['MAIL_DEFAULT_SENDER']
+               or 'Law Minded <hello@lawminded.in>')
+
+
+def _resend_payload(msg):
+    """Translate a Flask-Mail Message into Resend's JSON body. Kept separate from
+    the HTTP call so it can be tested without a network or an API key."""
+    payload = {
+        'from': RESEND_FROM,
+        'to': list(msg.recipients),
+        'subject': msg.subject,
+    }
+    if msg.body:
+        payload['text'] = msg.body
+    if msg.html:
+        payload['html'] = msg.html
+    if msg.reply_to:
+        payload['reply_to'] = msg.reply_to
+    if msg.extra_headers:
+        payload['headers'] = dict(msg.extra_headers)
+    attachments = []
+    for a in msg.attachments:
+        item = {
+            'filename': a.filename,
+            'content': base64.b64encode(a.data).decode(),
+            'content_type': a.content_type,
+        }
+        # The branded template shows the logo as <img src="cid:logo">. Resend
+        # carries that through `content_id`; without it the logo silently
+        # becomes a broken image in every email we send.
+        cid = (a.headers or {}).get('Content-ID', '').strip('<>')
+        if cid:
+            item['content_id'] = cid
+        attachments.append(item)
+    if attachments:
+        payload['attachments'] = attachments
+    return payload
+
+
+def _deliver(msg):
+    """Send one message. Every email the site sends goes through here."""
+    if not RESEND_API_KEY:
+        mail.send(msg)
+        return
+    req = urllib.request.Request(
+        RESEND_ENDPOINT,
+        data=json.dumps(_resend_payload(msg)).encode(),
+        headers={'Authorization': f'Bearer {RESEND_API_KEY}',
+                 'Content-Type': 'application/json'})
+    try:
+        with urllib.request.urlopen(req, timeout=20) as r:
+            json.load(r)
+    except urllib.error.HTTPError as e:
+        # Resend puts the real reason in the body — an unverified domain, a From
+        # it does not recognise. Surfacing only "HTTP 403" would send whoever
+        # debugs this hunting in the wrong place.
+        detail = e.read().decode('utf-8', 'replace')[:300]
+        raise RuntimeError(f'Resend rejected the email (HTTP {e.code}): {detail}') from e
+    except urllib.error.URLError as e:
+        raise RuntimeError(f'Could not reach Resend: {e.reason}') from e
+
+
 def send_branded_email(subject, recipients, heading, body_html, body_text, unsub=None):
     """Build + send a branded HTML email (with plain-text alt + inline logo)."""
     msg = Message(subject=subject, recipients=recipients)
@@ -403,7 +486,7 @@ def send_branded_email(subject, recipients, heading, body_html, body_text, unsub
     with app.open_resource(EMAIL_LOGO) as f:
         msg.attach('logo.png', 'image/png', f.read(), 'inline',
                    headers={'Content-ID': '<logo>', 'X-Attachment-Id': 'logo'})
-    mail.send(msg)
+    _deliver(msg)
 
 
 def _log_email(db, recipient, subject, kind, slug, status, error=None):
@@ -1468,7 +1551,7 @@ def contact():
             body=f'Name: {name}\nEmail: {email}\n\nMessage:\n{query}'
         )
         notify.reply_to = email
-        mail.send(notify)
+        _deliver(notify)
         # Branded acknowledgement to the person who wrote in.
         send_branded_email(
             subject='We received your message — Law Minded',
