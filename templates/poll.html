@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}{{ poll.question }} - Law Minded{% endblock %}
+{% block meta_desc %}A quick question for Law Minded subscribers.{% endblock %}
+{# A poll is for the people who were emailed it, not for search. #}
+{% block head_extra %}<meta name="robots" content="noindex, nofollow">{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <span class="section-tag">{% if admin %}Poll results{% else %}One quick question{% endif %}</span>
+  <h1>{{ poll.question }}</h1>
+
+  {% if admin %}
+    <p>{{ counts.total }} of {{ total_subscribers }} subscribers have voted.
+       Voting {% if open_now %}closes{% else %}closed{% endif %} on {{ poll.closes }}.</p>
+    <p style="font:600 18px/1.6 Georgia,serif;">
+      Yes: {{ counts.yes }} &nbsp;·&nbsp; No: {{ counts.no }}
+    </p>
+    {% if votes %}
+      <table style="width:100%;border-collapse:collapse;margin-top:18px;font-size:14px;">
+        <tr style="text-align:left;border-bottom:1px solid #ECE6D8;">
+          <th style="padding:6px 0;">Name</th><th>Email</th><th>Vote</th><th>When</th>
+        </tr>
+        {% for v in votes %}
+        <tr style="border-bottom:1px solid #F4F0E6;">
+          <td style="padding:6px 0;">{{ v['name'] or '—' }}</td>
+          <td>{{ v['email'] }}</td>
+          <td><strong>{{ v['choice']|upper }}</strong></td>
+          <td>{{ v['updated_at'] }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    {% else %}
+      <p>No votes yet.</p>
+    {% endif %}
+
+  {% elif not open_now %}
+    <p>Voting on this closed on {{ poll.closes }}. Thank you to everyone who answered.</p>
+    {% if counts %}
+      <p style="font:600 18px/1.6 Georgia,serif;">
+        Yes: {{ counts.yes }} &nbsp;·&nbsp; No: {{ counts.no }}
+      </p>
+    {% endif %}
+    <div class="error-actions">
+      <a href="{{ url_for('templates_page') }}" class="btn-primary">Browse the templates</a>
+    </div>
+
+  {% elif not valid %}
+    <h1>This link is personal</h1>
+    <p>Poll links are tied to the email address they were sent to, so this one cannot record a vote. Open the link from your own copy of the email, and if you cannot find it, write to us and we will send it again.</p>
+    <div class="error-actions">
+      <a href="{{ url_for('contact_page') }}" class="btn-primary">Contact us</a>
+      <a href="{{ url_for('index') }}" class="btn-secondary">Back to home</a>
+    </div>
+
+  {% else %}
+    <p>{{ poll.intro }}</p>
+    {% if choice %}
+      <p><strong>Your answer is recorded: {{ poll.yes if choice == 'yes' else poll.no }}.</strong>
+         You can change it until {{ poll.closes }} by choosing the other option below.</p>
+    {% else %}
+      <p>One click, and voting closes on {{ poll.closes }}.</p>
+    {% endif %}
+    <form method="post" action="{{ url_for('poll', slug=slug) }}" class="error-actions">
+      <input type="hidden" name="token" value="{{ token }}">
+      <button type="submit" name="choice" value="yes"
+              class="{{ 'btn-secondary' if choice == 'yes' else 'btn-primary' }}">{{ poll.yes }}</button>
+      <button type="submit" name="choice" value="no"
+              class="{{ 'btn-secondary' if choice == 'no' else 'btn-primary' }}">{{ poll.no }}</button>
+    </form>
+    <p style="margin-top:18px;font-size:14px;color:#8A8271;">
+      Whatever wins, everything already on the site stays free.</p>
+  {% endif %}
+</div>
+{% endblock %}

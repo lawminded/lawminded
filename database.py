@@ -78,6 +78,19 @@ def init_db():
             value TEXT
         );
 
+        -- One row per person per poll. The UNIQUE constraint is what makes the
+        -- count trustworthy: a forwarded link or a second click updates the
+        -- existing row instead of stuffing the ballot.
+        CREATE TABLE IF NOT EXISTS poll_votes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            poll TEXT NOT NULL,
+            email TEXT NOT NULL,
+            choice TEXT NOT NULL,            -- 'yes' | 'no'
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(poll, email)
+        );
+
         CREATE TABLE IF NOT EXISTS documents (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             doc_type TEXT NOT NULL,          -- 'template' | 'board' | 'special'

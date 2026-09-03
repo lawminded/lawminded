@@ -253,6 +253,53 @@ def unsubscribe_url(email):
     return f'{SITE_URL}{path}?token={token}'
 
 
+# ─── Subscriber polls ────────────────────────────────────────────────────────
+# One question at a time, defined here rather than in a table: there is one poll,
+# an admin screen to create more would be a screen nobody uses, and the question
+# has to be written carefully anyway. Add a second entry when a second is needed.
+POLLS = {
+    'templates-login': {
+        'question': 'Should the document templates sit behind a free member login?',
+        'intro': ('We are adding many more templates — board resolutions, '
+                  'authorisations, minutes of meetings, agreements and affidavits. '
+                  'A free login would let us keep your downloads in one place and '
+                  'tell you when new formats are added. It also means one extra '
+                  'step before you can download anything.'),
+        'yes': 'Yes — a free login is fine',
+        'no': 'No — keep downloads open to everyone',
+        'closes': '2026-09-10',
+    },
+}
+
+_poll_serializer = URLSafeSerializer(app.secret_key, salt='lm-poll')
+
+
+def poll_url(slug, email):
+    """Absolute, signed link to a poll, personal to one subscriber. Same shape
+    and the same request-context care as unsubscribe_url above, because the
+    caller is the same background broadcast."""
+    token = _poll_serializer.dumps([slug, email])
+    if has_request_context():
+        path = url_for('poll', slug=slug)
+    else:
+        with app.test_request_context():
+            path = url_for('poll', slug=slug)
+    return f'{SITE_URL}{path}?token={token}'
+
+
+def poll_is_open(poll):
+    return date.today().isoformat() <= poll['closes']
+
+
+def poll_counts(db, slug):
+    rows = db.execute(
+        'SELECT choice, COUNT(*) AS n FROM poll_votes WHERE poll=? GROUP BY choice',
+        (slug,)).fetchall()
+    counts = {r['choice']: r['n'] for r in rows}
+    return {'yes': counts.get('yes', 0), 'no': counts.get('no', 0),
+            'total': sum(counts.values())}
+
+
 # The site's readers, its deadlines and its article dates are all Indian. The
 # server runs UTC and so does SQLite's CURRENT_TIMESTAMP, which puts anything
 # published after 18:30 UTC — i.e. after midnight in Delhi — on the previous day.
@@ -523,8 +570,14 @@ def mail_subscribers(subject, heading, body_html, body_text, kind, slug=None):
         addr = (person['email'] or '').strip()
         if not addr:
             continue
+        # heading/body may be plain strings, or callables taking the subscriber
+        # row when the message is personal — a greeting by name, a link signed
+        # for that address. Strings keep every existing caller working.
+        head = heading(person) if callable(heading) else heading
+        html = body_html(person) if callable(body_html) else body_html
+        text = body_text(person) if callable(body_text) else body_text
         try:
-            send_branded_email(subject, [addr], heading, body_html, body_text,
+            send_branded_email(subject, [addr], head, html, text,
                                unsub=unsubscribe_url(addr))
             _log_email(db, addr, subject, kind, slug, 'sent')
             sent += 1
@@ -1676,6 +1729,82 @@ def unsubscribe():
 
     return render_template('unsubscribe.html', email=email, token=token,
                            removed=removed, confirm=False, valid=bool(email))
+
+
+@app.route('/poll/<slug>', methods=['GET', 'POST'])
+@csrf.exempt
+@limiter.limit('30 per minute')
+def poll(slug):
+    """A one-question poll, opened from a signed link in a subscriber email.
+
+    GET only shows the question and the buttons. Recording a vote is a POST, for
+    the same reason the draft-approval page uses one: mail clients and link
+    scanners fetch every URL in a message to build previews, so a GET that voted
+    would cast half the ballots before anyone read the email.
+
+    CSRF-exempt, like /unsubscribe and for the same reason. The voter arrives
+    from an email with no session, and the request is already authenticated by a
+    signed token unique to their address — forging one means holding the secret
+    that is the whole credential. Requiring a session token as well would only
+    turn "cookies were blocked between the click and the vote" into a 400 the
+    reader cannot interpret.
+    """
+    cfg = POLLS.get(slug)
+    if not cfg:
+        abort(404)
+
+    token = request.values.get('token', '')
+    try:
+        signed_slug, email = _poll_serializer.loads(token)
+        if signed_slug != slug:
+            email = None
+    except (BadSignature, ValueError, TypeError):
+        email = None
+
+    db = get_db()
+    open_now = poll_is_open(cfg)
+    existing = db.execute('SELECT choice FROM poll_votes WHERE poll=? AND email=?',
+                          (slug, email)).fetchone() if email else None
+    choice = existing['choice'] if existing else None
+
+    if request.method == 'POST' and email and open_now:
+        picked = request.form.get('choice', '')
+        if picked in ('yes', 'no'):
+            # Someone re-reading the email and changing their mind should be able
+            # to. UPSERT keeps it one row per person either way.
+            db.execute(
+                'INSERT INTO poll_votes (poll, email, choice) VALUES (?,?,?) '
+                'ON CONFLICT(poll, email) DO UPDATE SET choice=excluded.choice, '
+                'updated_at=CURRENT_TIMESTAMP',
+                (slug, email, picked))
+            db.commit()
+            choice = picked
+
+    # Results stay hidden while voting is open, so an early landslide does not
+    # steer the people who vote later.
+    counts = poll_counts(db, slug) if not open_now else None
+    db.close()
+    return render_template('poll.html', slug=slug, poll=cfg, valid=bool(email),
+                           choice=choice, open_now=open_now, token=token,
+                           counts=counts)
+
+
+@app.route('/admin/poll/<slug>')
+@admin_required
+def admin_poll(slug):
+    cfg = POLLS.get(slug) or abort(404)
+    db = get_db()
+    counts = poll_counts(db, slug)
+    votes = db.execute(
+        'SELECT v.email, v.choice, v.updated_at, s.name FROM poll_votes v '
+        'LEFT JOIN subscribers s ON s.email = v.email '
+        'WHERE v.poll=? ORDER BY v.updated_at DESC', (slug,)).fetchall()
+    total_subscribers = db.execute('SELECT COUNT(*) AS n FROM subscribers').fetchone()['n']
+    db.close()
+    return render_template('poll.html', slug=slug, poll=cfg, valid=False,
+                           choice=None, open_now=poll_is_open(cfg), token='',
+                           counts=counts, votes=votes,
+                           total_subscribers=total_subscribers, admin=True)
 
 
 @app.route('/download-request', methods=['POST'])
