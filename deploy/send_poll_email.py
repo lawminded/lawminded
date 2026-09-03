@@ -11,13 +11,12 @@ Read it with --dry-run first, then --test to see the real thing in an inbox.
 Each person gets their own greeting and their own signed poll link, so the vote
 is one per subscriber and the result means something.
 
-DELIBERATELY NOT THE BRANDED TEMPLATE. The first version used the newsletter
-layout — masthead logo, cream card, gold call-to-action button — and Gmail filed
-it under Promotions, which is what that shape is for. This is a founder asking
-eleven people a question, so it goes out looking like one: no images, no button,
-no card, a From that names the person rather than the brand — and, after that
-still landed in Promotions, no HTML part at all. It is text/plain, which is what
-correspondence between two people actually looks like.
+BACK TO THE BRANDED TEMPLATE, deliberately. Three versions tried to dodge
+Gmail's Promotions tab — no button, no images, then no HTML at all — and every
+one landed there regardless, including to a Gmail address that had never
+received site mail. The tab is not being decided by the markup, so the owner's
+call is to stop optimising for it: the mail goes out looking like Law Minded,
+signed by the founder.
 """
 import argparse
 import os
@@ -26,10 +25,14 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 POLL = 'templates-login'
-SUBJECT = 'Quick question about the templates'
-# A letter from a person, not a newsletter from a brand. Gmail weighs this when
-# it decides between the Primary and Promotions tabs, and it is also just true.
-FROM = 'Piyush Kundnani <hello@lawminded.in>'
+SUBJECT = 'A quick question about the Law Minded templates'
+
+# Sender: the site's own default, "Law Minded <hello@lawminded.in>". An earlier
+# version sent as the founder personally, to try to stay out of Gmail's
+# Promotions tab. It landed there anyway — twice, once as plain HTML and once as
+# text with no HTML at all — so the owner's call is to stop fighting the tab and
+# have the mail look like the brand it comes from. The letter is still signed by
+# the founder at the bottom; the envelope is the company.
 
 
 def first_name(row):
@@ -48,8 +51,7 @@ def body_text(site, row, unsub):
     link = site.poll_url(POLL, row['email'])
     return (
         f'Dear {first_name(row)},\n\n'
-        'I run Law Minded, and before we change something I would rather ask you '
-        'than guess.\n\n'
+        'Before we change something, we would rather ask you than guess.\n\n'
         'We are adding a lot more to the templates library over the next few '
         'weeks: board resolutions, authorisations, minutes of meetings, '
         'agreements and affidavits.\n\n'
@@ -57,42 +59,75 @@ def body_text(site, row, unsub):
         'the way they are now?\n\n'
         'With a login, your downloads stay in one place and we can tell you when '
         'a format you need is added. Without one, there is nothing to sign up for '
-        'and nothing to remember. I can see the argument both ways, which is why '
-        'I am asking.\n\n'
+        'and nothing to remember. There is a good argument each way, which is why '
+        'we are asking.\n\n'
         f'You can answer here, it takes one click:\n{link}\n\n'
-        'Or just reply to this email with yes or no. Either reaches me.\n\n'
-        'I will close the question on 10 September. Whatever we decide, '
+        'Or just reply to this email with yes or no. That reaches us too.\n\n'
+        'The question closes on 10 September. Whatever we decide, '
         'everything on the site today stays free.\n\n'
         'Thanks for your time.\n\n'
         'Warm regards,\n'
         'Piyush Kundnani\n'
-        'Founder, Law Minded\n\n'
-        'If you would rather not get emails like this, reply and say so and I '
-        'will take you off the list.\n'
+        'Founder, Law Minded\n'
+    )
+
+
+def body_html(site, row):
+    """The site's own branded body: this goes inside send_branded_email's
+    wrapper, which supplies the logo masthead, the card and the footer."""
+    link = site.poll_url(POLL, row['email'])
+    p = 'margin:0 0 14px;font:400 15px/1.7 Arial,sans-serif;'
+    return (
+        f'<p style="{p}">Dear {first_name(row)},</p>'
+
+        f'<p style="{p}">Before we change something, we would rather ask you '
+        'than guess.</p>'
+
+        f'<p style="{p}">We are adding a lot more to the templates library over '
+        'the next few weeks: <strong>board resolutions, authorisations, minutes '
+        'of meetings, agreements and affidavits</strong>.</p>'
+
+        f'<p style="{p}">Should those sit behind a free member login, or stay '
+        'open to everyone the way they are now?</p>'
+
+        f'<p style="{p}">With a login, your downloads stay in one place and we '
+        'can tell you when a format you need is added. Without one, there is '
+        'nothing to sign up for and nothing to remember. There is a good '
+        'argument each way, which is why we are asking.</p>'
+
+        f'<p style="margin:0 0 22px;">'
+        f'<a href="{link}" style="display:inline-block;background:#8A5E07;'
+        'color:#ffffff;text-decoration:none;padding:13px 26px;border-radius:8px;'
+        'font:600 15px/1 Arial,sans-serif;">Give your answer</a></p>'
+
+        f'<p style="{p}">It takes one click. Or simply reply to this email with '
+        'yes or no — that reaches us too.</p>'
+
+        f'<p style="{p}">The question closes on <strong>10 September 2026</strong>. '
+        'Whatever we decide, everything on the site today stays free.</p>'
+
+        f'<p style="{p}">Thanks for your time.</p>'
+
+        f'<p style="{p}">Warm regards,<br>'
+        '<strong>Piyush Kundnani</strong><br>'
+        '<span style="color:#8A8271;">Founder, Law Minded</span></p>'
     )
 
 
 def deliver(site, row, unsub):
-    """One plain-text message. No HTML part at all.
+    """The branded template: logo masthead, card, footer, List-Unsubscribe.
 
-    Three rounds of this: the branded template went to Promotions, and so did
-    plain HTML with no images or buttons. A message carrying an HTML
-    alternative is still a message somebody designed, and Gmail reads the shape
-    before it reads the words. Actual correspondence between people is
-    text/plain, so that is what this is.
-
-    Not send_branded_email, which would wrap it in the newsletter layout and
-    attach the logo — the thing being avoided.
+    Three rounds went the other way — plain HTML, then text with no HTML at all
+    — trying to stay out of Gmail's Promotions tab. Both landed there anyway,
+    including to an address with no history of site mail, which is the test that
+    settles it. The tab is not being decided by the markup. So the mail may as
+    well look like Law Minded sent it, which is the owner's call.
     """
-    from flask_mail import Message
-    msg = Message(subject=SUBJECT, recipients=[row['email']], sender=FROM)
-    msg.body = body_text(site, row, unsub)
-    # msg.html deliberately left unset — see above.
-    msg.reply_to = 'hello@lawminded.in'
-    # No List-Unsubscribe header either. It is a bulk-mail marker, and this is
-    # eleven people who asked to hear from us being asked one question by a
-    # person. Opting out is a reply, which for a list this size actually works.
-    site._deliver(msg)
+    site.send_branded_email(
+        SUBJECT, [row['email']],
+        'A quick question about the templates',
+        body_html(site, row), body_text(site, row, unsub),
+        unsub=unsub)
 
 
 def main():
@@ -113,7 +148,7 @@ def main():
         db.close()
 
         named = sum(1 for p in people if (p['name'] or '').strip())
-        print(f'From: {FROM}')
+        print(f'From: {site.RESEND_FROM}')
         print(f'Subject: {SUBJECT}')
         print(f'Subscribers: {len(people)}  ({named} by name, '
               f'{len(people) - named} as "Dear user")')
