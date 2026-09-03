@@ -463,7 +463,10 @@ def _resend_payload(msg):
     """Translate a Flask-Mail Message into Resend's JSON body. Kept separate from
     the HTTP call so it can be tested without a network or an API key."""
     payload = {
-        'from': RESEND_FROM,
+        # msg.sender lets one message override the site-wide From — a letter
+        # from a person reads differently from a brand's newsletter, and Gmail
+        # sorts it differently too.
+        'from': msg.sender or RESEND_FROM,
         'to': list(msg.recipients),
         'subject': msg.subject,
     }
@@ -550,7 +553,8 @@ def _log_email(db, recipient, subject, kind, slug, status, error=None):
         (recipient, subject, kind, slug, status, (error or '')[:500]))
 
 
-def mail_subscribers(subject, heading, body_html, body_text, kind, slug=None):
+def mail_subscribers(subject, heading, body_html, body_text, kind, slug=None,
+                     send=None):
     """Send one message to every subscriber, one SMTP conversation each, and
     record the outcome per recipient.
 
@@ -577,8 +581,14 @@ def mail_subscribers(subject, heading, body_html, body_text, kind, slug=None):
         html = body_html(person) if callable(body_html) else body_html
         text = body_text(person) if callable(body_text) else body_text
         try:
-            send_branded_email(subject, [addr], head, html, text,
-                               unsub=unsubscribe_url(addr))
+            # `send` lets a caller deliver something other than the branded
+            # newsletter — a plain letter, say — while keeping the per-recipient
+            # log and the "one bad address must not stop the run" behaviour here.
+            if send:
+                send(person, unsubscribe_url(addr))
+            else:
+                send_branded_email(subject, [addr], head, html, text,
+                                   unsub=unsubscribe_url(addr))
             _log_email(db, addr, subject, kind, slug, 'sent')
             sent += 1
         except Exception as e:                       # noqa: BLE001 — see docstring

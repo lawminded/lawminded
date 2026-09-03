@@ -10,6 +10,13 @@ Read it with --dry-run first, then --test to see the real thing in an inbox.
 
 Each person gets their own greeting and their own signed poll link, so the vote
 is one per subscriber and the result means something.
+
+DELIBERATELY NOT THE BRANDED TEMPLATE. The first version used the newsletter
+layout — masthead logo, cream card, gold call-to-action button — and Gmail filed
+it under Promotions, which is what that shape is for. This is a founder asking
+eleven people a question, so it goes out looking like one: no images, no button,
+no card, a link written as a link, and a From that names the person rather than
+the brand. The plain-text part carries the same words.
 """
 import argparse
 import os
@@ -18,7 +25,10 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 POLL = 'templates-login'
-SUBJECT = 'A quick question about the Law Minded templates'
+SUBJECT = 'Quick question about the Law Minded templates'
+# A letter from a person, not a newsletter from a brand. Gmail weighs this when
+# it decides between the Primary and Promotions tabs, and it is also just true.
+FROM = 'Piyush Kundnani <hello@lawminded.in>'
 
 
 def first_name(row):
@@ -33,71 +43,82 @@ def first_name(row):
     return first.title() if (first.islower() or first.isupper()) else first
 
 
-def body_html(site, row):
-    link = site.poll_url(POLL, row['email'])
-    p = 'margin:0 0 14px;font:400 15px/1.7 Arial,sans-serif;'
-    return (
-        f'<p style="{p}">Dear {first_name(row)},</p>'
-
-        f'<p style="{p}">You are one of the people who signed up to Law Minded, '
-        'so I would like your view on something before we decide it.</p>'
-
-        f'<p style="{p}">We are adding a lot more to the free templates library. '
-        'Board resolutions, authorisations, minutes of meetings, agreements and '
-        'affidavits are all being drafted now, on top of what is already '
-        'there.</p>'
-
-        f'<p style="{p}">The question is whether those templates should sit '
-        'behind a free member login.</p>'
-
-        f'<p style="{p}"><strong>If we add a login:</strong> your downloads stay '
-        'in one place, and we can tell you when a format you need is added. '
-        '<strong>If we do not:</strong> anyone can download anything, exactly as '
-        'today, with nothing to sign up for.</p>'
-
-        f'<p style="{p}">There is no wrong answer, and it is one click:</p>'
-
-        f'<p style="margin:0 0 20px;">'
-        f'<a href="{link}" style="display:inline-block;background:#8A5E07;'
-        'color:#ffffff;text-decoration:none;padding:13px 26px;border-radius:8px;'
-        'font:600 15px/1 Arial,sans-serif;">Give your answer</a></p>'
-
-        f'<p style="{p}">Voting closes on <strong>10 September 2026</strong>. '
-        'Whichever way it goes, everything on the site today stays free.</p>'
-
-        f'<p style="{p}">If you would rather just reply to this email with a '
-        'yes or a no, that works too. I read all of them.</p>'
-
-        f'<p style="{p}">Warm regards,<br>'
-        '<strong>Piyush Kundnani</strong><br>'
-        '<span style="color:#8A8271;">Founder, Law Minded</span></p>'
-    )
-
-
-def body_text(site, row):
+def body_text(site, row, unsub):
     link = site.poll_url(POLL, row['email'])
     return (
         f'Dear {first_name(row)},\n\n'
-        'You are one of the people who signed up to Law Minded, so I would like '
-        'your view on something before we decide it.\n\n'
-        'We are adding a lot more to the free templates library. Board '
-        'resolutions, authorisations, minutes of meetings, agreements and '
-        'affidavits are all being drafted now, on top of what is already there.\n\n'
-        'The question is whether those templates should sit behind a free member '
-        'login.\n\n'
-        'If we add a login: your downloads stay in one place, and we can tell you '
-        'when a format you need is added. If we do not: anyone can download '
-        'anything, exactly as today, with nothing to sign up for.\n\n'
-        'There is no wrong answer, and it is one click:\n'
-        f'{link}\n\n'
-        'Voting closes on 10 September 2026. Whichever way it goes, everything on '
-        'the site today stays free.\n\n'
-        'If you would rather just reply to this email with a yes or a no, that '
-        'works too. I read all of them.\n\n'
+        'I run Law Minded, and before we change something I would rather ask you '
+        'than guess.\n\n'
+        'We are adding a lot more to the templates library over the next few '
+        'weeks: board resolutions, authorisations, minutes of meetings, '
+        'agreements and affidavits.\n\n'
+        'Should those sit behind a free member login, or stay open to everyone '
+        'the way they are now?\n\n'
+        'With a login, your downloads stay in one place and we can tell you when '
+        'a format you need is added. Without one, there is nothing to sign up for '
+        'and nothing to remember. I can see the argument both ways, which is why '
+        'I am asking.\n\n'
+        f'You can answer here, it takes one click:\n{link}\n\n'
+        'Or just reply to this email with yes or no. Either reaches me.\n\n'
+        'I will close the question on 10 September. Whatever we decide, '
+        'everything on the site today stays free.\n\n'
+        'Thanks for your time.\n\n'
         'Warm regards,\n'
         'Piyush Kundnani\n'
         'Founder, Law Minded\n'
+        'lawminded.in\n\n'
+        f'--\nTo stop receiving emails from us: {unsub}\n'
     )
+
+
+def body_html(site, row, unsub):
+    """Deliberately close to what a person typing in Gmail would produce: no
+    layout table, no background colour, no image, no button. The only styling is
+    a font stack, because leaving it out makes some clients pick a serif."""
+    link = site.poll_url(POLL, row['email'])
+    p = 'margin:0 0 14px;'
+    return (
+        '<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;'
+        'line-height:1.6;color:#222222;">'
+        f'<p style="{p}">Dear {first_name(row)},</p>'
+        f'<p style="{p}">I run Law Minded, and before we change something I '
+        'would rather ask you than guess.</p>'
+        f'<p style="{p}">We are adding a lot more to the templates library over '
+        'the next few weeks: board resolutions, authorisations, minutes of '
+        'meetings, agreements and affidavits.</p>'
+        f'<p style="{p}">Should those sit behind a free member login, or stay '
+        'open to everyone the way they are now?</p>'
+        f'<p style="{p}">With a login, your downloads stay in one place and we '
+        'can tell you when a format you need is added. Without one, there is '
+        'nothing to sign up for and nothing to remember. I can see the argument '
+        'both ways, which is why I am asking.</p>'
+        f'<p style="{p}">You can <a href="{link}">answer here</a>, it takes one '
+        'click. Or just reply to this email with yes or no. Either reaches me.</p>'
+        f'<p style="{p}">I will close the question on 10 September. Whatever we '
+        'decide, everything on the site today stays free.</p>'
+        f'<p style="{p}">Thanks for your time.</p>'
+        f'<p style="{p}">Warm regards,<br>Piyush Kundnani<br>'
+        'Founder, Law Minded<br>lawminded.in</p>'
+        f'<p style="margin:22px 0 0;font-size:12px;color:#888888;">'
+        f'To stop receiving emails from us, <a href="{unsub}" '
+        'style="color:#888888;">unsubscribe here</a>.</p>'
+        '</div>'
+    )
+
+
+def deliver(site, row, unsub):
+    """One plain message. Not send_branded_email: that one wraps everything in
+    the newsletter layout and attaches the logo, which is exactly what we are
+    avoiding here."""
+    from flask_mail import Message
+    msg = Message(subject=SUBJECT, recipients=[row['email']], sender=FROM)
+    msg.body = body_text(site, row, unsub)
+    msg.html = body_html(site, row, unsub)
+    msg.reply_to = 'hello@lawminded.in'
+    # No List-Unsubscribe header. It is a bulk-mail marker, and this is eleven
+    # people who asked to hear from us being asked one question by a person.
+    # The footer carries a working unsubscribe link instead, so nobody is stuck.
+    site._deliver(msg)
 
 
 def main():
@@ -118,6 +139,7 @@ def main():
         db.close()
 
         named = sum(1 for p in people if (p['name'] or '').strip())
+        print(f'From: {FROM}')
         print(f'Subject: {SUBJECT}')
         print(f'Subscribers: {len(people)}  ({named} by name, '
               f'{len(people) - named} as "Dear user")')
@@ -125,10 +147,10 @@ def main():
         print('-' * 70)
 
         if a.dry_run:
-            for p in people[:3]:
-                print(body_text(site, p))
+            for p in people[:2]:
+                print(body_text(site, p, site.unsubscribe_url(p['email'])))
                 print('-' * 70)
-            print(f'DRY RUN — nothing sent. Showing {min(3, len(people))} of '
+            print(f'DRY RUN — nothing sent. Showing {min(2, len(people))} of '
                   f'{len(people)} personalised copies.')
             return
 
@@ -138,19 +160,13 @@ def main():
                 if p['email'] == a.test:
                     row = p
                     break
-            site.send_branded_email(
-                SUBJECT, [a.test], 'A quick question about the templates',
-                body_html(site, row), body_text(site, row),
-                unsub=site.unsubscribe_url(a.test))
+            deliver(site, row, site.unsubscribe_url(a.test))
             print(f'Test copy sent to {a.test}. Nobody else was mailed.')
             return
 
         sent, failed = site.mail_subscribers(
-            SUBJECT,
-            heading=lambda p: 'A quick question about the templates',
-            body_html=lambda p: body_html(site, p),
-            body_text=lambda p: body_text(site, p),
-            kind='poll')
+            SUBJECT, heading=None, body_html=None, body_text=None, kind='poll',
+            send=lambda person, unsub: deliver(site, person, unsub))
         print(f'sent: {sent}   failed: {failed}')
         if failed:
             sys.exit(1)

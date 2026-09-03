@@ -103,6 +103,21 @@ def test_a_resend_error_says_what_resend_said():
         A.RESEND_API_KEY, A.urllib.request.urlopen = real_key, real_open
 
 
+def test_a_message_can_override_the_from_address():
+    """The poll letter goes out as a named person rather than the brand, which is
+    part of why Gmail files it under Primary instead of Promotions. If msg.sender
+    stopped being honoured, it would silently revert to the site-wide From."""
+    with A.app.app_context():
+        m = _msg()
+        m.sender = 'Piyush Kundnani <hello@lawminded.in>'
+        assert A._resend_payload(m)['from'] == 'Piyush Kundnani <hello@lawminded.in>'
+
+        plain = _msg()
+        plain.sender = None
+        assert A._resend_payload(plain)['from'] == A.RESEND_FROM, \
+            'a message with no sender must still fall back to the site default'
+
+
 def test_the_request_identifies_itself():
     """Resend is behind Cloudflare, which answers urllib's default
     "Python-urllib/3.x" with 403 and Cloudflare error 1010 — a body that
