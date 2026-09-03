@@ -15,8 +15,9 @@ DELIBERATELY NOT THE BRANDED TEMPLATE. The first version used the newsletter
 layout — masthead logo, cream card, gold call-to-action button — and Gmail filed
 it under Promotions, which is what that shape is for. This is a founder asking
 eleven people a question, so it goes out looking like one: no images, no button,
-no card, a link written as a link, and a From that names the person rather than
-the brand. The plain-text part carries the same words.
+no card, a From that names the person rather than the brand — and, after that
+still landed in Promotions, no HTML part at all. It is text/plain, which is what
+correspondence between two people actually looks like.
 """
 import argparse
 import os
@@ -25,7 +26,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 POLL = 'templates-login'
-SUBJECT = 'Quick question about the Law Minded templates'
+SUBJECT = 'Quick question about the templates'
 # A letter from a person, not a newsletter from a brand. Gmail weighs this when
 # it decides between the Primary and Promotions tabs, and it is also just true.
 FROM = 'Piyush Kundnani <hello@lawminded.in>'
@@ -65,59 +66,32 @@ def body_text(site, row, unsub):
         'Thanks for your time.\n\n'
         'Warm regards,\n'
         'Piyush Kundnani\n'
-        'Founder, Law Minded\n'
-        'lawminded.in\n\n'
-        f'--\nTo stop receiving emails from us: {unsub}\n'
-    )
-
-
-def body_html(site, row, unsub):
-    """Deliberately close to what a person typing in Gmail would produce: no
-    layout table, no background colour, no image, no button. The only styling is
-    a font stack, because leaving it out makes some clients pick a serif."""
-    link = site.poll_url(POLL, row['email'])
-    p = 'margin:0 0 14px;'
-    return (
-        '<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;'
-        'line-height:1.6;color:#222222;">'
-        f'<p style="{p}">Dear {first_name(row)},</p>'
-        f'<p style="{p}">I run Law Minded, and before we change something I '
-        'would rather ask you than guess.</p>'
-        f'<p style="{p}">We are adding a lot more to the templates library over '
-        'the next few weeks: board resolutions, authorisations, minutes of '
-        'meetings, agreements and affidavits.</p>'
-        f'<p style="{p}">Should those sit behind a free member login, or stay '
-        'open to everyone the way they are now?</p>'
-        f'<p style="{p}">With a login, your downloads stay in one place and we '
-        'can tell you when a format you need is added. Without one, there is '
-        'nothing to sign up for and nothing to remember. I can see the argument '
-        'both ways, which is why I am asking.</p>'
-        f'<p style="{p}">You can <a href="{link}">answer here</a>, it takes one '
-        'click. Or just reply to this email with yes or no. Either reaches me.</p>'
-        f'<p style="{p}">I will close the question on 10 September. Whatever we '
-        'decide, everything on the site today stays free.</p>'
-        f'<p style="{p}">Thanks for your time.</p>'
-        f'<p style="{p}">Warm regards,<br>Piyush Kundnani<br>'
-        'Founder, Law Minded<br>lawminded.in</p>'
-        f'<p style="margin:22px 0 0;font-size:12px;color:#888888;">'
-        f'To stop receiving emails from us, <a href="{unsub}" '
-        'style="color:#888888;">unsubscribe here</a>.</p>'
-        '</div>'
+        'Founder, Law Minded\n\n'
+        'If you would rather not get emails like this, reply and say so and I '
+        'will take you off the list.\n'
     )
 
 
 def deliver(site, row, unsub):
-    """One plain message. Not send_branded_email: that one wraps everything in
-    the newsletter layout and attaches the logo, which is exactly what we are
-    avoiding here."""
+    """One plain-text message. No HTML part at all.
+
+    Three rounds of this: the branded template went to Promotions, and so did
+    plain HTML with no images or buttons. A message carrying an HTML
+    alternative is still a message somebody designed, and Gmail reads the shape
+    before it reads the words. Actual correspondence between people is
+    text/plain, so that is what this is.
+
+    Not send_branded_email, which would wrap it in the newsletter layout and
+    attach the logo — the thing being avoided.
+    """
     from flask_mail import Message
     msg = Message(subject=SUBJECT, recipients=[row['email']], sender=FROM)
     msg.body = body_text(site, row, unsub)
-    msg.html = body_html(site, row, unsub)
+    # msg.html deliberately left unset — see above.
     msg.reply_to = 'hello@lawminded.in'
-    # No List-Unsubscribe header. It is a bulk-mail marker, and this is eleven
-    # people who asked to hear from us being asked one question by a person.
-    # The footer carries a working unsubscribe link instead, so nobody is stuck.
+    # No List-Unsubscribe header either. It is a bulk-mail marker, and this is
+    # eleven people who asked to hear from us being asked one question by a
+    # person. Opting out is a reply, which for a list this size actually works.
     site._deliver(msg)
 
 

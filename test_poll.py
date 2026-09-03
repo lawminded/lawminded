@@ -137,9 +137,30 @@ def test_personalisation_reaches_each_subscriber():
     assert seen, 'nothing was sent'
     addr, heading, html = seen[0]
     assert heading == 'Hello Test Reader', f'not personalised: {heading!r}'
-    token = html.split('token=')[1].split('<')[0]
-    assert A._poll_serializer.loads(token) == [SLUG, addr], \
-        'the link in the email is not signed for the person receiving it'
+    with A.app.app_context():
+        assert A.poll_url(SLUG, addr) in html, \
+            'the link in the email is not the one signed for the person receiving it'
+
+
+def test_the_emailed_link_has_no_query_string():
+    """A long ?token=... is the shape of a click-tracking link, and filters read
+    it that way. The token goes in the path instead."""
+    with A.app.app_context():
+        url = A.poll_url(SLUG, VOTER)
+    assert '?' not in url, f'the emailed link looks like a tracking URL: {url}'
+    assert url.startswith(f'https://lawminded.in/poll/{SLUG}/') or '/poll/' in url, url
+
+
+def test_the_path_form_of_the_link_opens_without_voting():
+    setup()
+    with A.app.app_context():
+        url = A.poll_url(SLUG, VOTER)
+    path = url.split('lawminded.in', 1)[-1] if 'lawminded.in' in url else url
+    c = A.app.test_client()
+    r = c.get(path)
+    assert r.status_code == 200, r.status_code
+    assert 'Yes' in r.get_data(as_text=True), 'the voting buttons did not render'
+    assert _counts()['total'] == 0, 'opening the path link cast a vote'
 
 
 if __name__ == '__main__':

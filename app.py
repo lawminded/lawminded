@@ -277,14 +277,18 @@ _poll_serializer = URLSafeSerializer(app.secret_key, salt='lm-poll')
 def poll_url(slug, email):
     """Absolute, signed link to a poll, personal to one subscriber. Same shape
     and the same request-context care as unsubscribe_url above, because the
-    caller is the same background broadcast."""
+    caller is the same background broadcast.
+
+    The token sits in the path rather than a query string. A long opaque
+    ?token=... is what click-tracking links look like, and mail filters read it
+    that way; the same string as a path segment reads as an ordinary page."""
     token = _poll_serializer.dumps([slug, email])
     if has_request_context():
-        path = url_for('poll', slug=slug)
+        path = url_for('poll_link', slug=slug, token=token)
     else:
         with app.test_request_context():
-            path = url_for('poll', slug=slug)
-    return f'{SITE_URL}{path}?token={token}'
+            path = url_for('poll_link', slug=slug, token=token)
+    return f'{SITE_URL}{path}'
 
 
 def poll_is_open(poll):
@@ -1741,10 +1745,19 @@ def unsubscribe():
                            removed=removed, confirm=False, valid=bool(email))
 
 
+@app.route('/poll/<slug>/<token>')
+@limiter.limit('30 per minute')
+def poll_link(slug, token):
+    """The form of the link that goes in an email: token in the path, nothing
+    that looks like tracking. Renders the same page; voting still POSTs to
+    /poll/<slug> with the token in the body."""
+    return poll(slug, token_from_path=token)
+
+
 @app.route('/poll/<slug>', methods=['GET', 'POST'])
 @csrf.exempt
 @limiter.limit('30 per minute')
-def poll(slug):
+def poll(slug, token_from_path=None):
     """A one-question poll, opened from a signed link in a subscriber email.
 
     GET only shows the question and the buttons. Recording a vote is a POST, for
@@ -1763,7 +1776,7 @@ def poll(slug):
     if not cfg:
         abort(404)
 
-    token = request.values.get('token', '')
+    token = token_from_path or request.values.get('token', '')
     try:
         signed_slug, email = _poll_serializer.loads(token)
         if signed_slug != slug:
