@@ -1591,11 +1591,19 @@ def seed_articles():
     except Exception:
         pass
 
-    # RTI vs PIL comparison, 4 Sep 2026. Written for the site's biggest query
-    # cluster, which had no page of its own.
+    # News-driven weekly post, 4 Sep 2026: Supreme Court's SARFAESI ruling in
+    # Kotak Mahindra Bank v Trupti Sanjay Mehta (into blog_seed19.py).
     try:
         from blog_seed19 import BLOG_ARTICLES_19
         articles = articles + list(BLOG_ARTICLES_19)
+    except Exception:
+        pass
+
+    # RTI vs PIL comparison, 4 Sep 2026. Written for the site's biggest query
+    # cluster, which had no page of its own.
+    try:
+        from blog_seed20 import BLOG_ARTICLES_20
+        articles = articles + list(BLOG_ARTICLES_20)
     except Exception:
         pass
 

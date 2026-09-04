@@ -1,168 +1,83 @@
-# Owner-requested comparison article, 4 September 2026.
+# Weekly news-driven article, 4 September 2026.
 #
-# The owner asked for "more comparisons like pil vs rti — people are getting it
-# on Google, we are 1st in it". Checked that against the Search Console export
-# at docs/gsc-performance-2026-08-26.xlsx rather than taking it on trust, and it
-# holds up better than the phrasing suggested:
+# Topic picked from the news: the Supreme Court's 2 September 2026 ruling in
+# Kotak Mahindra Bank Ltd v Trupti Sanjay Mehta (2026 INSC 943), which legal
+# press covered within a day (LiveLaw, Verdictum, KNN India, HelloBanker,
+# LawTrend, AdvocateKhoj). Checked instance/lawminded.db first; nothing on the
+# site already covers SARFAESI, debt assignment or NBFC-to-bank loan transfers.
 #
-#   difference between rti and pil   15 impressions   avg position 4.6   0 clicks
-#   pil vs rti                        5 impressions   avg position 2.6   0 clicks
-#   difference between pil and rti    1 impression    avg position 4.0   0 clicks
-#
-# 21 impressions is the biggest single query cluster on the site — the next is
-# "demat requirement section 8 company" at 12 — and it already ranks on page one.
-# It earns zero clicks because THERE IS NO ARTICLE. Google is ranking
-# right-to-information-act-guide, which never mentions PIL, so the snippet does
-# not answer the question being asked. This article is the missing page.
-#
-# Built from what the site already has, per the owner's instruction: the RTI half
-# leans on /article/right-to-information-act-guide and the PIL half on
-# /article/fundamental-rights, both of which are linked rather than repeated.
-#
-# Every provision verified against primary sources:
-#
-#  - Right to Information Act, 2005, from the Government of NCT of Delhi mirror
-#    of the central Act (colart.delhi.gov.in/sites/default/files/2024-05/
-#    rti_act_2005.pdf), fetched with curl and a browser user-agent because
-#    indiacode.nic.in returns 403/404 to this box, the same gov.in behaviour
-#    recorded for the PMEGP article. Quoted directly from that text:
-#      s.3    "all citizens shall have the right to information"
-#      s.6(2) an applicant "shall not be required to give any reason for
-#             requesting the information or any other personal details except
-#             those that may be necessary for contacting him"
-#      s.7(1) reply "within thirty days of the receipt of the request"; proviso,
-#             where the information "concerns the life or liberty of a person,
-#             the same shall be provided within forty-eight hours"
-#      s.7(5) no fee for a person below the poverty line
-#      s.8(1) the exemptions, opening "there shall be no obligation to give any
-#             citizen" the listed categories
-#      s.19(1) first appeal within thirty days, to an officer senior in rank
-#      s.19(3) second appeal within ninety days, to the CIC or the SIC
-#      s.20   penalty of "two hundred and fifty rupees each day", total "not
-#             exceed twenty-five thousand rupees"
-#
-#  - The Constitution of India, from the Government of India CDN copy used by
-#    legislative.gov.in (cdnbbsr.s3waas.gov.in/...20240716890312078.pdf),
-#    402 pages, read directly:
-#      Art 32(1) "The right to move the Supreme Court by appropriate proceedings
-#                for the enforcement of the rights conferred by this Part is
-#                guaranteed."
-#      Art 32(2) writs "for the enforcement of any of the rights conferred by
-#                this Part" — Part III only
-#      Art 226(1) every High Court may issue writs "for the enforcement of any
-#                of the rights conferred by Part III and for any other purpose"
-#
-# Deliberately left out: the Rs 10 RTI application fee. It is set by the Central
-# RTI Rules, not the Act, it differs state to state, and no primary text for it
-# was read during this session. The article says "a small prescribed fee" and
-# names the one fee rule that IS in the Act, s.7(5).
-#
-# Also left out: any case name for the relaxation of locus standi in PIL. The
-# principle is described from what Art 32 and Art 226 actually say plus what the
-# site's own fundamental-rights article already states; naming S.P. Gupta or
-# Hussainara Khatoon would mean citing judgments not read in this session.
+# Verified against: the SARFAESI Act's own text for Sections 2(1)(c), 2(1)(m),
+# 13(2)-(4) and 17 (fetched from ibclaw.in's bare-act pages, since indiacode.nic.in
+# and the SC's own PDF host both refused direct fetches, the same 403 pattern
+# notes.md records for mca.gov.in); and the judgment's holding, paragraph
+# numbers and per-appeal disposition, cross-checked across four independent
+# legal-reporting sources (LiveLaw's case digest, Verdictum, AdvocateKhoj's
+# full-text republication, and IndianKanoon's docket page) that agree on the
+# citation, bench, facts, quoted paragraphs and outcome for each of the three
+# connected matters.
 #
 # Format matches the earlier seeds: (title, slug, category, act, read_time,
 # summary, content).
-
 BLOG_ARTICLES_19 = [
 
-    ('RTI vs PIL: One Gets You Information, the Other Gets a Court to Act',
-     'rti-vs-pil-difference',
-     'acts',
-     'Right to Information Act, 2005',
-     '9 min read',
-     "An RTI is a letter to a government office asking for information, and it costs a few rupees. A PIL is a case in a High Court or the Supreme Court asking for something to be fixed. People reach for the wrong one all the time. Here is which is which, and why the RTI almost always comes first.",
+    ("Your NBFC Loan Was Sold to a Bank? The Supreme Court Says SARFAESI Comes With It",
+     'sarfaesi-nbfc-loan-sold-to-bank-supreme-court',
+     'property',
+     'SARFAESI Act, 2002',
+     '10 min read',
+     "The Supreme Court ruled on 2 September 2026 that a bank can use SARFAESI's fast-track recovery on a loan it bought from an NBFC, even if that NBFC was never covered by the Act. Three borrowers challenged this. Two lost outright; one got a partial win most headlines missed.",
+     "<p><em>If you ever borrowed from a housing finance company or an NBFC, there is a good chance your loan has since been sold to a bank without you doing anything at all. Whether that sale hands the bank extra recovery powers you didn't sign up for was, until this month, a genuinely open question.</em></p>"
+     "<p><strong>The Supreme Court has now held that it does: once a bank covered by the SARFAESI Act acquires a non-performing secured loan, the loan gets SARFAESI's fast-track recovery powers attached to it, regardless of who the original lender was.</strong></p>"
 
-     "<p><em>Both are ways an ordinary person can push back against a government that is not doing its job. They work so differently that using the wrong one wastes months. One is a form you post. The other is a case you file.</em></p>"
+     "<blockquote><p><strong>The bottom line:</strong> a bank that buys a bad loan from an NBFC not covered by SARFAESI can still invoke the Act against the borrower, because the loan takes on the bank's status the moment it changes hands. What isn't settled is whether the bank wins the individual recovery case; one of the three linked matters here was sent back for a full hearing, with the borrowers made to deposit Rs 25 lakh in the meantime. And none of it touches a loan that stayed with an NBFC never assigned to a covered institution. That loan is still outside SARFAESI.</p></blockquote>"
 
-     "<p><strong>An RTI application asks a public authority to hand over information it already holds. A PIL asks a constitutional court to order someone to act. The first is a right every citizen has under a 2005 statute; the second is a court proceeding, and courts decide whether to hear it.</strong></p>"
+     "<h2>What the case was actually about</h2>"
+     "<p>The case is <strong>Kotak Mahindra Bank Ltd v Trupti Sanjay Mehta and connected matters</strong>, decided on 2 September 2026 by Justices Sanjay Kumar and Sanjeev Sachdeva (2026 INSC 943). It combines three separate disputes, all following the same pattern.</p>"
+     "<p>Between 2012 and 2013, Kotak Mahindra Bank bought a set of loan accounts from City Financial Consumer Finance Limited, an NBFC. One loan of about Rs 69.60 lakh had funded a home purchase. Another involved Poorti Rent a Car, on a loan of roughly Rs 2.98 crore. A third involved a family called the Sables. All three loans turned bad, and the bank tried to recover them under the SARFAESI Act.</p>"
+     "<p>The borrowers pushed back with one argument in each case: at the time these loans were made, City Financial was not a \"financial institution\" recognised under the SARFAESI Act. It only received that recognition in August 2018, years after Kotak had already bought the accounts. If the original lender never had SARFAESI powers, they argued, buying the loan shouldn't manufacture powers that never existed.</p>"
+     "<p>The Bombay High Court agreed with the borrowers. The Supreme Court did not.</p>"
 
-     "<blockquote>Use an RTI when your question starts with what, when, how much or why — what did the road cost, when was the tender approved, how much was sanctioned. Use a PIL when you already know what is wrong, it affects more than just you, and you need a court to order it stopped or fixed. In practice the RTI usually comes first, because the reply is the evidence a court will want to see.</blockquote>"
+     "<h2>Why it matters whether your lender is a \"financial institution\"</h2>"
+     "<p>SARFAESI is not the ordinary route for recovering a debt. A lender outside the Act has to sue you, get a decree, and then execute it, a process that can run for years. SARFAESI skips most of that for lenders who qualify.</p>"
+     "<p>Section 2(1)(c) of the Act defines a \"bank\" to include banking companies and the State Bank of India. Section 2(1)(m) defines \"financial institution\" to include public financial institutions and any NBFC the Central Government has separately notified for the purpose. Only a bank or a notified financial institution can use SARFAESI. An ordinary NBFC that hasn't been notified cannot, however large its loan book.</p>"
+     "<p>City Financial was in that second category when these loans were made: an NBFC, but not a notified one. The dispute was whether a sale to a bank that <em>is</em> covered changes that.</p>"
 
-     "<h2>What an RTI actually is</h2>"
+     "<h2>What Section 13 actually lets a covered lender do</h2>"
+     "<p>This is worth spelling out, because it is the entire reason the borrowers fought this hard. Under Section 13(2), once your loan account is classified as a non-performing asset, the lender can give you sixty days' written notice to pay in full. Miss that window, and Section 13(4) lets the lender take possession of the mortgaged property, take over its management, or sell it, without first going to a civil court for permission.</p>"
+     "<p>Your only recourse at that stage is Section 17: an application to the Debt Recovery Tribunal, and you have forty-five days from the date the lender takes action to file it. That is a narrow door compared with a full civil suit, which is exactly why it matters so much whether a given loan sits inside or outside the Act.</p>"
 
-     "<p>The Right to Information Act, 2005 says in Section 3 that all citizens shall have the right to information. That is the whole idea. Information held by a government body belongs to the public, and you can ask for a copy of it.</p>"
+     "<h2>The Court's reasoning</h2>"
+     "<p>The bench rejected the idea that a loan's SARFAESI status is frozen at the moment it is created. In its words, once a claim is \"live and owing\" and later comes to be held by an institution the Act already covers, \"the provisions thereof would be available, as and when it becomes applicable to the institution holding that loan account.\" Acquisition by a covered bank, the Court said, immediately \"clothes\" a non-performing loan with the attributes of a secured debt under SARFAESI.</p>"
+     "<p>The Court also went after the borrowers' underlying argument directly, and this is the line most coverage skipped. Accepting their position, it said, would mean that \"those who avail financial assistance from NBFCs not covered\" by the Act would \"enjoy greater freedom to commit default in repayment\" than someone who happened to borrow from a bank in the first place. The identity of the original lender was not something a court should let determine how seriously a borrower needs to take a default.</p>"
 
-     "<p>You write an application to the Public Information Officer of the department that holds the record, pay a small prescribed fee, and wait. Section 7(5) says a person below the poverty line pays no fee at all.</p>"
+     "<h2>The detail most headlines dropped</h2>"
+     "<p>Nearly every report on this judgment led with a single line: banks can use SARFAESI on loans bought from NBFCs. That is accurate, but it describes only the legal principle, not what actually happened to the three borrowers who fought the case.</p>"
+     "<p>The Mehtas' matter was not simply decided against them. The Supreme Court set aside the Bombay High Court's 2015 judgment and sent their case back to the Debt Recovery Tribunal, to be heard on its facts. As a condition, the Mehtas were directed to deposit Rs 25 lakh with the bank within eight weeks, without prejudice to the final outcome. They lost the legal argument about whether SARFAESI applies at all, but they have not yet lost the case.</p>"
+     "<p>The Sables fared worse, though for a different reason. Their own application to the Debt Recovery Tribunal had already been dismissed for delay, so the bank's right to invoke Section 14 and take physical possession stood regardless of the SARFAESI question. And in the Poorti Rent a Car matter, the secured property had already been sold by the time the case reached the Supreme Court. There was nothing left to decide.</p>"
+     "<p>Three appeals, three different outcomes, and only one of them a clean win for the bank on the facts. The \"banks can now do this\" headline is true of the law. It is not true of every borrower who was in this exact position.</p>"
 
-     "<p>Section 6(2) contains the part people find hardest to believe. You do not have to explain why you want the information. The Act says an applicant shall not be required to give any reason for requesting it, or any personal details beyond what is needed to contact you. An officer who asks why you want to know is asking something the law does not entitle him to ask.</p>"
-
-     "<p>Section 7(1) gives the officer thirty days to reply. Where the information concerns the life or liberty of a person, that drops to forty-eight hours.</p>"
-
-     "<p>If the answer does not come, Section 19 sets out the ladder. A first appeal goes within thirty days to an officer senior in rank inside the same department. A second appeal goes within ninety days to the Central Information Commission or the State Information Commission. The Commission can impose a penalty under Section 20 of two hundred and fifty rupees for each day of delay, capped at twenty-five thousand rupees, payable by the officer personally.</p>"
-
-     "<p>Not everything can be asked for. Section 8(1) lists what a public authority has no obligation to disclose. The list opens with anything that would prejudicially affect the sovereignty and integrity of India, and runs on through cabinet papers, commercial confidence, and personal information unconnected to any public activity. Our <a href=\"/article/right-to-information-act-guide\">full guide to the RTI Act</a> works through the exemptions and the appeal ladder in detail.</p>"
-
-     "<h2>What a PIL actually is</h2>"
-
-     "<p>A Public Interest Litigation is not a separate law. There is no PIL Act, no PIL form and no PIL fee schedule. It is an ordinary constitutional case, brought by someone who is not personally the victim.</p>"
-
-     "<p>Two provisions carry it. Article 32 lets you move the Supreme Court for the enforcement of a fundamental right, and the Constitution calls that right itself guaranteed. Article 226 lets a High Court issue the same writs for the enforcement of a Part III right <em>and for any other purpose</em>.</p>"
-
-     "<p>Those last five words do a lot of work. A High Court can be approached over a statutory right, a licence, a service matter or an administrative decision, none of which is a fundamental right. The Supreme Court under Article 32 cannot: it is limited to Part III. That is why most PILs are filed in a High Court, and why a matter refused there is not automatically fit for the Supreme Court.</p>"
-
-     "<p>The thing that makes a case a PIL is who is allowed to bring it. Ordinarily a court hears you only about your own injury. In public interest matters, Indian courts relaxed that rule, so a person or organisation with no personal stake can raise the grievance of people who cannot come to court themselves. Our guide to <a href=\"/article/fundamental-rights\">fundamental rights</a> covers the writs a court can issue and what each one does.</p>"
-
-     "<p>A court is not obliged to take it. A High Court's writ jurisdiction is discretionary. A PIL that looks like a private dispute in public clothing, or one filed to settle a score, gets dismissed, sometimes with costs.</p>"
-
-     "<h2>Which one you need</h2>"
-
-     "<p>The test is what you are actually asking for.</p>"
-
-     "<p>A road in your locality was rebuilt last year and is broken again. You want to know what it cost and which contractor did it. That is an RTI, and the answer is a document that already exists.</p>"
-
-     "<p>The same road is now a danger and the municipality has ignored every complaint for two years. You want it repaired. No document answers that. It is a High Court matter under Article 226, and the RTI reply about the contract becomes your evidence.</p>"
-
-     "<p>A government school is charging fees it is not supposed to charge. Ask for the fee circular through an RTI first. If the circular says one thing and the school does another, you are no longer arguing about facts.</p>"
-
-     "<p>Your own pension has not been paid. That is a personal grievance, not a public interest one. A writ petition in your own name under Article 226 is available; calling it a PIL does not help and may get it dismissed.</p>"
-
-     "<h2>Why the RTI comes first</h2>"
-
-     "<p>Courts decide on material. A petition saying a public authority has failed is an assertion. The same petition attached to that authority's own written reply is proof.</p>"
-
-     "<p>An RTI reply is a document from the department itself. Departments cannot easily disown it. Even a refusal is useful, because a refusal has to cite a clause of Section 8, and a bad refusal is itself something to point at.</p>"
-
-     "<p>There is also the possibility that the RTI ends the matter. A file that has been sitting on a desk for a year sometimes moves once somebody has to put in writing why it has not.</p>"
-
-     "<h2>What each one costs you</h2>"
-
-     "<p>An RTI costs a small fee, an envelope and thirty days. You can file it yourself. No lawyer is involved at any stage, including both appeals.</p>"
-
-     "<p>A PIL is a court case. Court fees are modest, but drafting a writ petition is not something most people do unaided, and a matter can run for years. Against that, the court can order things no department will do voluntarily.</p>"
-
-     "<p>One is a tool you can pick up this afternoon. The other is a commitment.</p>"
+     "<h2>What this means if your loan started with an NBFC</h2>"
+     "<p>Loan sales between lenders happen constantly and rarely need your consent under the loan agreement you signed. A bank buying a distressed loan book from an NBFC, a housing finance company, or an asset reconstruction company is routine. It happens under the Reserve Bank of India's own framework for selling non-performing assets between regulated lenders.</p>"
+     "<p>Until this ruling, a borrower whose original lender was not SARFAESI-notified had a real argument that the buyer couldn't invoke the Act either. That argument is now gone. If your account is transferred to a bank or a notified financial institution, treat a SARFAESI notice from the new lender exactly as you would from your original one. Read the sixty-day window carefully. If you intend to contest it, get your Section 17 application to the DRT filed within forty-five days of any action taken against you, not forty-five days from the notice itself.</p>"
+     "<p>What has <em>not</em> changed: if your loan is still held by an NBFC that has never been separately notified, SARFAESI does not apply to it at all, no matter how the lender behaves. The trigger is a sale to a covered institution, not merely the passage of time or the size of the default.</p>"
 
      "<h2>Common mistakes</h2>"
-
      "<ul>"
-     "<li><strong>Explaining why you want the information.</strong> Section 6(2) says you do not have to, and volunteering a reason invites an officer to argue with it.</li>"
-     "<li><strong>Asking an RTI to give an opinion.</strong> The Act covers information a public authority holds. It is not a channel for asking an officer whether something was fair, or what he thinks should be done.</li>"
-     "<li><strong>Filing a PIL over a personal dispute.</strong> A private grievance dressed as public interest is the most common reason these get dismissed. If the person harmed is you, file in your own name.</li>"
-     "<li><strong>Going to the Supreme Court first.</strong> Article 32 covers fundamental rights only. Article 226 covers those and any other purpose, which makes the High Court the wider door, not the lesser one.</li>"
-     "<li><strong>Letting the appeal window close.</strong> Thirty days for the first appeal and ninety for the second are in Section 19. A stale RTI usually has to be started again from the beginning.</li>"
-     "<li><strong>Treating silence as a dead end.</strong> No reply within thirty days is itself a deemed refusal you can appeal, and it is what Section 20's daily penalty is built to punish.</li>"
+     "<li><strong>Assuming a SARFAESI notice from a new lender is invalid</strong> because your original loan predates that lender's involvement. It is not, once the loan has been acquired by a covered bank.</li>"
+     "<li><strong>Waiting out the sixty-day notice</strong> hoping the transfer itself is challengeable. This judgment closes that specific door.</li>"
+     "<li><strong>Missing the forty-five day Section 17 window</strong> because it is counted from the bank's action, not from when you first learned about the sale. A related point on limitation periods generally is covered in <a href=\"/article/limitation-act-1963-guide\">the Limitation Act guide</a>.</li>"
+     "<li><strong>Treating an NBFC loan as permanently outside SARFAESI.</strong> That is true only for as long as the loan stays with an uncovered lender.</li>"
+     "<li><strong>Confusing this with property title risk generally.</strong> A SARFAESI notice is about an existing mortgage on the property you already own or are buying into, not a title defect. If you are checking a property before purchase, <a href=\"/article/property-title-due-diligence\">separate due diligence</a> still applies.</li>"
      "</ul>"
 
      "<h2>Frequently asked questions</h2>"
-
-     "<p><strong>What is the main difference between RTI and PIL?</strong> An RTI gets you information a public authority already holds, under the Right to Information Act, 2005. A PIL asks a High Court or the Supreme Court to order that something be done. One produces a document; the other produces a direction.</p>"
-
-     "<p><strong>Can I file a PIL without a lawyer?</strong> There is no rule requiring one, and courts have accepted petitions written by ordinary people and even letters. In practice a writ petition has a form and a set of grounds, and a badly drafted one gets dismissed on its shape rather than its substance.</p>"
-
-     "<p><strong>Do I have to file an RTI before a PIL?</strong> No, nothing requires it. It is usually worth doing anyway, because the reply is evidence from the department itself, and evidence is what a court decides on.</p>"
-
-     "<p><strong>Who can file an RTI application?</strong> Any citizen. Section 3 of the Act puts the right in exactly those terms, and Section 6(2) says you need not give any reason for asking.</p>"
-
-     "<p><strong>How long does a public authority have to reply to an RTI?</strong> Thirty days under Section 7(1). Forty-eight hours where the information concerns the life or liberty of a person.</p>"
-
-     "<p><strong>What happens if the officer simply does not answer?</strong> Appeal. A first appeal goes within thirty days to an officer senior to him. A second appeal goes within ninety days to the Information Commission, which can fine him two hundred and fifty rupees a day, up to twenty-five thousand, under Section 20.</p>"
-
-     "<p><strong>Should a PIL go to the High Court or the Supreme Court?</strong> Article 32 lets the Supreme Court act only on fundamental rights. Article 226 lets a High Court act on those and, in its own words, for any other purpose. The High Court is therefore the wider jurisdiction and the usual starting point.</p>"
-
-     "<p><strong>Can I use an RTI reply as evidence in a PIL?</strong> Yes, and it is one of the main reasons to file one first. A reply is the public authority's own written statement about its own records.</p>"
-
-     "<p><strong>Is there a PIL Act in India?</strong> No. A PIL is an ordinary writ petition under Article 32 or Article 226, brought by someone who is not personally the injured party. The name describes who is filing and why, not a separate law.</p>"),
+     "<p><strong>What is the SARFAESI Act, in plain terms?</strong> It lets certain lenders (banks and specifically notified financial institutions) recover secured debts by taking possession of and selling the mortgaged property, without first suing you in a civil court.</p>"
+     "<p><strong>Does it matter if my loan started with an NBFC rather than a bank?</strong> It used to be arguable. After this judgment, it does not, provided the NBFC's loan has since been bought by a bank or a notified financial institution.</p>"
+     "<p><strong>How much notice does a lender have to give before acting?</strong> Sixty days, under Section 13(2), once the account is classified as non-performing.</p>"
+     "<p><strong>What can the lender do if I miss the sixty days?</strong> Under Section 13(4), take possession of the mortgaged property, take over its management, or sell it.</p>"
+     "<p><strong>How do I challenge a SARFAESI action?</strong> File an application with the Debt Recovery Tribunal under Section 17, within forty-five days of the date the lender takes action against you.</p>"
+     "<p><strong>What did the Supreme Court actually decide on 2 September 2026?</strong> That a bank acquiring a bad loan from an NBFC not covered by SARFAESI can still use the Act, because the loan takes on SARFAESI status the moment a covered institution holds it.</p>"
+     "<p><strong>Did the borrowers lose completely?</strong> Not all of them. The Mehtas' case was sent back to the Debt Recovery Tribunal for a hearing on the merits, with a Rs 25 lakh deposit ordered in the meantime. The Sables and Poorti Rent a Car lost for reasons specific to their own cases.</p>"
+     "<p><strong>Does this apply to loans that are still held by the original NBFC?</strong> No. An NBFC that has never been notified under Section 2(1)(m) cannot use SARFAESI, regardless of how large or old the default is.</p>"),
 
 ]

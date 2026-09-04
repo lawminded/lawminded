@@ -18,6 +18,38 @@ The history of what was asked for is worth keeping.
 
 ## Pending
 
+- [ ] 2026-09-05 | PAS-3 vs PAS-4: the difference, and why they are not
+      alternatives
+      *Owner asked for this on 2026-09-04, off the Search Console data. "pas 3 vs
+      pas 4" sits at 6 impressions and average position 2.8 in
+      docs/gsc-performance-2026-08-26.xlsx with no page of its own — the second
+      best comparison gap after RTI vs PIL. The material is already in
+      private-placement-section-42 (PAS-3 x9, PAS-4 x8); link it, do not repeat
+      it. The angle worth leading on: they are not two options to choose
+      between, they are two steps of one private placement — PAS-4 is the offer
+      letter that goes out before, PAS-3 is the return of allotment filed after.
+      Verify Section 42 and Rule 14 of the Companies (Prospectus and Allotment of
+      Securities) Rules 2014 against the bare Act and the rules themselves,
+      including the filing deadline for PAS-3, before writing a single figure.*
+
+- [ ] 2026-09-06 | Writ petition under Article 32 vs Article 226: which court,
+      and what each can do
+      *Owner asked for this on 2026-09-04. Distinct from the RTI vs PIL article
+      staged the same day, which covers the 32/226 split only far enough to say
+      why a PIL usually goes to a High Court. This one is the full treatment:
+      the five writs, what "and for any other purpose" in Article 226 actually
+      lets a High Court reach, why Article 32 is itself a fundamental right while
+      226 is a power of the court, alternate remedy, territorial jurisdiction,
+      and the discretion a High Court has to refuse.
+      LINK, DO NOT REPEAT: rti-vs-pil-difference and fundamental-rights both
+      already exist and both touch this. Check both before drafting so the three
+      pages divide the subject instead of competing for it.
+      Verify against the Constitution itself. The GoI CDN copy read on
+      2026-09-04 works and indiacode does not:
+      https://cdnbbsr.s3waas.gov.in/s380537a945c7aaa788ccfcdf1b99b5d8f/uploads/2024/07/20240716890312078.pdf
+      Note: the Read tool cannot open PDFs on the Mac (no poppler); pypdf is now
+      installed for the system python and does the job.*
+
 ## Written
 
 - [x] 2026-08-31 | CCFS-2026 extension beyond 31 August 2026

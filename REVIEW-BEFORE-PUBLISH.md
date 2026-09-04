@@ -1043,3 +1043,80 @@ Worth doing next. Separately, `lease-vs-leave-and-licence` ranks at positions
 72-88 for "rent agreement" and "rental agreement" phrasings it never uses; that
 is a vocabulary fix to a live article, which needs a content migration rather
 than a new page.
+## blog_seed19.py — SARFAESI on loans sold by an NBFC to a bank, weekly news post, 4 September 2026
+
+Housekeeping first: queried the live DB for both branches sitting from the
+previous run. `ccfs-2026-extended-15-september-2026` had `published=1` — already
+an ancestor of `main` from an earlier session, so only the branch itself needed
+deleting (local and remote, remote already gone). `what-is-sebi-plain-english-guide`
+is still `published=0`, one draft pending, under the two-draft stop limit.
+
+`automation/queue.md` had nothing pending or due, so this ran the news search
+rather than the queue.
+
+Topic: the Supreme Court's 2 September 2026 ruling in **Kotak Mahindra Bank Ltd
+v Trupti Sanjay Mehta** (2026 INSC 943), covered within a day by LiveLaw,
+Verdictum, KNN India, HelloBanker, LawTrend and AdvocateKhoj. Checked
+`instance/lawminded.db` first — nothing on the site covers SARFAESI, debt
+assignment, or NBFC-to-bank loan transfers.
+
+| Claim | Verified against |
+|---|---|
+| Citation 2026 INSC 943, bench Sanjay Kumar J. and Sanjeev Sachdeva J., decided 2 Sep 2026 | LiveLaw case digest, Verdictum, AdvocateKhoj, IndianKanoon docket — all four agree |
+| CFCFL notified as a "financial institution" under s.2(1)(m) only on 27.08.2018 | Verdictum, AdvocateKhoj |
+| Mehtas' loan ≈ Rs 69.60 lakh, KMBL acquired the account 13.07.2012 | IndianKanoon, AdvocateKhoj |
+| Poorti Rent a Car loan ≈ Rs 2.98 crore, KMBL acquired 18.07.2012 | IndianKanoon |
+| Sables: KMBL acquired 09.04.2013, demand notice 13.11.2013, SLP(C) 33113/2018 dismissed | IndianKanoon |
+| Bombay HC judgment set aside dated 16.07.2015 | AdvocateKhoj |
+| Holding, quoted: "the provisions thereof would be available, as and when it becomes applicable to the institution holding that loan account" (Para 36) | LiveLaw, IndianKanoon, AdvocateKhoj — same paragraph number, same quote, across all three |
+| Holding, quoted: "those who avail financial assistance from NBFCs not covered... enjoy greater freedom to commit default" (Para 32) | IndianKanoon, AdvocateKhoj |
+| Disposition: Mehtas' appeal allowed, case restored to DRT, Rs 25 lakh deposit ordered within 8 weeks; Sables' and Poorti's SLPs dismissed, on grounds specific to each | AdvocateKhoj (full-text republication with operative order), cross-checked against Verdictum |
+| SARFAESI s.2(1)(c) "bank", s.2(1)(m) "financial institution" — exact statutory text | ibclaw.in bare-act pages |
+| SARFAESI s.13(2): 60-day notice after NPA classification | ibclaw.in, corroborated by Bajaj Finserv's plain-English explainer |
+| SARFAESI s.13(4): possession, management takeover, or sale without a civil suit | ibclaw.in |
+| SARFAESI s.17: 45 days from the s.13(4) measure to apply to the DRT | ibclaw.in |
+
+**Could not reach:** the Supreme Court's own judgment PDF. `indiacode.nic.in`
+returned 403 on direct fetch (same pattern notes.md records for `mca.gov.in`),
+and the `api.sci.gov.in` PDF host also 403'd; the exact diary-number path needed
+to construct the direct URL wasn't recoverable from search. Treated AdvocateKhoj
+(which republishes full judgment text with paragraph numbers, not just a
+digest) as the closest available primary source, cross-verified against three
+independent legal-reporting outlets that agree on every fact, quote and
+disposition above. Left out: the exact RBI circular number/date for the
+NPA-sale framework mentioned in the judgment (KMBL v Trupti Sanjay Mehta names
+RBI as a respondent over its 2005 NPA-sale guidelines) — could confirm the
+guidelines exist and their general shape, not the precise circular reference,
+so the article states the RBI framework's existence without citing a specific
+circular number.
+
+**The gap between the coverage and the document:** nearly every report led with
+"banks can use SARFAESI on loans bought from NBFCs" as a flat, one-line result.
+The document shows three separate appeals with three different outcomes — the
+Mehtas' case was sent back to the DRT for a merits hearing, not simply decided
+against them, with a Rs 25 lakh interim deposit condition. The article gives
+this its own section ("The detail most headlines dropped").
+
+**Humanizer pass:** first draft had the blockquote as three bolded labels
+("What it settles:", "What it does not settle:", "What it does not touch:"),
+which is exactly the vertical bolded-header shape the skill flags. Rewritten as
+prose with one bold lead-in. Also removed four spaced em dashes used as clause
+punctuation (unspaced or comma/parenthesis substituted throughout) and one
+trailing "-ing" clause ("leaving nothing left to decide" → two plain sentences).
+Sentence-length check: 1,746 words, 98 sentences, average 17.8 words. The two
+sentences over 40 words are both verbatim court quotes (Paras 32 and 36),
+consistent with the "unless it's a verbatim quote" exception.
+
+**Wiring:** `blog_seed19.py` created (19 was the next free number; the site has
+moved well past `blog_seed7.py`, so this run followed the actual sequence in
+`database.py` rather than the literal filename in weekly-post.md). Category
+`property` — the case turns on recovery of a mortgaged flat, and `corp` is
+already over-represented. `SEO_TITLES`, `SEO_DESCRIPTIONS` (144 chars) and four
+`INTERNAL_LINKS` phrases (`sarfaesi`, `sarfaesi act`, `debt recovery tribunal`,
+`secured creditor`) added; none of those phrases existed elsewhere in the map,
+so no ranking conflict to resolve. `test_seo.py` and `test_draft.py` both pass.
+
+**Hero image:** Gemini returned HTTP 429 (prepayment credits depleted on the
+project this run's `GEMINI_API_KEY` points at), so `gen_image.py` fell back to
+a licensed Pexels photograph automatically. Image generated and copied to the
+web server.
