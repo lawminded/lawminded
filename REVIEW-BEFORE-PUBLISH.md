@@ -942,3 +942,104 @@ Verified live after deploy: title and description as written, FAQPage schema
 carrying all eight questions, Article/BreadcrumbList/Person/ImageObject present,
 hero image serving, sitemap `lastmod` 2026-09-01, and the guide no longer saying
 31 August anywhere.
+
+---
+
+## RTI vs PIL: One Gets You Information, the Other Gets a Court to Act
+`rti-vs-pil-difference` · category `acts` · staged 4 September 2026
+
+Owner asked for "more comparisons like pil vs rti — people are getting it on
+Google, we are 1st in it", built from content the site already has.
+
+**The premise checked out, and was stronger than stated.** From
+`docs/gsc-performance-2026-08-26.xlsx`:
+
+| Query | Impressions | Avg position | Clicks |
+|---|---|---|---|
+| difference between rti and pil | 15 | 4.6 | 0 |
+| pil vs rti | 5 | 2.6 | 0 |
+| difference between pil and rti | 1 | 4.0 | 0 |
+
+21 impressions is the biggest single query cluster on the site — the next is
+"demat requirement section 8 company" at 12 — and it already ranks on page one.
+It earns **zero clicks because there was no article**. Google was ranking
+`right-to-information-act-guide`, which never mentions PIL, so the snippet did
+not answer the question. This is the missing page, not a new topic.
+
+Built on the two guides the site already had, both linked rather than repeated:
+`right-to-information-act-guide` (RTI, 9 mentions) and `fundamental-rights`
+(the only article that mentioned PIL at all, once).
+
+| Claim in the article | Source | Status |
+|---|---|---|
+| s.3 — "all citizens shall have the right to information" | RTI Act 2005 | Confirmed |
+| s.6(2) — applicant "shall not be required to give any reason for requesting the information or any other personal details except those that may be necessary for contacting him" | RTI Act 2005 | Confirmed |
+| s.7(1) — reply "within thirty days of the receipt of the request" | RTI Act 2005 | Confirmed |
+| s.7(1) proviso — where it "concerns the life or liberty of a person, the same shall be provided within forty-eight hours" | RTI Act 2005 | Confirmed |
+| s.7(5) — no fee for a person below the poverty line | RTI Act 2005 | Confirmed |
+| s.8(1) — "there shall be no obligation to give any citizen" the listed categories, opening with sovereignty and integrity of India | RTI Act 2005 | Confirmed |
+| s.19(1) — first appeal within thirty days to an officer senior in rank | RTI Act 2005 | Confirmed |
+| s.19(3) — second appeal within ninety days to the CIC or SIC | RTI Act 2005 | Confirmed |
+| s.20 — "two hundred and fifty rupees each day", total "not exceed twenty-five thousand rupees" | RTI Act 2005 | Confirmed |
+| Art 32(1) — "The right to move the Supreme Court by appropriate proceedings for the enforcement of the rights conferred by this Part is guaranteed" | Constitution of India | Confirmed |
+| Art 32(2) — writs "for the enforcement of any of the rights conferred by this Part", i.e. Part III only | Constitution of India | Confirmed |
+| Art 226(1) — every High Court may issue writs "for the enforcement of any of the rights conferred by Part III **and for any other purpose**" | Constitution of India | Confirmed |
+
+Sources actually read, not cited from memory:
+
+* **RTI Act, 2005** — the Government of NCT of Delhi mirror of the central Act,
+  `colart.delhi.gov.in/sites/default/files/2024-05/rti_act_2005.pdf`, 49 pages.
+  `indiacode.nic.in` returned 403 to WebFetch and 404 to curl, the same gov.in
+  behaviour recorded for the PMEGP article; the state mirror was fetched with a
+  browser user-agent and read in full.
+* **Constitution of India** — the Government of India CDN copy behind
+  legislative.gov.in, `cdnbbsr.s3waas.gov.in/...20240716890312078.pdf`,
+  402 pages. Note for next time: neither PDF could be read until `pypdf` was
+  installed for the system python; the Read tool needs poppler, which this Mac
+  does not have.
+
+Left out on purpose:
+
+* **The Rs 10 RTI application fee.** Set by the Central RTI Rules, not the Act,
+  and it varies by state. No primary text for it was read, so the article says
+  "a small prescribed fee" and names only the fee rule that is in the Act, s.7(5).
+* **Any case name for the relaxation of locus standi in PIL.** S.P. Gupta and
+  Hussainara Khatoon are the usual citations, but neither judgment was read in
+  this session. The principle is described from what Articles 32 and 226 say,
+  plus what `fundamental-rights` already states.
+
+`SEO_TITLES` "RTI vs PIL: The Difference, and Which One You Need" (50 chars) —
+both halves of the query, because the cluster splits between "rti and pil" and
+"pil vs rti". `SEO_DESCRIPTIONS` 147 chars. `INTERNAL_LINKS` gained 'public
+interest litigation', 'pil', 'rti application' and 'writ petition'; the bare
+'rti' and 'fundamental rights' entries still point at the two deep guides, which
+is right for a first-time reader, and the longer phrases win over them. Verified
+the autolinks actually fire: 1 inbound from the RTI guide, 3 from
+fundamental-rights.
+
+Humanizer run over the finished draft. 1,716 words, average sentence 14.2,
+nothing over 40 after two statutory enumerations were split. No bolded-label
+stacks, no flagged vocabulary, no announced enumerations, no didactic asides.
+Two "it is not" constructions kept deliberately: "A Public Interest Litigation
+is not a separate law" corrects a belief readers genuinely arrive with, and the
+Common-mistakes line about an RTI not being a channel for opinions is a
+clarification rather than a manufactured reveal.
+
+Schema on the rendered page: Article, BreadcrumbList, Person with credential,
+ImageObject, and FAQPage carrying all nine questions.
+
+Hero image: Gemini still returns RESOURCE_EXHAUSTED, so this is a licensed
+Pexels photograph generated on the writer box (the only machine with
+`PEXELS_API_KEY`) — hands going through a box of filed papers. On topic for
+retrieving records, no text, no logos, no courtroom imagery that would imply the
+article is only about litigation.
+
+`test_seo.py` passes at 228 pages.
+
+**Not written, and why.** The same export shows `pas 3 vs pas 4` at 6
+impressions and average position 2.8 with no dedicated page — the second-best
+comparison gap, and `private-placement-section-42` already carries the material.
+Worth doing next. Separately, `lease-vs-leave-and-licence` ranks at positions
+72-88 for "rent agreement" and "rental agreement" phrasings it never uses; that
+is a vocabulary fix to a live article, which needs a content migration rather
+than a new page.

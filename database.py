@@ -1591,6 +1591,14 @@ def seed_articles():
     except Exception:
         pass
 
+    # RTI vs PIL comparison, 4 Sep 2026. Written for the site's biggest query
+    # cluster, which had no page of its own.
+    try:
+        from blog_seed19 import BLOG_ARTICLES_19
+        articles = articles + list(BLOG_ARTICLES_19)
+    except Exception:
+        pass
+
     # Only insert slugs that aren't already in the table (never overwrite),
     # and never re-seed a retired (de-duplicated) article.
     to_insert = [a for a in articles if a[1] not in existing and a[1] not in RETIRED_SLUGS]

@@ -27,7 +27,7 @@ ordinary `git push` — no migration, no script run against the production DB.
 # Bump this ONLY when the titles or descriptions below actually change. It is a
 # freshness signal, not a way to nudge the crawler; a date that moves without
 # the page moving is the kind of thing Google learns to distrust.
-SEARCH_META_CHANGED = '2026-09-01'
+SEARCH_META_CHANGED = '2026-09-04'
 
 # Hand-written <title> tags, keyed by article slug, for the pages that carry the
 # traffic. Same reasoning as SEO_DESCRIPTIONS below, and the same deployment
@@ -108,6 +108,13 @@ SEO_TITLES = {
         'DPDP Rules 2025: The Full Compliance Deadline Calendar',  # 34 · 8.2
     'ccfs-2026-companies-compliance-facilitation-scheme':
         'CCFS-2026: Cut ROC Late Fees by 90% Before 15 September',  # 33 · 14.2
+    # The site's biggest query cluster by impressions — "difference between rti
+    # and pil" (15), "pil vs rti" (5), "difference between pil and rti" (1) — all
+    # already on page one via the RTI guide, which never mentions PIL, and all
+    # earning zero clicks. Both halves of the query go in the title.
+    'rti-vs-pil-difference':
+        'RTI vs PIL: The Difference, and Which One You Need',
+
     'ccfs-2026-extended-15-september-2026':
         # Not "15 Days Left": a countdown in a <title> is wrong by the next
         # morning and Google may serve a cached copy of it for days. The last
@@ -475,6 +482,9 @@ SEO_DESCRIPTIONS = {
     'ccfs-2026-companies-compliance-facilitation-scheme':
         "Clear overdue ROC filings for 10% of the additional fees under CCFS-2026. "
         "What it covers, who is excluded, and why 15 September 2026 is the cliff.",
+    'rti-vs-pil-difference':
+        "An RTI gets information a government office already holds. A PIL asks a "
+        "court to order action. Which one you need, and why RTI usually comes first.",
     'ccfs-2026-extended-15-september-2026':
         "MCA Circular 04/2026 extends CCFS-2026 to 15 September 2026. The 10% "
         "additional-fee deal is unchanged. What the fortnight is worth in rupees.",
@@ -697,6 +707,14 @@ INTERNAL_LINKS = {
     'rera': 'rera-homebuyer-rights-complaint',
     'right to information': 'right-to-information-act-guide',
     'rti': 'right-to-information-act-guide',
+    # The bare 'rti' and 'fundamental rights' entries keep pointing at the two
+    # deep guides, which is right for someone meeting either subject for the
+    # first time. These longer phrases win over them (longer phrase wins) and go
+    # to the comparison, because anyone writing them is asking which to use.
+    'public interest litigation': 'rti-vs-pil-difference',
+    'pil': 'rti-vs-pil-difference',
+    'rti application': 'rti-vs-pil-difference',
+    'writ petition': 'rti-vs-pil-difference',
 
     # ─── Contracts ──────────────────────────────────────────────────────
     'electronic signature': 'electronic-signatures-india',
