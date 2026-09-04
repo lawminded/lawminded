@@ -156,6 +156,13 @@ SEO_TITLES = {
     # so both go in the title rather than a generic "SEBI order" framing.
     'sebi-bars-goenka-chandra-zee-land-pledge-order':
         "SEBI Bars Chandra, Goenka: Zee's ₹726 Cr Land Pledge",
+
+    # No Search Console history: published 4 Sep 2026, two days after the
+    # judgment. "SARFAESI" and "NBFC loan sold to a bank" are the terms
+    # someone whose loan got assigned would actually type; the case name
+    # alone is a narrower, secondary search.
+    'sarfaesi-nbfc-loan-sold-to-bank-supreme-court':
+        'SARFAESI on NBFC Loans Sold to a Bank: SC Rules',
 }
 
 
@@ -499,6 +506,9 @@ SEO_DESCRIPTIONS = {
     'sebi-bars-goenka-chandra-zee-land-pledge-order':
         "SEBI barred Subhash Chandra and Punit Goenka for a year and fined Zee ₹1.48 "
         "crore, over a ₹726 crore Hyderabad land pledge with no board approval.",
+    'sarfaesi-nbfc-loan-sold-to-bank-supreme-court':
+        "Supreme Court: banks can use SARFAESI on loans bought from NBFCs, even ones "
+        "never covered by the Act. What the Kotak Mahindra Bank ruling means.",
 }
 
 
@@ -893,6 +903,13 @@ INTERNAL_LINKS = {
     'ccfs-2026 extension': 'ccfs-2026-extended-15-september-2026',
     'ccfs deadline': 'ccfs-2026-extended-15-september-2026',
     'general circular no. 04/2026': 'ccfs-2026-extended-15-september-2026',
+
+    # New 4 Sep 2026. No other article on the site used these phrases yet,
+    # so there is no existing mapping to outrank.
+    'sarfaesi': 'sarfaesi-nbfc-loan-sold-to-bank-supreme-court',
+    'sarfaesi act': 'sarfaesi-nbfc-loan-sold-to-bank-supreme-court',
+    'debt recovery tribunal': 'sarfaesi-nbfc-loan-sold-to-bank-supreme-court',
+    'secured creditor': 'sarfaesi-nbfc-loan-sold-to-bank-supreme-court',
 }
 
 
