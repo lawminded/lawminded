@@ -60,13 +60,64 @@ OMITTED_RE = re.compile(
     re.M)
 
 
+# A footnote block sits at the foot of a page: numbered lines, each carrying
+# amendment or commencement wording. pypdf reads it in document order, which
+# drops it into the middle of whatever sentence was running across that page —
+# section 1 came out at 2,095 words because the commencement notification list
+# ("12th September, 2013 - S. 2(1),(3),(4)...") landed inside sub-section (3),
+# splitting the sentence in half. Cutting the block per page, before the pages
+# are joined, keeps footnotes out of every section at once.
+FOOTNOTE_LINE = re.compile(
+    # The block opens with a marker like "*1." or "1." — the asterisk is a
+    # footnote symbol carried over from the page, and missing it is why
+    # section 1 stayed at 2,095 words through two attempts at this.
+    r'^\s*\*?\s*\d{1,2}\.\s+(?=.{0,140}?('
+    r'\bSubs\. by|\bIns\. by|\bomitted by|\bw\.e\.f|\bvide\b|\bibid\b'
+    r'|\bCame into force|\bEnforced\b|\bNotification No|\bGazette of India'
+    r'|\bS\.\s*\d|\bs\.\s*\d+,))', re.I)
+
+# Continuation lines of a commencement footnote do not start with a number at
+# all — they start with the date the provisions came into force, as in
+# "1st April, 2014 - S. 135 and Sch. VII, vide notification No. S.O. 582(E)".
+FOOTNOTE_DATE = re.compile(
+    r'^\s*\*?\s*\d{1,2}(?:st|nd|rd|th)?\s+[A-Z][a-z]+,?\s+\d{4}\s*[-–—]', re.I)
+
+# A real section heading, which must never be mistaken for a footnote even
+# though both open with a number and a full stop.
+REAL_HEADING = re.compile(
+    r'^\s*\d{1,3}[A-Z]{0,2}\.\s*(?:\[|[A-Z][^.\n]{2,90}?\s*\.?\s*[—–])')
+
+
+def strip_footnotes(page_text):
+    """Drop the footnote block at the foot of one page.
+
+    pypdf reads a page in document order, so the footnotes land in the middle
+    of whatever sentence was running across that page. Section 1 came out at
+    2,095 words because the entire commencement history — sixty-six lines of
+    "1st April, 2014 - S. 135 and Sch. VII, vide notification..." — was sitting
+    inside sub-section (3), splitting the sentence in half.
+
+    Footnotes always run to the bottom of the page, so the first footnote line
+    marks the cut. Everything above it is the Act.
+    """
+    lines = page_text.split('\n')
+    for i, line in enumerate(lines):
+        if i < 3 or not line.strip():
+            continue
+        if REAL_HEADING.match(line):
+            continue
+        if FOOTNOTE_LINE.match(line) or FOOTNOTE_DATE.match(line):
+            return '\n'.join(lines[:i])
+    return page_text
+
+
 def read_pdf(path):
     try:
         import pypdf
     except ImportError:
         sys.exit('pypdf is not installed. Run: python3 -m pip install --user pypdf')
     reader = pypdf.PdfReader(str(path))
-    return '\n'.join((p.extract_text() or '') for p in reader.pages)
+    return '\n'.join(strip_footnotes(p.extract_text() or '') for p in reader.pages)
 
 
 def split_body(text):
