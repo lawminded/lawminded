@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% from '_icons.html' import icon %}
+{% block title %}Section {{ section.number }} of the {{ act_title }}: {{ section.heading }} - Law Minded{% endblock %}
+{% block meta_desc %}Section {{ section.number }} of the {{ act_title }} — {{ section.heading }}, explained in plain English, with the exact words of the Act.{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="{{ url_for('index') }}">Home</a> ›
+    <a href="{{ url_for('act_index') }}">{{ act_title }}</a> ›
+    {% if chapter %}<a href="{{ url_for('act_chapter', slug=chapter.slug) }}">Chapter {{ chapter.roman }}</a> ›{% endif %}
+    <span>Section {{ section.number }}</span>
+  </nav>
+  <span class="section-tag">Section {{ section.number }}{% if chapter %} · Chapter {{ chapter.roman }}, {{ chapter.title }}{% endif %}</span>
+  <h1>{{ section.heading }}</h1>
+  {% if section.omitted %}<p><span class="act-omitted">Omitted</span></p>{% endif %}
+</div>
+
+<section>
+  <div class="act-wrap">
+
+    <div class="act-summary act-summary--lead">
+      <p class="act-summary-label">{{ icon('book', 15) }} Law Minded summary</p>
+      {% for para in section.summary %}<p>{{ para }}</p>{% endfor %}
+    </div>
+
+    {% if section.paragraphs %}
+    <div class="faq-item act-text" onclick="toggleFaq(this)">
+      <div class="faq-q">
+        Read the exact words of section {{ section.number }}
+        <span class="faq-toggle">{{ icon('plus', 18) }}</span>
+      </div>
+      <div class="faq-a">
+        <p class="act-text-note">The text of the Act, unchanged.</p>
+        {% for para in section.paragraphs %}<p>{{ para }}</p>{% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <nav class="act-prevnext">
+      {% if prev_s %}
+      <a class="act-prev" href="{{ url_for('act_section', number=prev_s.number|lower) }}">
+        <span>Previous</span><strong>{{ prev_s.number }}. {{ prev_s.heading }}</strong></a>
+      {% endif %}
+      {% if next_s %}
+      <a class="act-next" href="{{ url_for('act_section', number=next_s.number|lower) }}">
+        <span>Next</span><strong>{{ next_s.number }}. {{ next_s.heading }}</strong></a>
+      {% endif %}
+    </nav>
+
+    {% if chapter %}
+    <p class="act-back"><a href="{{ url_for('act_chapter', slug=chapter.slug) }}">
+      All sections in Chapter {{ chapter.roman }} — {{ chapter.title }}</a></p>
+    {% endif %}
+
+    <p class="act-source">{{ source_note }} {{ authority_note }}</p>
+  </div>
+</section>
+{% endblock %}

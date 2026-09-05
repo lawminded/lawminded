@@ -1103,3 +1103,26 @@ button .ic,a .ic,.offer-link .ic,.blog-link .ic{vertical-align:middle;}
 .act-more a{font-family:var(--uf);font-size:.92rem;color:var(--gold-ink);text-decoration:none;}
 .act-more a:hover{text-decoration:underline;}
 @media(max-width:640px){.act-heading{font-size:1.25rem;}}
+
+/* Chapter page: names of the sections only, the way a legal index reads. */
+.act-section-list{list-style:none;padding:0;margin:0;display:grid;gap:.5rem;}
+.act-section-list a{display:flex;align-items:baseline;gap:.85rem;background:var(--card-bg);
+  border:1px solid var(--border);border-radius:var(--r-md);padding:.9rem 1.1rem;
+  text-decoration:none;transition:border-color .2s,transform .2s;}
+.act-section-list a:hover{border-color:var(--gold);transform:translateX(2px);}
+.act-list-num{flex-shrink:0;min-width:2.6rem;font-family:var(--uf);font-size:.8rem;font-weight:700;
+  color:var(--gold-ink);}
+.act-list-title{font-family:var(--uf);font-size:.97rem;color:var(--dark);line-height:1.5;}
+.act-summary--lead{margin-top:0;}
+.act-prevnext{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:2rem;}
+.act-prevnext a{display:block;background:var(--card-bg);border:1px solid var(--border);
+  border-radius:var(--r-md);padding:.9rem 1.1rem;text-decoration:none;}
+.act-prevnext a:hover{border-color:var(--gold);}
+.act-prevnext span{display:block;font-family:var(--uf);font-size:.7rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:.25rem;}
+.act-prevnext strong{font-family:var(--uf);font-size:.88rem;font-weight:600;color:var(--dark);line-height:1.45;}
+.act-next{text-align:right;}
+.act-back{margin-top:1.2rem;font-family:var(--uf);font-size:.9rem;}
+.act-back a{color:var(--gold-ink);text-decoration:none;}
+.act-back a:hover{text-decoration:underline;}
+@media(max-width:560px){.act-prevnext{grid-template-columns:1fr;}.act-next{text-align:left;}}

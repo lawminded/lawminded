@@ -4,12 +4,13 @@ Reads the parsed Act (content/companies-act-2013.json, built by
 automation/parse_act.py) and serves it as chapter pages, with each section
 opening in place.
 
-Chapter pages rather than 523 section pages, deliberately. Five hundred thin
-pages carrying little but statutory text is what search engines treat as
-mass-produced filler, and it would put the rankings the site already has at
-risk. A chapter page carries the full text of its sections in the HTML, so it
-is indexed and deep-linkable at #section-135, while being one substantial page
-instead of thirty slight ones.
+Three levels, the way a legal reference is actually used and the way
+ca2013.com lays it out: the Act lists its chapters, a chapter lists the names
+of its sections, and a section has its own page. Nobody reads a chapter
+end to end; they arrive knowing they want section 135 and want to get there.
+
+On a section page the Law Minded summary comes first, in plain English, and
+the exact words of the Act sit behind a tap underneath it.
 
 A chapter is published only when every section in it has a Law Minded summary.
 That is both an editorial rule and a legal one: s.52(1)(q)(ii) of the Copyright
@@ -103,6 +104,27 @@ def get_chapter(slug):
         if c['slug'] == slug:
             return c
     return None
+
+
+def get_section(number):
+    """One section by its number, only if it is publishable — a section with no
+    summary must not render the statute on its own. See the module docstring."""
+    want = str(number).lower()
+    for s in load()['sections']:
+        if str(s['number']).lower() == want:
+            return s if act_summaries.get(s['number']) else None
+    return None
+
+
+def neighbours(section):
+    """The previous and next publishable sections, for the prev/next links a
+    reference page needs."""
+    pub = [s for s in load()['sections'] if act_summaries.get(s['number'])]
+    for i, s in enumerate(pub):
+        if s['number'] == section['number']:
+            return (pub[i - 1] if i else None,
+                    pub[i + 1] if i + 1 < len(pub) else None)
+    return (None, None)
 
 
 def section_view(section):

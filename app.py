@@ -1953,12 +1953,27 @@ def act_chapter(slug):
     chapter = act.get_chapter(slug)
     if not chapter or not chapter['ready']:
         abort(404)
-    sections = [act.section_view(s) for s in chapter['sections']]
-    return render_template('act_chapter.html', chapter=chapter, sections=sections,
+    return render_template('act_chapter.html', chapter=chapter,
                            act_title=act.ACT_TITLE,
                            source_note=act.SOURCE_NOTE,
                            authority_note=act.AUTHORITY_NOTE,
                            all_chapters=act.published_chapters())
+
+
+@app.route('/act/companies-act-2013/section-<number>')
+def act_section(number):
+    row = act.get_section(number)
+    if not row:
+        abort(404)
+    chapter = next((c for c in act.chapters()
+                    if c['roman'] == row['chapter_roman']), None)
+    prev_s, next_s = act.neighbours(row)
+    return render_template('act_section.html',
+                           section=act.section_view(row), chapter=chapter,
+                           prev_s=prev_s, next_s=next_s,
+                           act_title=act.ACT_TITLE,
+                           source_note=act.SOURCE_NOTE,
+                           authority_note=act.AUTHORITY_NOTE)
 
 
 @app.route('/robots.txt')
@@ -2082,6 +2097,10 @@ def sitemap_xml():
     for ch in act.published_chapters():
         urls.append((SITE_URL + url_for('act_chapter', slug=ch['slug']),
                      'monthly', '0.7', SEARCH_META_CHANGED))
+        for sec in ch['sections']:
+            urls.append((SITE_URL + url_for('act_section',
+                                            number=sec['number'].lower()),
+                         'monthly', '0.6', SEARCH_META_CHANGED))
 
     xml = ['<?xml version="1.0" encoding="UTF-8"?>',
            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
