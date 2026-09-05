@@ -127,6 +127,50 @@ def neighbours(section):
     return (None, None)
 
 
+# Section 2 is a list of ~95 defined terms, and a reader looking for one wants
+# to see the term, not a wall of prose. ca2013.com lists them individually under
+# the section, which is the right call, so this pulls them out: (1) "abridged
+# prospectus" means... -> ('1', 'abridged prospectus').
+_Q = '\u201c\u201d\u2018\u2019"\''
+# A defined term can be a pair — the Act says "alter" or "alteration" — and
+# showing only the first half reads as a typo next to the printed reckoner.
+_DEFN_RE = re.compile(
+    r'\((?P<num>\d{1,3})\)\s*'
+    r'[' + _Q + r'](?P<term>[^' + _Q + r']{2,70})[' + _Q + r']'
+    r'(?P<more>(?:\s+(?:or|and)\s+[' + _Q + r'][^' + _Q + r']{2,70}[' + _Q + r'])*)')
+
+
+def definitions(section):
+    """The defined terms in a definitions section, in order. Empty for any
+    section that is not built as a list of definitions."""
+    out, seen = [], set()
+    for m in _DEFN_RE.finditer(section.get('text', '')):
+        term = re.sub(r'\s+', ' ', m.group('term')).strip()
+        # Fold "alter" or "alteration" into one readable label.
+        extra = [re.sub(r'\s+', ' ', t).strip()
+                 for t in re.findall(r'[' + _Q + r']([^' + _Q + r']{2,70})[' + _Q + r']',
+                                     m.group('more') or '')]
+        if extra:
+            term = ' or '.join([term] + extra)
+        key = term.lower()
+        if key in seen or len(term) < 2:
+            continue
+        seen.add(key)
+        out.append({'num': m.group('num'), 'term': term})
+    return out
+
+
+def chapter_neighbours(slug):
+    """Previous and next published chapter, for the 'Chapter 3 of 28' strip."""
+    pub = published_chapters()
+    for i, c in enumerate(pub):
+        if c['slug'] == slug:
+            return (pub[i - 1] if i else None,
+                    pub[i + 1] if i + 1 < len(pub) else None,
+                    i + 1, len(pub))
+    return (None, None, 0, len(pub))
+
+
 def section_view(section):
     """One section, ready to render: its text broken into paragraphs and its
     summary split into the paragraphs the writer intended."""
@@ -138,6 +182,7 @@ def section_view(section):
         'anchor': _section_slug(section['number']),
         'summary': [p.strip() for p in (summary or '').split('\n\n') if p.strip()],
         'paragraphs': split_text(section['text']),
+        'definitions': definitions(section),
         'words': section['words'],
     }
 

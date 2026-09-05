@@ -24,18 +24,12 @@
       {% for para in section.summary %}<p>{{ para }}</p>{% endfor %}
     </div>
 
-    {% if section.paragraphs %}
-    <div class="faq-item act-text" onclick="toggleFaq(this)">
-      <div class="faq-q">
-        Read the exact words of section {{ section.number }}
-        <span class="faq-toggle">{{ icon('plus', 18) }}</span>
-      </div>
-      <div class="faq-a">
-        <p class="act-text-note">The text of the Act, unchanged.</p>
+    <div class="act-statute">
+      <div class="act-statute-head">Section {{ section.number }}. {{ section.heading }}</div>
+      <div class="act-statute-body">
         {% for para in section.paragraphs %}<p>{{ para }}</p>{% endfor %}
       </div>
     </div>
-    {% endif %}
 
     <nav class="act-prevnext">
       {% if prev_s %}

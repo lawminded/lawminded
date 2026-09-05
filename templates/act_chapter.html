@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Chapter {{ chapter.roman }}: {{ chapter.title }} - {{ act_title }} - Law Minded{% endblock %}
-{% block meta_desc %}Chapter {{ chapter.roman }} of the {{ act_title }} — {{ chapter.title }}, sections {{ chapter.range }}. Pick a section for a plain-English summary and the exact words of the Act.{% endblock %}
+{% block meta_desc %}Chapter {{ chapter.roman }} of the {{ act_title }} — {{ chapter.title }}, sections {{ chapter.range }}. Every section in plain English with the exact words of the Act.{% endblock %}
 
 {% block content %}
 <div class="page-hero">
@@ -11,36 +11,41 @@
   </nav>
   <span class="section-tag">Chapter {{ chapter.roman }} · Sections {{ chapter.range }}</span>
   <h1>{{ chapter.title }}</h1>
-  <p>{{ chapter.count }} section{{ 's' if chapter.count != 1 else '' }} in this chapter.
-     Open any one for a plain-English summary and the exact words of the Act.</p>
 </div>
 
 <section>
   <div class="act-wrap">
-    <ol class="act-section-list">
-      {% for s in chapter.sections %}
+
+    <div class="act-chapter-strip">
+      <span>Chapter {{ position }} of {{ total_chapters }}</span>
+      <span class="act-strip-nav">
+        {% if prev_c %}<a href="{{ url_for('act_chapter', slug=prev_c.slug) }}">‹ Previous</a>{% endif %}
+        {% if next_c %}<a href="{{ url_for('act_chapter', slug=next_c.slug) }}">Next ›</a>{% endif %}
+      </span>
+    </div>
+
+    <ol class="act-index">
+      {% for s in sections %}
       <li>
-        <a href="{{ url_for('act_section', number=s.number|lower) }}">
-          <span class="act-list-num">{{ s.number }}</span>
-          <span class="act-list-title">{{ s.heading }}</span>
-          {% if s.omitted %}<span class="act-omitted">Omitted</span>{% endif %}
+        <a class="act-index-link" href="{{ url_for('act_section', number=s.number|lower) }}">
+          <span class="act-index-num">{{ s.number }}.</span>
+          <span class="act-index-title">{{ s.heading }}</span>
         </a>
+        {% if s.omitted %}<span class="act-omitted">Omitted</span>{% endif %}
+
+        {% if s.definitions %}
+        <ol class="act-defn-list">
+          {% for d in s.definitions %}
+          <li><a href="{{ url_for('act_section', number=s.number|lower) }}#defn-{{ d.num }}">
+            <span class="act-defn-num">({{ d.num }})</span> {{ d.term }}</a></li>
+          {% endfor %}
+        </ol>
+        {% endif %}
       </li>
       {% endfor %}
     </ol>
 
     <p class="act-source">{{ source_note }} {{ authority_note }}</p>
-
-    {% if all_chapters|length > 1 %}
-    <nav class="act-more">
-      <h2>Other chapters</h2>
-      <ul>
-        {% for c in all_chapters %}{% if c.slug != chapter.slug %}
-        <li><a href="{{ url_for('act_chapter', slug=c.slug) }}">Chapter {{ c.roman }} — {{ c.title }}</a></li>
-        {% endif %}{% endfor %}
-      </ul>
-    </nav>
-    {% endif %}
   </div>
 </section>
 {% endblock %}

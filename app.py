@@ -1953,7 +1953,11 @@ def act_chapter(slug):
     chapter = act.get_chapter(slug)
     if not chapter or not chapter['ready']:
         abort(404)
+    prev_c, next_c, position, total_chapters = act.chapter_neighbours(slug)
     return render_template('act_chapter.html', chapter=chapter,
+                           sections=[act.section_view(s) for s in chapter['sections']],
+                           prev_c=prev_c, next_c=next_c, position=position,
+                           total_chapters=total_chapters,
                            act_title=act.ACT_TITLE,
                            source_note=act.SOURCE_NOTE,
                            authority_note=act.AUTHORITY_NOTE,

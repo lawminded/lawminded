@@ -1126,3 +1126,33 @@ button .ic,a .ic,.offer-link .ic,.blog-link .ic{vertical-align:middle;}
 .act-back a{color:var(--gold-ink);text-decoration:none;}
 .act-back a:hover{text-decoration:underline;}
 @media(max-width:560px){.act-prevnext{grid-template-columns:1fr;}.act-next{text-align:left;}}
+
+/* Chapter index: the Act's own numbering, with section 2's defined terms
+   nested under it the way a printed reckoner lists them. */
+.act-chapter-strip{display:flex;justify-content:space-between;align-items:center;
+  border:1px solid var(--border);border-radius:var(--r-md);padding:.7rem 1.1rem;margin-bottom:1.6rem;
+  font-family:var(--uf);font-size:.85rem;color:var(--muted);}
+.act-strip-nav a{color:var(--gold-ink);text-decoration:none;margin-left:1rem;font-weight:600;}
+.act-strip-nav a:hover{text-decoration:underline;}
+.act-index{list-style:none;padding:0;margin:0;}
+.act-index > li{margin-bottom:1rem;}
+.act-index-link{display:flex;gap:.6rem;align-items:baseline;text-decoration:none;padding:.35rem 0;}
+.act-index-num{flex-shrink:0;font-family:var(--uf);font-size:.95rem;font-weight:700;color:var(--gold-ink);}
+.act-index-title{font-family:var(--uf);font-size:1rem;color:var(--dark);line-height:1.55;}
+.act-index-link:hover .act-index-title{color:var(--gold-ink);text-decoration:underline;}
+.act-defn-list{list-style:none;margin:.5rem 0 0;padding:0 0 0 1.9rem;
+  columns:2;column-gap:2rem;border-left:2px solid var(--border);}
+.act-defn-list li{break-inside:avoid;margin-bottom:.32rem;}
+.act-defn-list a{font-family:var(--uf);font-size:.88rem;color:var(--mid);text-decoration:none;}
+.act-defn-list a:hover{color:var(--gold-ink);text-decoration:underline;}
+.act-defn-num{color:var(--muted);font-size:.82rem;}
+@media(max-width:640px){.act-defn-list{columns:1;padding-left:1.1rem;}}
+
+/* The statute itself, shown in the open rather than behind a tap. */
+.act-statute{border:1px solid var(--border);border-radius:var(--r-md);overflow:hidden;margin-top:1.6rem;}
+.act-statute-head{background:var(--gold);color:var(--ink-on-gold);font-family:var(--uf);
+  font-size:.95rem;font-weight:700;padding:.85rem 1.25rem;line-height:1.4;}
+.act-statute-body{background:var(--card-bg);padding:1.4rem 1.5rem;}
+.act-statute-body p{font-family:var(--uf);font-size:.94rem;line-height:1.9;color:var(--mid);margin:0 0 1rem;}
+.act-statute-body p:last-child{margin-bottom:0;}
+@media(max-width:640px){.act-statute-body{padding:1.1rem;}}
