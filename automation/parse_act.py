@@ -35,13 +35,24 @@ from pathlib import Path
 # the dash that ends it is an em dash, an en dash, or occasionally a plain
 # hyphen (section 3A).
 SECTION_RE = re.compile(
-    r'^\s*(?:\d{1,2}\s*\[\s*)?(?P<num>\d{1,3}[A-Z]{0,2})\.\s+'
+    r'^\s*(?:\d{1,2}\s*\[\s*)?(?P<num>\d{1,3}[A-Z]{0,2})\.\s*'
     r'(?P<head>[^\n]{3,160}?(?:\n[ \t]*[^\n]{1,90}?)?)'
     r'\s*\.?\s*\n?\s*[—–-]',
     re.M)
 CHAPTER_RE = re.compile(
     r'^\s*CHAPTER\s+(?P<num>[IVXLC]+[A-Z]?)\s*\n\s*(?P<title>[^\n]{3,90})',
     re.M)
+# Every page carries numbered amendment footnotes — "3. The word \u201cand\u201d omitted
+# by s. 2, ibid. (w.e.f. 9-2-2018)" — which open with a number and a full stop
+# exactly like a section. Left unchecked they win the race for that number:
+# sections 3 (Formation of company) and 4 (Memorandum) were both buried by one.
+FOOTNOTE_HINT = re.compile(
+    # Every term here is anchored on word boundaries. An unanchored "vide"
+    # matches inside diVIDEnd and eVIDEnce, which quietly deleted every dividend
+    # and evidence section from the Act — 51, 123, 124, 126, 127, 449 and more.
+    r'\bibid\b|\bw\.e\.f|\bSubs\. by\b|\bIns\. by\b|\bomitted by\b|\bEarlier\b'
+    r'|\bvide\b|\bG\.S\.R\.|\(\d+ of \d{4}\)', re.I)
+
 # Omitted and repealed sections appear as "11. [Omitted.]." with no dash.
 OMITTED_RE = re.compile(
     r'^\s*(?:\d{1,2}\s*\[\s*)?(?P<num>\d{1,3}[A-Z]{0,2})\.\s*'
@@ -125,21 +136,51 @@ def parse(text):
             head = head[:-1]
         if len(head.split()) > 24 or head[:1].islower():
             continue
+        # Test only the heading's own line. A heading may wrap onto a second
+        # line that happens to carry a footnote, and judging the whole capture
+        # threw away real sections (51, 123, 124, 449 and a dozen more).
+        if FOOTNOTE_HINT.search(m.group('head').split('\n')[0]):
+            continue
         starts.append({'num': m.group('num'), 'head': head, 'at': m.start(),
                        'body_at': m.end()})
     for m in OMITTED_RE.finditer(body):
         starts.append({'num': m.group('num'),
                        'head': f'{m.group("head")} [{m.group("what").lower()}]',
                        'at': m.start(), 'body_at': m.end(), 'omitted': True})
+    for cand in starts:
+        if cand['num'] == '37ZA':
+            cand['num'] = '378ZA'          # misprint in the source PDF
+
     starts.sort(key=lambda s: s['at'])
 
-    # Keep the first appearance of each number: a later "135." inside a
-    # cross-reference is not a second section 135.
-    seen, ordered = set(), []
-    for s in starts:
-        if s['num'] not in seen:
-            seen.add(s['num'])
-            ordered.append(s)
+    # A number can match in several places: the section itself, a cross
+    # reference ("...as provided in section 51. The company..."), a footnote.
+    # Taking the first is wrong — it cost us sections 51, 123, 124 and 449. The
+    # Act's own contents say what each heading should be, so use that to choose.
+    want_head = {}
+    for m in FRONT_SECTION_RE.finditer(front):
+        num = m.group(1)
+        head = re.sub(r'^\s*' + re.escape(num) + r'\.\s*', '',
+                      re.sub(r'\s+', ' ', m.group(0)).strip()).strip(' .')
+        want_head.setdefault(num, head.lower())
+
+    def score(cand):
+        """How well this candidate's heading matches the one the Act lists."""
+        listed = want_head.get(cand['num'])
+        if not listed:
+            return 0
+        got = cand['head'].lower()
+        words = [w for w in re.split(r'\W+', listed) if len(w) > 3][:4]
+        if not words:
+            return 0
+        return sum(1 for w in words if w in got)
+
+    by_num = {}
+    for cand in starts:
+        best = by_num.get(cand['num'])
+        if best is None or score(cand) > score(best):
+            by_num[cand['num']] = cand
+    ordered = sorted(by_num.values(), key=lambda s: s['at'])
 
     sections = []
     for i, s in enumerate(ordered):
@@ -161,20 +202,23 @@ def parse(text):
             'words': len(text_body.split()),
         })
 
-    # Keep only what the Act's own contents list, in the order it lists them.
+    # The contents list is an index, and it lags: 393A and 418A were inserted by
+    # amendment and never added to it. So a section found in the body is kept
+    # even when the contents do not list it — the body is the Act. The contents
+    # are used the other way round, to catch sections the parse missed.
     want = []
     for n in expected:
         if n not in want:
             want.append(n)
     found = {s['number']: s for s in sections}
-    kept = [found[n] for n in want if n in found]
-    phantom = sorted(set(found) - set(want))
+    kept = sections
+    unlisted = sorted(set(found) - set(want))
     missing = [n for n in want if n not in found]
 
     for c in chapters:
         c.pop('at', None)
     return {'chapters': chapters, 'sections': kept,
-            'phantom_dropped': phantom, 'missing': missing,
+            'unlisted': unlisted, 'missing': missing,
             'expected_count': len(want)}
 
 
@@ -185,9 +229,8 @@ def report(data):
           f'own contents  (omitted/repealed: {sum(s["omitted"] for s in secs)})')
     if data['missing']:
         print(f'  MISSING from the parse: {data["missing"]}')
-    if data['phantom_dropped']:
-        print(f'  phantoms dropped: {len(data["phantom_dropped"])} '
-              f'-> {data["phantom_dropped"][:10]}')
+    if data.get('unlisted'):
+        print(f'  in the body but not in the contents (kept): {data["unlisted"]}')
     thin = [s['number'] for s in secs if not s['omitted'] and s['words'] < 12]
     print(f'suspiciously short: {len(thin)}' + (f' -> {thin[:12]}' if thin else ''))
     nochap = [s['number'] for s in secs if not s['chapter_roman']]
