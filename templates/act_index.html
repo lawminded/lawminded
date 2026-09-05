@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{{ act_title }}: Every Chapter, Explained in Plain English - Law Minded{% endblock %}
+{% block meta_desc %}The {{ act_title }} chapter by chapter, with a plain-English summary of every section above the exact words of the Act.{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <span class="section-tag">Bare Act with plain-English summaries</span>
+  <h1>{{ act_title }}</h1>
+  <p>Every section of the Act, grouped by chapter. Each one carries a Law Minded
+     summary in plain English, with the exact words of the Act underneath it.</p>
+</div>
+
+<section>
+  <div class="act-wrap">
+    <div class="act-chapter-list">
+      {% for c in chapters %}
+      <a class="act-chapter-card" href="{{ url_for('act_chapter', slug=c.slug) }}">
+        <span class="act-chapter-num">Chapter {{ c.roman }}</span>
+        <span class="act-chapter-title">{{ c.title }}</span>
+        <span class="act-chapter-meta">Sections {{ c.range }} · {{ c.count }} section{{ 's' if c.count != 1 else '' }}</span>
+      </a>
+      {% endfor %}
+    </div>
+
+    {% if chapters|length < total %}
+    <p class="act-source">{{ chapters|length }} of {{ total }} chapters are published so
+       far. The rest are being written — a chapter goes up once every section in it
+       has a plain-English summary, never as bare legal text on its own.</p>
+    {% endif %}
+    <p class="act-source">{{ source_note }} {{ authority_note }}</p>
+  </div>
+</section>
+{% endblock %}

@@ -33,6 +33,7 @@ load_dotenv()
 
 from database import (get_db, init_db, seed_articles, seed_documents, seed_formats,
                       apply_content_migrations, DB_PATH)
+import act
 import content as C
 import formats as F
 from seo_meta import (SEO_DESCRIPTIONS, SEO_TITLES, SEARCH_META_CHANGED,
@@ -1934,6 +1935,32 @@ def indexnow_key_file(key):
     abort(404)
 
 
+@app.route('/act/companies-act-2013')
+def act_index():
+    """The Act's chapter list. Only chapters whose sections all carry a Law
+    Minded summary appear — see act.py for why that is a legal line, not a
+    stylistic one."""
+    return render_template('act_index.html',
+                           chapters=act.published_chapters(),
+                           total=len(act.chapters()),
+                           act_title=act.ACT_TITLE,
+                           source_note=act.SOURCE_NOTE,
+                           authority_note=act.AUTHORITY_NOTE)
+
+
+@app.route('/act/companies-act-2013/<slug>')
+def act_chapter(slug):
+    chapter = act.get_chapter(slug)
+    if not chapter or not chapter['ready']:
+        abort(404)
+    sections = [act.section_view(s) for s in chapter['sections']]
+    return render_template('act_chapter.html', chapter=chapter, sections=sections,
+                           act_title=act.ACT_TITLE,
+                           source_note=act.SOURCE_NOTE,
+                           authority_note=act.AUTHORITY_NOTE,
+                           all_chapters=act.published_chapters())
+
+
 @app.route('/robots.txt')
 def robots_txt():
     lines = [
@@ -2048,6 +2075,13 @@ def sitemap_xml():
     for r in article_rows:
         urls.append((SITE_URL + url_for('article', slug=r['slug']), 'monthly', '0.8',
                      freshest(r['updated_at'] or '', SEARCH_META_CHANGED)))
+
+    # The Companies Act reference. Only published chapters — one whose sections
+    # are not all summarised is not reachable, so it must not be advertised.
+    urls.append((SITE_URL + url_for('act_index'), 'weekly', '0.8', SEARCH_META_CHANGED))
+    for ch in act.published_chapters():
+        urls.append((SITE_URL + url_for('act_chapter', slug=ch['slug']),
+                     'monthly', '0.7', SEARCH_META_CHANGED))
 
     xml = ['<?xml version="1.0" encoding="UTF-8"?>',
            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']

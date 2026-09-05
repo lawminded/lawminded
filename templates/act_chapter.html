@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% from '_icons.html' import icon %}
+{% block title %}Chapter {{ chapter.roman }}: {{ chapter.title }} - {{ act_title }} - Law Minded{% endblock %}
+{% block meta_desc %}Chapter {{ chapter.roman }} of the {{ act_title }} — {{ chapter.title }}, sections {{ chapter.range }}. Each section in plain English, with the bare text of the Act.{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="{{ url_for('index') }}">Home</a> ›
+    <a href="{{ url_for('act_index') }}">{{ act_title }}</a> ›
+    <span>Chapter {{ chapter.roman }}</span>
+  </nav>
+  <span class="section-tag">Chapter {{ chapter.roman }} · Sections {{ chapter.range }}</span>
+  <h1>{{ chapter.title }}</h1>
+  <p>{{ chapter.count }} section{{ 's' if chapter.count != 1 else '' }} of the
+     {{ act_title }}, each with a plain-English summary above the words of the Act
+     itself. Tap a section to open it.</p>
+</div>
+
+<section>
+  <div class="act-wrap">
+
+    {% for s in sections %}
+    <article class="act-section" id="{{ s.anchor }}">
+      <div class="act-section-head">
+        <span class="act-num">{{ s.number }}</span>
+        <h2 class="act-heading">{{ s.heading }}</h2>
+        {% if s.omitted %}<span class="act-omitted">Omitted</span>{% endif %}
+      </div>
+
+      {% if s.summary %}
+      <div class="act-summary">
+        <p class="act-summary-label">{{ icon('book', 15) }} Law Minded summary</p>
+        {% for para in s.summary %}<p>{{ para }}</p>{% endfor %}
+      </div>
+      {% endif %}
+
+      {% if s.paragraphs %}
+      <div class="faq-item act-text" onclick="toggleFaq(this)">
+        <div class="faq-q">
+          Read the exact words of section {{ s.number }}
+          <span class="faq-toggle">{{ icon('plus', 18) }}</span>
+        </div>
+        <div class="faq-a">
+          <p class="act-text-note">The text of the Act, unchanged.</p>
+          {% for para in s.paragraphs %}<p>{{ para }}</p>{% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </article>
+    {% endfor %}
+
+    <p class="act-source">{{ source_note }} {{ authority_note }}</p>
+
+    {% if all_chapters|length > 1 %}
+    <nav class="act-more">
+      <h2>Other chapters</h2>
+      <ul>
+        {% for c in all_chapters %}{% if c.slug != chapter.slug %}
+        <li><a href="{{ url_for('act_chapter', slug=c.slug) }}">
+          Chapter {{ c.roman }} — {{ c.title }}</a></li>
+        {% endif %}{% endfor %}
+      </ul>
+    </nav>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
