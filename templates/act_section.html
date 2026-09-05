@@ -37,12 +37,14 @@
     </div>
     {% endif %}
 
+    {% if not definitions %}
     <div class="act-statute">
       <div class="act-statute-head">Section {{ section.number }}. {{ section.heading }}</div>
       <div class="act-statute-body">
         {% for para in section.paragraphs %}<p>{{ para }}</p>{% endfor %}
       </div>
     </div>
+    {% endif %}
 
     <nav class="act-prevnext">
       {% if prev_s %}

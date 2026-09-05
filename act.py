@@ -221,7 +221,13 @@ def section_view(section):
 
 # Sub-sections open with "(1)", clauses with "(a)". Breaking on those turns one
 # unreadable slab into something a person can follow, without changing a word.
-_SPLIT_RE = re.compile(r'(?=\((?:\d{1,2}|[a-z]{1,2}|[ivx]{1,4})\)\s)')
+# Not every "(10)" starts a sub-section: "referred to in sub-section (10) of
+# section 143" is mid-sentence, and splitting there left "(10) of section 143;"
+# stranded as its own paragraph.
+_SPLIT_RE = re.compile(
+    r'(?<!sub-section )(?<!sub -section )(?<!subsection )(?<!section )'
+    r'(?<!clause )(?<!clauses )(?<!and )(?<!or )(?<!to )'
+    r'(?=\((?:\d{1,2}|[a-z]{1,2}|[ivx]{1,4})\)\s)')
 
 
 def split_text(text, limit=60):
