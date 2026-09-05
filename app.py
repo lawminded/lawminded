@@ -200,6 +200,9 @@ ADSENSE_SLOTS = {
 # verification method into GOOGLE_SITE_VERIFICATION in .env. When set, base.html
 # renders <meta name="google-site-verification" ...> so Google can verify the site.
 GOOGLE_SITE_VERIFICATION = os.getenv('GOOGLE_SITE_VERIFICATION', '')
+# Bing Webmaster Tools verifies the same way, with its own meta tag. Worth
+# having beyond Bing's own traffic: ChatGPT's web search reads Bing's index.
+BING_SITE_VERIFICATION = os.getenv('BING_SITE_VERIFICATION', '')
 
 VALID_EMAIL_RE = re.compile(r'^[^\s@]+@[^\s@]+\.[^\s@]+$')
 
@@ -653,7 +656,50 @@ def announce_article_async(slug):
                                 slug, s, f)
             except Exception as e:                   # noqa: BLE001
                 app.logger.exception('announcing %s failed: %r', slug, e)
+            # Same thread, after the email: telling search engines is the other
+            # half of publishing, and neither should hold up the redirect.
+            ping_indexnow(f'{SITE_URL}/article/{slug}')
     threading.Thread(target=_run, daemon=True).start()
+
+
+# ─── IndexNow ────────────────────────────────────────────────────────────────
+# A sitemap tells a crawler a page exists the next time it looks. IndexNow tells
+# it now. Bing, Yandex, Seznam and Naver share one endpoint; Brave does not take
+# part, and Google does not either, so this is not a replacement for the sitemap.
+#
+# It matters more than Bing's own traffic share suggests: ChatGPT's web search
+# reads Bing's index, so a page Bing has not crawled cannot be cited there.
+#
+# The key is a secret only in the weak sense — it must be published at
+# /<key>.txt to prove the domain is ours — so it lives in .env rather than here,
+# and the route below serves whatever it is set to.
+INDEXNOW_KEY = os.getenv('INDEXNOW_KEY', '')
+INDEXNOW_ENDPOINT = 'https://api.indexnow.org/indexnow'
+
+
+def ping_indexnow(*urls):
+    """Tell IndexNow that these URLs changed. Never raises: search-engine
+    notification failing must not break publishing."""
+    urls = [u for u in urls if u]
+    if not (INDEXNOW_KEY and urls and IS_PROD):
+        return False
+    body = json.dumps({
+        'host': urllib.parse.urlparse(SITE_URL).netloc,
+        'key': INDEXNOW_KEY,
+        'keyLocation': f'{SITE_URL}/{INDEXNOW_KEY}.txt',
+        'urlList': list(urls),
+    }).encode()
+    try:
+        req = urllib.request.Request(
+            INDEXNOW_ENDPOINT, data=body,
+            headers={'Content-Type': 'application/json; charset=utf-8',
+                     'User-Agent': 'LawMindedBot/1.0 (+https://lawminded.in)'})
+        with urllib.request.urlopen(req, timeout=15) as r:
+            app.logger.info('IndexNow accepted %d url(s): HTTP %s', len(urls), r.status)
+            return True
+    except Exception as e:                           # noqa: BLE001
+        app.logger.warning('IndexNow ping failed for %s: %r', urls, e)
+        return False
 
 
 # ─── Context Processor (globals available in every template) ─────────────────
@@ -921,6 +967,7 @@ def inject_globals():
         'adsense_client': ADSENSE_CLIENT if ADS_ENABLED else '',
         'adsense_slots': ADSENSE_SLOTS,
         'google_site_verification': GOOGLE_SITE_VERIFICATION,
+        'bing_site_verification': BING_SITE_VERIFICATION,
         'category_map': CATEGORY_MAP,
         'topics': C.TOPICS,
         'current_year': date.today().year,
@@ -1875,6 +1922,16 @@ def google_site_verification():
     return app.response_class(
         'google-site-verification: google790ff7b7719dd579.html',
         mimetype='text/html')
+
+
+@app.route('/<key>.txt')
+def indexnow_key_file(key):
+    """IndexNow proves the domain is ours by asking for the key back at a URL on
+    it. Only the configured key is served; anything else 404s, so this is not a
+    catch-all on every .txt at the site root."""
+    if INDEXNOW_KEY and key == INDEXNOW_KEY:
+        return app.response_class(INDEXNOW_KEY, mimetype='text/plain')
+    abort(404)
 
 
 @app.route('/robots.txt')
