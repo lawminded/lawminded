@@ -1955,7 +1955,7 @@ def act_chapter(slug):
         abort(404)
     prev_c, next_c, position, total_chapters = act.chapter_neighbours(slug)
     return render_template('act_chapter.html', chapter=chapter,
-                           sections=[act.section_view(s) for s in chapter['sections']],
+                           sections=chapter['sections'],
                            prev_c=prev_c, next_c=next_c, position=position,
                            total_chapters=total_chapters,
                            act_title=act.ACT_TITLE,
@@ -1974,8 +1974,25 @@ def act_section(number):
     prev_s, next_s = act.neighbours(row)
     return render_template('act_section.html',
                            section=act.section_view(row), chapter=chapter,
+                           definitions=act.definitions(row),
                            prev_s=prev_s, next_s=next_s,
                            act_title=act.ACT_TITLE,
+                           source_note=act.SOURCE_NOTE,
+                           authority_note=act.AUTHORITY_NOTE)
+
+
+@app.route('/act/companies-act-2013/section-<number>/<slug>')
+def act_definition(number, slug):
+    """One defined term on its own page. Section 2 alone has 93 of them, and a
+    reader looking up "associate company" wants that, not a page of ninety-two
+    other definitions to scroll past."""
+    section, defn = act.get_definition(number, slug)
+    if not section or not defn:
+        abort(404)
+    chapter = next((c for c in act.chapters()
+                    if c['roman'] == section['chapter_roman']), None)
+    return render_template('act_definition.html', section=section, defn=defn,
+                           chapter=chapter, act_title=act.ACT_TITLE,
                            source_note=act.SOURCE_NOTE,
                            authority_note=act.AUTHORITY_NOTE)
 

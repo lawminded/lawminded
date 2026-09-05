@@ -140,9 +140,14 @@ _DEFN_RE = re.compile(
     r'(?P<more>(?:\s+(?:or|and)\s+[' + _Q + r'][^' + _Q + r']{2,70}[' + _Q + r'])*)')
 
 
-def definitions(section):
+def definitions(section, with_text=False):
     """The defined terms in a definitions section, in order. Empty for any
-    section that is not built as a list of definitions."""
+    section that is not built as a list of definitions.
+
+    Numbering follows the Act, so gaps are real: (49) "interested director" was
+    omitted by the Companies (Amendment) Act, 2017, which is why section 2 has
+    93 definitions running up to number 94.
+    """
     out, seen = [], set()
     for m in _DEFN_RE.finditer(section.get('text', '')):
         term = re.sub(r'\s+', ' ', m.group('term')).strip()
@@ -156,8 +161,35 @@ def definitions(section):
         if key in seen or len(term) < 2:
             continue
         seen.add(key)
-        out.append({'num': m.group('num'), 'term': term})
+        entry = {'num': m.group('num'), 'term': term,
+                 'slug': f"{m.group('num')}-{_slugify(term)}"}
+        if with_text:
+            entry['text'] = _defn_text(section['text'], m.end())
+        out.append(entry)
     return out
+
+
+def _slugify(term):
+    return re.sub(r'-+', '-', re.sub(r'[^a-z0-9]+', '-', term.lower())).strip('-')
+
+
+def _defn_text(text, start):
+    """One definition's own words: from where its term ends to the start of the
+    next numbered definition."""
+    nxt = re.search(r'\s\(\d{1,3}\)\s*[\u201c\u2018"\']', text[start:])
+    body = text[start:start + nxt.start()] if nxt else text[start:]
+    return re.sub(r'\s+', ' ', body).strip(' ;,')
+
+
+def get_definition(section_number, slug):
+    """One definition of one section, by its slug."""
+    sec = get_section(section_number)
+    if not sec:
+        return None, None
+    for d in definitions(sec, with_text=True):
+        if d['slug'] == slug:
+            return sec, d
+    return sec, None
 
 
 def chapter_neighbours(slug):

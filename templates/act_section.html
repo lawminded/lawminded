@@ -4,7 +4,7 @@
 {% block meta_desc %}Section {{ section.number }} of the {{ act_title }} — {{ section.heading }}, explained in plain English, with the exact words of the Act.{% endblock %}
 
 {% block content %}
-<div class="page-hero">
+<div class="page-hero page-hero--compact">
   <nav class="breadcrumb" aria-label="Breadcrumb">
     <a href="{{ url_for('index') }}">Home</a> ›
     <a href="{{ url_for('act_index') }}">{{ act_title }}</a> ›
@@ -23,6 +23,19 @@
       <p class="act-summary-label">{{ icon('book', 15) }} Law Minded summary</p>
       {% for para in section.summary %}<p>{{ para }}</p>{% endfor %}
     </div>
+
+    {% if definitions %}
+    <div class="act-defn-index">
+      <h2>The {{ definitions|length }} terms defined in this section</h2>
+      <p class="act-defn-note">Open any term for its own page.</p>
+      <ol class="act-defn-list">
+        {% for d in definitions %}
+        <li><a href="{{ url_for('act_definition', number=section.number|lower, slug=d.slug) }}">
+          <span class="act-defn-num">({{ d.num }})</span> {{ d.term }}</a></li>
+        {% endfor %}
+      </ol>
+    </div>
+    {% endif %}
 
     <div class="act-statute">
       <div class="act-statute-head">Section {{ section.number }}. {{ section.heading }}</div>

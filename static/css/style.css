@@ -1156,3 +1156,14 @@ button .ic,a .ic,.offer-link .ic,.blog-link .ic{vertical-align:middle;}
 .act-statute-body p{font-family:var(--uf);font-size:.94rem;line-height:1.9;color:var(--mid);margin:0 0 1rem;}
 .act-statute-body p:last-child{margin-bottom:0;}
 @media(max-width:640px){.act-statute-body{padding:1.1rem;}}
+
+/* The Act pages are reference material, not editorial features — the hero was
+   taking a whole screen before a reader saw a word of law. */
+.page-hero--compact{padding-top:1.6rem;padding-bottom:1.4rem;}
+.page-hero--compact h1{font-size:1.9rem;line-height:1.25;margin-bottom:.4rem;}
+.page-hero--compact p{font-size:.92rem;}
+@media(max-width:640px){.page-hero--compact h1{font-size:1.5rem;}}
+.act-defn-index{margin-top:1.6rem;}
+.act-defn-index h2{font-family:var(--hf);font-size:1.2rem;color:var(--dark);margin-bottom:.2rem;}
+.act-defn-note{font-family:var(--uf);font-size:.85rem;color:var(--muted);margin-bottom:.9rem;}
+.act-defn-index .act-defn-list{border-left:0;padding-left:0;}

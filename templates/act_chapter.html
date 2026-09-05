@@ -3,7 +3,7 @@
 {% block meta_desc %}Chapter {{ chapter.roman }} of the {{ act_title }} — {{ chapter.title }}, sections {{ chapter.range }}. Every section in plain English with the exact words of the Act.{% endblock %}
 
 {% block content %}
-<div class="page-hero">
+<div class="page-hero page-hero--compact">
   <nav class="breadcrumb" aria-label="Breadcrumb">
     <a href="{{ url_for('index') }}">Home</a> ›
     <a href="{{ url_for('act_index') }}">{{ act_title }}</a> ›
@@ -33,14 +33,6 @@
         </a>
         {% if s.omitted %}<span class="act-omitted">Omitted</span>{% endif %}
 
-        {% if s.definitions %}
-        <ol class="act-defn-list">
-          {% for d in s.definitions %}
-          <li><a href="{{ url_for('act_section', number=s.number|lower) }}#defn-{{ d.num }}">
-            <span class="act-defn-num">({{ d.num }})</span> {{ d.term }}</a></li>
-          {% endfor %}
-        </ol>
-        {% endif %}
       </li>
       {% endfor %}
     </ol>
