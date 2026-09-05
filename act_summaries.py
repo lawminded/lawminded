@@ -289,6 +289,222 @@ SUMMARIES = {
         "binds the company."
     ),
 
+    # ── Chapter III — Prospectus and allotment of securities ─────────────────
+    '23': (
+        "There are only two lawful ways for a company to raise money by issuing "
+        "securities, and this section names them.\n\n"
+        "A public company can make a public offer through a prospectus, or go the "
+        "private placement route to a selected group. A private company can only "
+        "do the second — it may not invite the public to subscribe at all.\n\n"
+        "Everything else in this Chapter hangs off that split: Part I governs "
+        "public offers, Part II governs private placements."
+    ),
+
+    '24': (
+        "This section draws the line between two regulators.\n\n"
+        "Where the issue or transfer of securities and the non-payment of dividend "
+        "concerns listed companies, or companies that intend to list, SEBI makes "
+        "the rules and enforces them. For everything else, and for all other "
+        "companies, it is the Central Government and the Registrar.\n\n"
+        "It is the reason a listed company answers to both the Companies Act and "
+        "the SEBI rulebook, and why the two do not contradict each other on the "
+        "same point."
+    ),
+
+    '25': (
+        "A company cannot dodge the prospectus rules by selling shares to a "
+        "middleman and letting the middleman sell them on to the public.\n\n"
+        "Where securities are allotted with a view to being offered to the public, "
+        "the document that makes that offer is treated as a prospectus issued by "
+        "the company itself — with all the duties and liabilities that carries.\n\n"
+        "The Act even tells you when to be suspicious: if the offer comes within "
+        "six months of allotment, or the company has not been paid in full, the "
+        "arrangement is presumed to have been a way around the law."
+    ),
+
+    '26': (
+        "The contents list for a prospectus. It says what a company must tell "
+        "people before asking them for money.\n\n"
+        "That includes who runs the company, what it does, what it intends to do "
+        "with the money raised, its financial position, the risks, any litigation, "
+        "and the terms of the offer. The prospectus must be dated, signed, and "
+        "delivered to the Registrar before it goes out.\n\n"
+        "Issue one that leaves out what this section requires and there are "
+        "penalties for the company and for every person who authorised it."
+    ),
+
+    '27': (
+        "Money raised on a prospectus has to be used for what the prospectus said "
+        "it would be used for.\n\n"
+        "Changing those objects, or the terms of a contract mentioned in the "
+        "prospectus, needs a special resolution of the members. The company also "
+        "has to advertise the proposal so shareholders actually learn of it.\n\n"
+        "Anyone who disagrees gets an exit: dissenting shareholders must be offered "
+        "the chance to have their shares bought back, on terms SEBI prescribes."
+    ),
+
+    '28': (
+        "This covers existing shareholders selling their own shares to the public, "
+        "rather than the company issuing new ones.\n\n"
+        "They may do it in consultation with the Board, and the document offering "
+        "the shares counts as a prospectus — so the same disclosure duties and the "
+        "same liabilities apply.\n\n"
+        "The selling shareholders, not the company, bear the cost of the offer, "
+        "in proportion to what each of them sells."
+    ),
+
+    '29': (
+        "Certain securities can only exist electronically.\n\n"
+        "Every company making a public offer must issue those securities in "
+        "dematerialised form, held in a depository account rather than as paper "
+        "certificates. Other classes of company can be brought into the same rule "
+        "by the government.\n\n"
+        "Physical share certificates are easy to forge, lose and transfer "
+        "invisibly, which is the problem this addresses."
+    ),
+
+    '30': (
+        "A short rule about advertising.\n\n"
+        "Whenever a prospectus is advertised anywhere, the advertisement itself "
+        "must carry the company's objects, the liability of its members, the amount "
+        "of share capital, and the names of the signatories.\n\n"
+        "The point is that a person should not be drawn in by a headline promise "
+        "without the basic facts alongside it."
+    ),
+
+    '31': (
+        "A shelf prospectus saves a company from writing a fresh prospectus for "
+        "every tranche of a series of issues.\n\n"
+        "It is filed once and stays valid for up to one year from the first offer. "
+        "For each later offer within that year, the company files only an "
+        "information memorandum updating what has changed — new financial position, "
+        "new charges created, and so on.\n\n"
+        "The shelf prospectus plus the memorandum together count as the prospectus "
+        "for that offer."
+    ),
+
+    '32': (
+        "A red herring prospectus is issued before the full prospectus and leaves "
+        "out the details that are not fixed yet — typically the price of the "
+        "securities or the number on offer.\n\n"
+        "It has to be filed with the Registrar at least three days before the offer "
+        "opens, and it carries the same obligations as a prospectus.\n\n"
+        "Once the offer closes, the complete prospectus with the final details goes "
+        "to the Registrar and to SEBI."
+    ),
+
+    '33': (
+        "You cannot hand someone an application form for securities on its own.\n\n"
+        "Every form must come with an abridged prospectus — a short-form version of "
+        "the real thing — so that nobody applies for securities without at least a "
+        "summary of what they are buying.\n\n"
+        "The exception is where the form is issued in connection with a genuine "
+        "invitation to enter into an underwriting agreement, which is a deal "
+        "between professionals rather than an offer to the public."
+    ),
+
+    '34': (
+        "If a prospectus contains a statement that is untrue or misleading, or "
+        "leaves out something that makes it misleading, this is the criminal "
+        "consequence.\n\n"
+        "Every person who authorised the issue of that prospectus is liable to the "
+        "punishment for fraud under section 447 — which can mean imprisonment as "
+        "well as a fine.\n\n"
+        "There is one way out: a person escapes if they prove the statement was "
+        "immaterial, or that they had reasonable grounds to believe it was true and "
+        "did believe it, right up until the prospectus was issued."
+    ),
+
+    '35': (
+        "The same misleading prospectus, but the civil side: compensation for "
+        "people who lost money.\n\n"
+        "Anyone who subscribed for securities relying on it and suffered a loss can "
+        "claim against the company, its directors, its promoters, the experts named "
+        "in it, and everyone who authorised its issue. They are liable jointly and "
+        "severally, so a claimant can pursue any one of them for the whole loss.\n\n"
+        "A director escapes by showing they withdrew before the prospectus was "
+        "issued, or that it went out without their knowledge or consent, or that "
+        "they reasonably believed the statement was true.\n\n"
+        "Where the misleading statement was made to defraud, the people responsible "
+        "carry personal liability without limit."
+    ),
+
+    '36': (
+        "This one is not about prospectuses at all — it is about the sales pitch.\n\n"
+        "Anyone who knowingly or recklessly makes a false, deceptive or misleading "
+        "statement, promise or forecast, or deliberately hides a material fact, in "
+        "order to persuade someone to invest, commits fraud under section 447.\n\n"
+        "It reaches agreements to acquire or subscribe for securities, and "
+        "agreements whose purpose is to make money from the movement of a security's "
+        "price."
+    ),
+
+    '37': (
+        "A short but useful section: it says who can bring the case.\n\n"
+        "An action under section 34, 35 or 36 can be brought not only by one "
+        "affected person but by a group of people or an association of them acting "
+        "together.\n\n"
+        "Small investors rarely sue alone, because the loss is too small to justify "
+        "the cost. This lets them combine."
+    ),
+
+    '38': (
+        "This targets people who apply for securities under false identities, "
+        "usually to grab more of an oversubscribed issue than their share.\n\n"
+        "Applying in a fictitious name, making multiple applications under different "
+        "names or different combinations of names, or inducing a company to allot "
+        "securities to a false identity, all attract the fraud punishment under "
+        "section 447.\n\n"
+        "A court can also order the securities and any profit from them forfeited "
+        "to the Investor Education and Protection Fund."
+    ),
+
+    '39': (
+        "An offer to the public has a floor, and this section sets it.\n\n"
+        "No allotment can be made unless the minimum amount stated in the "
+        "prospectus has actually been subscribed and the application money "
+        "received. That money cannot be less than five per cent of the nominal "
+        "value of the security.\n\n"
+        "If the minimum is not reached within thirty days, the money has to go back "
+        "to the applicants. The idea is that a company should not begin a project "
+        "on money that only half arrived."
+    ),
+
+    '40': (
+        "Before a company makes a public offer, it must apply to one or more "
+        "recognised stock exchanges for permission for the securities to be traded "
+        "there, and say in the prospectus which exchanges it applied to.\n\n"
+        "If permission is refused, the allotment is void and the money must be "
+        "returned. Application money is held in a separate bank account and can "
+        "only be used for allotment or for repaying it.\n\n"
+        "The section is what stops a company selling shares that then turn out to "
+        "have nowhere to be sold on."
+    ),
+
+    '41': (
+        "A single sentence with a wide reach. A company may issue depository "
+        "receipts in a foreign country — the instrument that lets an overseas "
+        "investor hold an Indian company's shares through a foreign bank.\n\n"
+        "It needs a special resolution of the members first, and the manner and "
+        "conditions are set by rules."
+    ),
+
+    '42': (
+        "This is the private placement route: raising money from a chosen group "
+        "instead of from the public.\n\n"
+        "The offer goes only to people the Board has identified in advance, and to "
+        "no more than two hundred people in a financial year for each kind of "
+        "security, leaving out qualified institutional buyers and employees holding "
+        "stock options. Go past that and it is treated as a public offer, with "
+        "every prospectus obligation that brings.\n\n"
+        "The money must arrive by banking channels — never in cash — into a "
+        "separate account, and it cannot be touched until the return of allotment "
+        "is filed. Allotment has to happen within sixty days, or the money goes "
+        "back within fifteen more, with interest after that.\n\n"
+        "The company also may not advertise the offer to anyone outside the "
+        "identified group."
+    ),
+
 }
 
 

@@ -266,6 +266,23 @@ def parse(text):
     unlisted = sorted(set(found) - set(want))
     missing = [n for n in want if n not in found]
 
+    # Headings come from the Act's own ARRANGEMENT OF SECTIONS, not from the
+    # body. The contents page is typeset on one line per section, so it is free
+    # of the wrapping damage the body carries: the body gives "Criminal
+    # liability for mis" with "statements in prospectus" starting the text, and
+    # spaces inside words — "Red herring prosp ectus", "stock ex changes",
+    # "to be d eemed prospectus". The contents has all of them right.
+    listed = {}
+    for m in re.finditer(r'^\s*(\d{1,3}[A-Z]{0,2})\.\s+([^\n]{3,150})', front, re.M):
+        num = m.group(1)
+        head = re.sub(r'\s+', ' ', m.group(2)).strip(' .')
+        if num not in listed and head and not FOOTNOTE_HINT.search(head):
+            listed[num] = head
+    for sec in sections:
+        clean_head = listed.get(sec['number'])
+        if clean_head and not sec['omitted']:
+            sec['heading'] = clean_head
+
     for c in chapters:
         c.pop('at', None)
     return {'chapters': chapters, 'sections': kept,
