@@ -461,6 +461,10 @@ ins.adsbygoogle[data-ad-status="unfilled"]{display:none!important;}
 .about-idea h2{font-family:var(--hf);font-size:2rem;color:var(--dark);margin-bottom:1.1rem;line-height:1.18;letter-spacing:-.01em;}
 .about-idea p{font-family:var(--uf);font-size:.95rem;color:var(--mid);line-height:1.8;margin-bottom:1rem;}
 .about-quote{border-left:3px solid var(--gold);padding-left:1.3rem;margin:1.6rem 0;font-family:var(--hf);font-style:italic;font-size:1.18rem;color:var(--charcoal);line-height:1.5;}
+/* Attribution sits under the quote, flush with its right edge. Upright and
+   small, so it reads as a signature rather than another line of the quote. */
+.about-quote-by{display:block;text-align:right;margin-top:.7rem;font-family:var(--uf);font-style:normal;font-size:.82rem;color:var(--mid);letter-spacing:.04em;}
+.about-quote-by::before{content:"— ";}
 .timeline{margin-top:1.6rem;}
 .timeline-item{display:flex;gap:1rem;margin-bottom:1.2rem;}
 .timeline-dot{width:11px;height:11px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:7px;box-shadow:0 0 0 4px var(--gold-tint);}
