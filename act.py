@@ -37,6 +37,22 @@ AUTHORITY_NOTE = ('The Ministry of Corporate Affairs is the authority on the '
 ROMAN = {'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100}
 
 
+# The Act sets its chapter titles in capitals, and .title() then capitalises
+# every word — "Incorporation Of Company And Matters Incidental Thereto".
+# Small words stay lowercase unless they open the title.
+_SMALL = {'of', 'and', 'the', 'in', 'to', 'for', 'by', 'or', 'a', 'an', 'on',
+          'with', 'as', 'at', 'from', 'etc'}
+
+
+def titlecase(text):
+    words = text.split()
+    out = []
+    for i, w in enumerate(words):
+        lw = w.lower()
+        out.append(lw if i and lw.strip('.,') in _SMALL else w[:1].upper() + w[1:])
+    return ' '.join(out)
+
+
 def _roman_value(s):
     """Sort chapters in numeric order. 'XXIA' sorts just after 'XXI'."""
     core = ''.join(c for c in s if c in ROMAN)
@@ -76,7 +92,7 @@ def chapters():
         ready = all(act_summaries.get(s['number']) for s in secs)
         out.append({
             'roman': c['roman'],
-            'title': c['title'],
+            'title': titlecase(c['title']),
             'slug': f'chapter-{c["roman"].lower()}',
             'sections': secs,
             'count': len(secs),

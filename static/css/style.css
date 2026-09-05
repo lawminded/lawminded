@@ -1063,15 +1063,12 @@ button .ic,a .ic,.offer-link .ic,.blog-link .ic{vertical-align:middle;}
 .act-wrap{max-width:100%;}
 .act-statute-body{max-width:none;}
 .act-summary{max-width:none;}
-.act-chapter-list{display:grid;gap:.85rem;}
-.act-chapter-card{display:block;background:var(--card-bg);border:1px solid var(--border);
-  border-left:3px solid var(--gold);border-radius:var(--r-md);padding:1.15rem 1.35rem;
-  text-decoration:none;transition:border-color .2s,box-shadow .2s,transform .2s;}
-.act-chapter-card:hover{border-color:var(--gold);box-shadow:var(--shadow-sm);transform:translateY(-1px);}
-.act-chapter-num{display:block;font-family:var(--uf);font-size:.72rem;letter-spacing:.12em;
-  text-transform:uppercase;color:var(--gold-ink);margin-bottom:.3rem;}
-.act-chapter-title{display:block;font-family:var(--hf);font-size:1.2rem;color:var(--dark);line-height:1.35;}
-.act-chapter-meta{display:block;font-family:var(--uf);font-size:.82rem;color:var(--muted);margin-top:.35rem;}
+
+
+
+
+
+
 
 .act-section{border-top:1px solid var(--border);padding:2rem 0 1.6rem;}
 .act-section:first-of-type{border-top:0;padding-top:.5rem;}
@@ -1111,10 +1108,8 @@ button .ic,a .ic,.offer-link .ic,.blog-link .ic{vertical-align:middle;}
 
 /* Chapter page: names of the sections only, the way a legal index reads. */
 .act-section-list{list-style:none;padding:0;margin:0;display:grid;gap:.5rem;}
-.act-section-list a{display:flex;align-items:baseline;gap:.85rem;background:var(--card-bg);
-  border:1px solid var(--border);border-radius:var(--r-md);padding:.9rem 1.1rem;
-  text-decoration:none;transition:border-color .2s,transform .2s;}
-.act-section-list a:hover{border-color:var(--gold);transform:translateX(2px);}
+
+
 .act-list-num{flex-shrink:0;min-width:2.6rem;font-family:var(--uf);font-size:.8rem;font-weight:700;
   color:var(--gold-ink);}
 .act-list-title{font-family:var(--uf);font-size:.97rem;color:var(--dark);line-height:1.5;}
@@ -1146,7 +1141,7 @@ button .ic,a .ic,.offer-link .ic,.blog-link .ic{vertical-align:middle;}
 .act-index-title{font-family:var(--uf);font-size:1rem;color:var(--dark);line-height:1.55;}
 .act-index-link:hover .act-index-title{color:var(--gold-ink);text-decoration:underline;}
 .act-defn-list{list-style:none;margin:.5rem 0 0;padding:0 0 0 1.9rem;
-  columns:3;column-gap:2.5rem;border-left:2px solid var(--border);}
+  columns:3;column-gap:2.5rem;}
 .act-defn-list li{break-inside:avoid;margin-bottom:.32rem;}
 .act-defn-list a{font-family:var(--uf);font-size:.88rem;color:var(--mid);text-decoration:none;}
 .act-defn-list a:hover{color:var(--gold-ink);text-decoration:underline;}
@@ -1176,3 +1171,58 @@ button .ic,a .ic,.offer-link .ic,.blog-link .ic{vertical-align:middle;}
 @media(min-width:1100px){.act-defn-index .act-defn-list{columns:4;}}
 @media(max-width:900px){.act-defn-list{columns:2;}}
 @media(max-width:600px){.act-defn-list{columns:1;}}
+
+/* ─── ACT: a contents page, not a card grid ───────────────────────────────
+   The obvious treatment for a list like this is a stack of bordered cards
+   with a coloured rule down the left edge. It is also the treatment every
+   generated layout reaches for. A statute already has a visual tradition of
+   its own — the engraved contents page, where a numeral sits in the margin
+   and hairlines separate the entries — so this borrows that instead. No
+   boxes, no left rules; the numeral and the space do the work. */
+.act-contents{list-style:none;margin:0;padding:0;
+  border-top:1px solid color-mix(in srgb, var(--border) 60%, transparent);}
+.act-contents > li{border-bottom:1px solid color-mix(in srgb, var(--border) 60%, transparent);}
+.act-contents a{display:grid;grid-template-columns:5.5rem 1fr;align-items:baseline;
+  gap:1.5rem;padding:1.35rem .75rem;text-decoration:none;position:relative;
+  transition:background .28s ease, padding-left .28s ease;}
+/* The glow the owner asked for, and only on hover: a soft wash plus a hairline
+   that draws itself under the row. Nothing is painted at rest. */
+.act-contents a::after{content:'';position:absolute;left:.75rem;right:.75rem;bottom:0;
+  height:1px;background:var(--gold);transform:scaleX(0);transform-origin:left;
+  transition:transform .35s cubic-bezier(.2,.7,.3,1);}
+.act-contents a:hover{background:color-mix(in srgb, var(--gold) 7%, transparent);
+  padding-left:1.4rem;}
+.act-contents a:hover::after{transform:scaleX(1);}
+.act-contents a:focus-visible{outline:2px solid var(--gold);outline-offset:-3px;}
+.act-numeral{font-family:var(--hf);font-size:2.1rem;line-height:1;color:var(--muted);
+  text-align:right;letter-spacing:.02em;transition:color .28s ease;}
+.act-contents a:hover .act-numeral{color:var(--gold);}
+.act-contents-body{display:block;}
+.act-contents-title{display:block;font-family:var(--hf);font-size:1.3rem;
+  color:var(--dark);line-height:1.3;}
+.act-contents a:hover .act-contents-title{color:var(--gold-ink);}
+.act-contents-meta{display:block;font-family:var(--uf);font-size:.8rem;
+  letter-spacing:.04em;color:var(--muted);margin-top:.35rem;}
+.act-dot{margin:0 .5rem;opacity:.55;}
+
+/* The section index inside a chapter, same restraint. */
+.act-index{list-style:none;padding:0;margin:0;
+  border-top:1px solid color-mix(in srgb, var(--border) 60%, transparent);}
+.act-index > li{border-bottom:1px solid color-mix(in srgb, var(--border) 60%, transparent);}
+.act-index-link{display:grid;grid-template-columns:3.5rem 1fr;gap:1.1rem;
+  align-items:baseline;padding:.95rem .75rem;text-decoration:none;position:relative;
+  transition:background .25s ease, padding-left .25s ease;}
+.act-index-link:hover{background:color-mix(in srgb, var(--gold) 6%, transparent);
+  padding-left:1.3rem;}
+.act-index-link:focus-visible{outline:2px solid var(--gold);outline-offset:-3px;}
+.act-index-num{font-family:var(--hf);font-size:1.05rem;font-weight:400;
+  color:var(--muted);text-align:right;transition:color .25s ease;}
+.act-index-link:hover .act-index-num{color:var(--gold);}
+.act-index-title{font-family:var(--uf);font-size:1rem;color:var(--dark);line-height:1.55;}
+.act-index-link:hover .act-index-title{color:var(--gold-ink);}
+@media(max-width:640px){
+  .act-contents a{grid-template-columns:3.2rem 1fr;gap:1rem;padding:1.1rem .5rem;}
+  .act-numeral{font-size:1.5rem;}
+  .act-contents-title{font-size:1.08rem;}
+  .act-index-link{grid-template-columns:2.6rem 1fr;gap:.8rem;}
+}

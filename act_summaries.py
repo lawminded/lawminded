@@ -968,6 +968,474 @@ SUMMARIES = {
             "There are defences — where the failure was the shareholder's own doing, or a lawful adjustment, or "
             "a dispute over entitlement, or where it was not the company's fault."),
 
+    # ── Chapter IX — Accounts of companies ───────────────────────────────────
+    '128': ("Every company keeps proper books of account at its registered office, showing all money received "
+            "and spent, all sales and purchases, its assets and liabilities.\n\n"
+            "They can be kept electronically, and at another place in India if the Registrar is told. Books must "
+            "be preserved for at least eight financial years.\n\n"
+            "Directors can inspect them. Keeping them badly is not a paperwork slip: officers in default face a "
+            "fine, and books are the foundation everything else in this Chapter rests on."),
+    '129': ("Financial statements must give a true and fair view of the company's affairs and follow the "
+            "accounting standards.\n\n"
+            "The Board lays them before the annual general meeting each year. Where a company has subsidiaries, "
+            "associates or joint ventures, it also prepares consolidated statements covering the whole group.\n\n"
+            "\"True and fair\" is the legal standard: statements that technically comply with a standard but "
+            "leave a misleading impression do not meet it."),
+    '129A': ("A short enabling section. The Central Government can require prescribed classes of unlisted "
+             "companies to prepare financial results during the year, not just at the end of it.\n\n"
+             "Those results must be approved by the Board, audited or reviewed, and filed with the Registrar. It "
+             "brings some unlisted companies closer to the quarterly rhythm listed ones already follow."),
+    '130': ("Accounts once approved are normally final. This section is the narrow exception.\n\n"
+            "A court or the Tribunal can order a company to re-open its books and recast its financial "
+            "statements — but only on an application by the Central Government, an income-tax authority, SEBI, "
+            "another regulator, or a person the Tribunal permits.\n\n"
+            "The grounds are serious: the accounts were prepared fraudulently, or the company's affairs were "
+            "mismanaged and the accounts cannot be relied on. Books cannot be re-opened beyond eight financial "
+            "years back."),
+    '131': ("Where the directors themselves realise the accounts or the Board's report do not comply with the "
+            "Act, they can revise them voluntarily.\n\n"
+            "It needs the Tribunal's approval, and the Tribunal hears the Central Government and the income-tax "
+            "authorities first. Revision is allowed only for the three preceding financial years, and only once "
+            "in a year.\n\n"
+            "The point is that a company can correct itself without waiting to be caught, but not quietly."),
+    '132': ("This constitutes the National Financial Reporting Authority — the regulator that oversees auditors "
+            "and accounting standards.\n\n"
+            "It recommends accounting and auditing standards to the Central Government, monitors compliance, and "
+            "oversees the quality of the audit profession.\n\n"
+            "It can investigate professional misconduct by chartered accountants and firms, and where it finds "
+            "misconduct it can impose penalties and debar a member or firm from practice for up to ten years. "
+            "Its proceedings carry the powers of a civil court."),
+    '133': ("The Central Government prescribes the accounting standards, on the recommendation of the Institute "
+            "of Chartered Accountants of India and in consultation with the National Financial Reporting "
+            "Authority.\n\n"
+            "It is the section that gives the standards their legal force — without it they would be professional "
+            "guidance rather than law."),
+    '134': ("This section covers what goes out with the accounts: the Board's report.\n\n"
+            "The financial statements are approved by the Board and signed by the chairperson or two directors, "
+            "including the managing director, along with the chief executive, chief financial officer and "
+            "company secretary where appointed.\n\n"
+            "The Board's report must cover the state of the company's affairs, dividend recommended, reserves, "
+            "material changes since the year end, conservation of energy, risk management, related party "
+            "contracts and corporate social responsibility.\n\n"
+            "It also carries the directors' responsibility statement — a signed declaration that the accounts "
+            "were properly prepared and that internal controls were adequate."),
+    '135': ("Corporate social responsibility is a spending obligation, not a suggestion.\n\n"
+            "A company with net worth of five hundred crore or more, turnover of a thousand crore or more, or "
+            "net profit of five crore or more in a financial year must form a CSR Committee of the Board with at "
+            "least one independent director.\n\n"
+            "It must spend at least two per cent of its average net profits of the preceding three years on the "
+            "activities listed in Schedule VII. If it does not, the Board explains why in its report.\n\n"
+            "Unspent money attached to an ongoing project moves to a special account and must be used within "
+            "three years; anything else goes to a fund named in Schedule VII."),
+    '136': ("A member is entitled to see the accounts before the meeting that adopts them.\n\n"
+            "The financial statements, the auditor's report and every document to be laid at the annual general "
+            "meeting must be sent to every member, trustee for debenture holders and other entitled person at "
+            "least twenty-one days beforehand.\n\n"
+            "Listed companies also place them on their website. A company with a subsidiary must make the "
+            "subsidiary's accounts available too."),
+    '137': ("The accounts do not stay inside the company. A copy of the financial statements, adopted at the "
+            "annual general meeting, goes to the Registrar within thirty days.\n\n"
+            "If they were not adopted, they are still filed as unadopted, and the adopted set follows within "
+            "thirty days of the adjourned meeting.\n\n"
+            "Filing late carries penalties on the company, on the managing director or the director responsible, "
+            "and on the chief financial officer."),
+    '138': ("Prescribed classes of company must appoint an internal auditor — a chartered accountant, cost "
+            "accountant, or another professional the Board decides on.\n\n"
+            "The internal auditor checks the company's own systems and controls as it goes along, which is a "
+            "different job from the statutory audit at the end of the year."),
+
+    # ── Chapter X — Audit and auditors ───────────────────────────────────────
+    '139': ("How a company gets its auditor, and for how long.\n\n"
+            "At the first annual general meeting a company appoints an auditor to hold office until the "
+            "conclusion of the sixth annual general meeting — a five-year term, ratified as prescribed.\n\n"
+            "Listed and prescribed companies must rotate: an individual auditor for one term of five years, an "
+            "audit firm for two terms of five years, and then a cooling-off of five years before returning. The "
+            "idea is that familiarity between auditor and company should not be allowed to set.\n\n"
+            "The first auditor is appointed by the Board within thirty days of incorporation, and a casual "
+            "vacancy is filled by the Board — or by the members if the vacancy came from a resignation."),
+    '140': ("Getting rid of an auditor is deliberately hard, because an auditor who can be dismissed easily "
+            "cannot report honestly.\n\n"
+            "Removal before the term ends needs a special resolution and the Central Government's prior "
+            "approval, and the auditor must be given a chance to be heard.\n\n"
+            "A resigning auditor files a statement of the reasons with the company and the Registrar within "
+            "thirty days. Where the Tribunal is satisfied an auditor acted fraudulently or colluded with the "
+            "company, it can order a change of auditor, and that auditor cannot be appointed by any company for "
+            "five years."),
+    '141': ("Who may be an auditor, and who may not.\n\n"
+            "Only a chartered accountant, or a firm where the majority of partners practising in India are "
+            "chartered accountants, is eligible.\n\n"
+            "Disqualified are: a body corporate other than an LLP, an officer or employee of the company, a "
+            "partner or employee of such a person, anyone holding securities in the company or indebted to it "
+            "beyond the prescribed limit, anyone with a business relationship with it, a relative of a director, "
+            "and a person already auditing twenty companies.\n\n"
+            "A person convicted of fraud cannot be appointed for ten years."),
+    '142': ("The auditor's fee is fixed in general meeting, or in the manner the members decide there — not by "
+            "the management the auditor is checking.\n\n"
+            "The first auditor's fee can be fixed by the Board. The fee includes out-of-pocket expenses, but not "
+            "payment for other services rendered at the company's request."),
+    '143': ("This is the heart of the audit: what an auditor may do and must do.\n\n"
+            "The auditor has a right of access at all times to the company's books and vouchers, wherever they "
+            "are kept, and can require information from officers. For a holding company, the same access extends "
+            "to subsidiaries and associates.\n\n"
+            "The report must say whether the accounts give a true and fair view, whether the company has adequate "
+            "internal financial controls, and answer a list of specific questions including whether loans made "
+            "are prejudicial to the company's interests.\n\n"
+            "The duty that matters most is reporting fraud. Where an auditor has reason to believe an offence "
+            "involving fraud is being committed, they must report it — to the Central Government above the "
+            "prescribed amount, and to the audit committee or Board below it. Failing to report is itself "
+            "punishable."),
+    '144': ("An auditor cannot audit work they did themselves, so this section lists the services they may not "
+            "provide to the company, its holding company or its subsidiary.\n\n"
+            "Barred are accounting and book-keeping, internal audit, design of financial information systems, "
+            "actuarial services, investment advisory, investment banking, outsourced financial services and "
+            "management services.\n\n"
+            "Anything else needs the approval of the Board or the audit committee."),
+    '145': ("The person appointed as auditor signs the audit report personally.\n\n"
+            "Qualifications, observations or comments on financial matters in that report must be read out at "
+            "the general meeting, and are open to inspection by any member. An adverse remark cannot be buried "
+            "in a document nobody reads aloud."),
+    '146': ("Auditors receive notice of every general meeting and are entitled to attend, either personally or "
+            "through an authorised representative who is qualified to be an auditor.\n\n"
+            "They have the right to be heard at the meeting on any part of the business that concerns them as "
+            "auditor. Unless the company exempts them, attendance is expected."),
+    '147': ("The penalties for breaking the audit provisions.\n\n"
+            "A company in contravention faces a fine, and its officers in default a fine and possible "
+            "imprisonment. An auditor who contravenes sections 139 to 146 faces a fine from twenty-five thousand "
+            "to five lakh rupees, or four times the audit fee, whichever is less.\n\n"
+            "Where the auditor acted knowingly or wilfully with intent to deceive, it becomes imprisonment of up "
+            "to one year plus a larger fine, and the auditor must refund the fee and pay damages. Where a firm's "
+            "partner acted fraudulently, the firm is jointly and severally liable."),
+    '148': ("Some companies must audit not just their money but their costs.\n\n"
+            "For prescribed classes engaged in production, processing, manufacturing or mining, the Central "
+            "Government can direct that particulars of cost be included in the books, and order a cost audit.\n\n"
+            "The cost audit is done by a cost accountant, appointed by the Board, and the report goes to the "
+            "Board and then to the Central Government. The auditor of the accounts cannot do the cost audit."),
+
+    # ── Chapter XI — Appointment and qualifications of directors ─────────────
+    '149': ("Every company has a Board made up of individuals — never another company.\n\n"
+            "The minimum is three directors for a public company, two for a private one and one for a One "
+            "Person Company; the maximum is fifteen, and more than that needs a special resolution.\n\n"
+            "Every company must have at least one director who stayed in India for 182 days or more in the "
+            "previous year. Listed companies must have at least one woman director and at least a third of the "
+            "Board independent.\n\n"
+            "The section defines what independence means — no pecuniary relationship, no relatives among the "
+            "directors, no past employment — and independent directors are not entitled to stock options and can "
+            "serve two consecutive five-year terms at most."),
+    '150': ("Independent directors can be picked from a data bank maintained by an approved institute, holding "
+            "the names and qualifications of eligible people.\n\n"
+            "The company remains responsible for checking that the person it appoints is suitable, and the "
+            "appointment is approved by the members at a general meeting."),
+    '151': ("A listed company may have one director elected by its small shareholders — those holding shares of "
+            "nominal value of twenty thousand rupees or less.\n\n"
+            "It gives the smallest investors a seat rather than leaving the Board entirely to the large holders "
+            "who can outvote them."),
+    '152': ("The general rules for appointing directors.\n\n"
+            "Where the articles are silent, the individual subscribers to the memorandum are the first directors "
+            "until the first annual general meeting. Every director is appointed by the members in general "
+            "meeting, must have a Director Identification Number, and must give written consent, which the "
+            "company files with the Registrar.\n\n"
+            "In a public company, at least two-thirds of the directors are liable to retire by rotation, and a "
+            "third of them retire at each annual general meeting — the longest-serving first."),
+    '153': ("Anyone who intends to be a director applies to the Central Government for a Director Identification "
+            "Number, in the prescribed form and with the prescribed fee.\n\n"
+            "The DIN is the permanent identifier that follows a person across every company they serve, which is "
+            "what makes disqualification enforceable."),
+    '154': ("The Central Government allots the Director Identification Number within one month of receiving the "
+            "application.\n\n"
+            "A short procedural section, but it is the step that turns an applicant into someone eligible to be "
+            "appointed."),
+    '155': ("No one may hold more than one Director Identification Number.\n\n"
+            "A second number would let a disqualified person reappear as somebody new, which is exactly what the "
+            "single-number rule prevents."),
+    '156': ("Every existing director must tell all the companies where they are a director of their DIN, within "
+            "one month of receiving it.\n\n"
+            "It is how the number reaches the company's own records and, from there, the public register."),
+    '157': ("Once a director gives their DIN, the company passes it to the Registrar within fifteen days.\n\n"
+            "Failure carries a penalty on the company and on every officer in default. The chain is deliberate: "
+            "person to company, company to Registrar, so the identity is verifiable at both ends."),
+    '158': ("Whenever a person or company files a return, information or particulars under this Act that relate "
+            "to a director, the DIN must be mentioned.\n\n"
+            "It makes every filing traceable to a specific individual rather than to a common name."),
+    '159': ("The penalty for failing to comply with the DIN provisions — sections 152, 155 and 156.\n\n"
+            "The individual or director in default faces a penalty of up to fifty thousand rupees, and a further "
+            "five hundred rupees for each day the default continues."),
+    '160': ("Someone who is not a retiring director can still stand for the Board.\n\n"
+            "They, or a member proposing them, give the company at least fourteen days' notice before the "
+            "meeting along with a deposit of one lakh rupees. The deposit comes back if the person is elected or "
+            "gets more than twenty-five per cent of the votes cast.\n\n"
+            "The deposit is not required for an independent director or a person recommended by the Board."),
+    '161': ("Three ways a director can join the Board between general meetings, if the articles allow.\n\n"
+            "An additional director can be appointed by the Board, but only holds office until the next annual "
+            "general meeting. An alternate director can be appointed to act for a director absent from India for "
+            "at least three months. A nominee director can be appointed by a financial institution, the "
+            "government or under an agreement.\n\n"
+            "The Board can also fill a casual vacancy caused by a director leaving before their term ends."),
+    '162': ("At a general meeting, two or more directors cannot be appointed by a single resolution.\n\n"
+            "Each appointment is voted on separately, unless the members first agree unanimously to do it "
+            "together. A resolution passed in breach of this is void.\n\n"
+            "It stops a Board being presented as a package, where members must accept an unwanted candidate to "
+            "get a wanted one."),
+    '163': ("A company's articles may provide for at least two-thirds of its directors to be appointed by "
+            "proportional representation — by single transferable vote or cumulative voting.\n\n"
+            "Under ordinary majority voting, a group holding just over half the shares elects the entire Board. "
+            "Proportional representation lets a substantial minority elect someone. Those appointments are made "
+            "once every three years."),
+    '164': ("The list of things that stop a person being a director.\n\n"
+            "Unsoundness of mind, undischarged insolvency, a pending insolvency application, conviction for an "
+            "offence with a sentence of six months or more in the last five years, a court order disqualifying "
+            "them, unpaid calls on shares for six months, and conviction for related party dealings in the last "
+            "five years.\n\n"
+            "The one that catches most people is sub-section (2): a director of a company that has failed to "
+            "file financial statements or annual returns for three continuous years, or failed to repay deposits "
+            "or debentures for a year, cannot be reappointed there or appointed anywhere else for five years."),
+    '165': ("A person may hold directorships in up to twenty companies, and of those no more than ten may be "
+            "public companies.\n\n"
+            "The members can set a lower number for their own company by special resolution.\n\n"
+            "Someone over the limit must resign from the excess within a year. Continuing beyond that carries a "
+            "penalty of two thousand rupees a day, and there is a ceiling on the total."),
+    '166': ("The statutory statement of what a director owes the company.\n\n"
+            "A director must act in accordance with the articles, in good faith to promote the objects of the "
+            "company for the benefit of its members as a whole, and in the best interests of the company, its "
+            "employees, the shareholders, the community and the environment.\n\n"
+            "They must exercise reasonable care, skill and independent judgement, must not put themselves in a "
+            "position where their interest conflicts with the company's, must not make any undue gain, and must "
+            "not assign their office to someone else.\n\n"
+            "A director who makes an undue gain has to hand it back to the company."),
+    '167': ("When a director's seat empties automatically, without anyone voting.\n\n"
+            "It happens on incurring a disqualification, on missing every Board meeting for twelve months, on "
+            "breaching the related-party rules in section 184 or 188, on being disqualified by a court or "
+            "Tribunal order, on conviction with a sentence of six months or more, and on being removed under the "
+            "Act.\n\n"
+            "Someone who carries on acting as a director after their office has become vacant faces imprisonment "
+            "of up to a year or a fine, or both."),
+    '168': ("A director resigns by giving written notice to the company, and the resignation takes effect from "
+            "the date the company receives it or a later date stated in it.\n\n"
+            "The Board takes note, the company tells the Registrar, and the resignation appears in the next "
+            "Board's report. The director may also send a copy with reasons to the Registrar themselves.\n\n"
+            "Resigning does not wipe the slate: a director stays liable for offences committed while in office."),
+    '169': ("Members can remove a director by ordinary resolution before their term ends, after giving the "
+            "director a reasonable opportunity of being heard.\n\n"
+            "A director appointed by the Tribunal under section 242 cannot be removed this way, and neither can "
+            "one appointed by proportional representation under section 163.\n\n"
+            "The director has the right to be heard at the meeting, and to have their written representation "
+            "circulated to members. If it arrives too late, they can require it to be read out."),
+    '170': ("Every company keeps a register at its registered office of its directors and key managerial "
+            "personnel — their particulars and their shareholding, including in the holding, subsidiary and "
+            "associate companies.\n\n"
+            "A return of the register and of any change in it goes to the Registrar within thirty days."),
+    '171': ("The register of directors and key managerial personnel is open to members for inspection during "
+            "business hours, free of charge, and they can take extracts.\n\n"
+            "It must also be kept open at the annual general meeting and made accessible to anyone attending. "
+            "Refusing inspection carries a penalty, and the Tribunal can order it immediately."),
+    '172': ("The residual penalty for this Chapter. Where a company breaks any provision about directors and no "
+            "specific punishment is set out for it, the company and every officer in default face a penalty of "
+            "fifty thousand rupees, and five hundred rupees a day while it continues, up to a ceiling."),
+
+    # ── Chapter XII — Meetings of Board and its powers ───────────────────────
+    '173': ("The Board must meet, and this section sets the rhythm.\n\n"
+            "The first meeting comes within thirty days of incorporation. After that, at least four meetings a "
+            "year, with no more than one hundred and twenty days between two of them.\n\n"
+            "Meetings need at least seven days' notice in writing. Directors can take part by video conference or "
+            "other audio-visual means, though certain sensitive items — approving accounts, a merger — may be "
+            "barred from being decided that way.\n\n"
+            "A One Person Company, small company or dormant company needs only one meeting in each half of the "
+            "year, at least ninety days apart."),
+    '174': ("Quorum for a Board meeting is one-third of the total strength or two directors, whichever is "
+            "higher.\n\n"
+            "Directors joining by video conference count towards it. If interested directors have to be excluded "
+            "and the remaining number falls below quorum, those left — if two or more — become the quorum.\n\n"
+            "Where a meeting cannot be held for want of quorum, it stands adjourned to the same day, time and "
+            "place next week."),
+    '175': ("Not every Board decision needs a meeting. A resolution can be passed by circulation — the draft is "
+            "sent to every director at their registered address and approved by a majority.\n\n"
+            "But if at least one-third of the directors want the matter decided at a meeting, it has to be. And "
+            "a circulated resolution must still be noted at the next Board meeting and recorded in the minutes."),
+    '176': ("A safety net for third parties. If it later turns out a director's appointment was invalid or had "
+            "ended, the acts they did in the meantime are still valid.\n\n"
+            "Someone dealing with a company cannot be expected to audit its internal appointments. The section "
+            "stops that being a way to escape a contract — though it does not validate acts done after the "
+            "defect was known."),
+    '177': ("Every listed public company and prescribed classes must have an audit committee of at least three "
+            "directors, a majority of them independent, and a majority able to read financial statements.\n\n"
+            "It recommends the appointment and remuneration of auditors, reviews the financial statements and "
+            "the auditor's report, examines related party transactions, evaluates internal controls, and can "
+            "call for outside professional advice.\n\n"
+            "It also runs the vigil mechanism — the whistle-blower channel — which prescribed companies must "
+            "establish, with safeguards against victimisation and direct access to the committee's chairperson."),
+    '178': ("Two more committees for listed public companies and prescribed classes.\n\n"
+            "The Nomination and Remuneration Committee, of three or more non-executive directors with at least "
+            "half independent, identifies who is fit to be a director, evaluates performance and frames the "
+            "remuneration policy for directors, key managerial personnel and other employees.\n\n"
+            "The Stakeholders Relationship Committee is required where a company has more than a thousand "
+            "shareholders, debenture holders or deposit holders, and deals with their grievances."),
+    '179': ("The Board can exercise every power the company itself has, subject to the Act and the articles.\n\n"
+            "Some powers can only be exercised at a Board meeting, by resolution: calls on shares, buy-back "
+            "under section 68, issuing securities, borrowing, investing the company's funds, granting loans, "
+            "approving financial statements and the Board's report, diversifying the business, approving a "
+            "merger, and taking over another company.\n\n"
+            "Certain of those can be delegated to a committee, the managing director or the manager, on terms "
+            "the Board sets."),
+    '180': ("Four things the Board cannot do without the members' consent by special resolution.\n\n"
+            "Selling or leasing the whole or substantially the whole of an undertaking. Investing the "
+            "compensation from a compulsory acquisition in anything other than trust securities. Borrowing "
+            "beyond the company's paid-up capital, free reserves and securities premium taken together — "
+            "temporary bank loans in the ordinary course excepted. And giving time or waiving repayment of a "
+            "debt owed by a director.\n\n"
+            "A borrowing beyond the limit is not valid against the lender unless the lender did not know."),
+    '181': ("The Board may contribute to genuine charitable funds.\n\n"
+            "But if the total in a financial year exceeds five per cent of the company's average net profits for "
+            "the three preceding years, prior permission of the members in general meeting is needed."),
+    '182': ("Political contributions, and the limits on them.\n\n"
+            "A government company cannot contribute at all, and neither can a company less than three years old. "
+            "Any other company can, but only with a Board resolution.\n\n"
+            "Contributions must be made only by a route other than cash, and disclosed in the profit and loss "
+            "account. Contravening carries a fine of up to five times the amount contributed, and imprisonment "
+            "of up to six months for officers in default."),
+    '183': ("A company can contribute to the National Defence Fund or any other fund the Central Government "
+            "approves for national defence.\n\n"
+            "This one is deliberately unrestricted — there is no ceiling — and the Board or anyone exercising "
+            "its powers can decide it. The total contributed in a year is disclosed in the profit and loss "
+            "account."),
+    '184': ("Every director must disclose their interest.\n\n"
+            "At the first Board meeting they attend, and at the first meeting of each financial year, and "
+            "whenever their interests change, a director discloses their concern or interest in any company, "
+            "firm or other body.\n\n"
+            "Where a contract is proposed with a body in which a director is interested, they must disclose it "
+            "at the meeting and must not take part in the discussion or the vote. A contract entered in breach "
+            "is voidable at the company's option, and the director faces a penalty."),
+    '185': ("A company generally may not lend to its own directors, or to anyone connected with them, or give a "
+            "guarantee or security for their borrowing.\n\n"
+            "The prohibition covers directors of the company and of its holding company, their partners and "
+            "relatives, and firms in which they are partners.\n\n"
+            "A company can lend to a person in whom a director is interested if the members approve by special "
+            "resolution and the loan is used for the borrowing company's principal business. There are "
+            "exceptions for a managing or whole-time director under a scheme available to all employees, and for "
+            "companies whose ordinary business is lending."),
+    '186': ("Limits on how far a company can lend, invest, or guarantee for others.\n\n"
+            "Investments are normally made through no more than two layers of investment companies. Loans, "
+            "guarantees and securities to any other body corporate are capped at sixty per cent of paid-up "
+            "capital, free reserves and securities premium, or one hundred per cent of free reserves and "
+            "securities premium, whichever is more.\n\n"
+            "Going beyond needs a special resolution. The interest charged cannot be below the yield on "
+            "government securities of comparable tenure, and a company in default on deposits cannot lend at "
+            "all. Every loan, guarantee and investment goes into a register open to members."),
+    '187': ("A company must hold its investments in its own name.\n\n"
+            "It stops assets being parked in a nominee's name where they are hard to trace and easy to move.\n\n"
+            "There are exceptions — shares held through a depository, shares in a subsidiary held by nominees to "
+            "meet the minimum member requirement, and deposits with a bank as security. Where an investment is "
+            "not held in the company's own name, the reason goes in a register kept for the purpose."),
+    '188': ("Related party transactions — deals between a company and people close to it.\n\n"
+            "Sale or purchase of goods or property, leasing, availing or rendering services, appointing an agent, "
+            "appointing a related party to an office of profit, and underwriting the company's securities all "
+            "need the Board's consent by resolution at a meeting.\n\n"
+            "Beyond prescribed limits, they also need a prior resolution of the members, and a member who is a "
+            "related party cannot vote on it. Deals in the ordinary course of business on an arm's length basis "
+            "fall outside the section.\n\n"
+            "A contract made without approval is voidable, the director must indemnify the company for its loss, "
+            "and in a listed company the officer in default faces a penalty."),
+    '189': ("Every company keeps a register of the contracts and arrangements in which its directors are "
+            "interested, with the particulars of each.\n\n"
+            "The register is placed before the next Board meeting and signed by the directors present. It is "
+            "kept at the registered office and is open to members, who can take extracts.\n\n"
+            "It is the written trail behind section 184's disclosure duty."),
+    '190': ("Where a company has a contract of service with a managing or whole-time director, it keeps a copy "
+            "at its registered office — or a written memorandum of the terms if the contract is not in "
+            "writing.\n\n"
+            "Members can inspect it without charge. A private company is exempt."),
+    '191': ("A director cannot take a personal payment for loss of office in connection with the transfer of the "
+            "company's undertaking, property or shares, unless the members approve it.\n\n"
+            "The concern is a director being quietly bought off to support a deal that is not in the company's "
+            "interest.\n\n"
+            "Where the payment is made without approval, the money is held in trust for the company — or, where "
+            "it relates to a share transfer, for the shareholders who sold."),
+    '192': ("A company cannot enter into an arrangement to buy an asset from a director, or sell one to them, "
+            "for consideration other than cash, unless the members approve it in general meeting.\n\n"
+            "The same applies to directors of the holding, subsidiary or associate company, and to people "
+            "connected with them. The notice of the meeting must include a valuation of the asset by a "
+            "registered valuer.\n\n"
+            "An arrangement made without approval is voidable at the company's option."),
+    '193': ("A One Person Company where the sole member is also the sole director presents an obvious problem: "
+            "there is nobody on the other side of the table.\n\n"
+            "So where such a company contracts with that member, and the contract is not in the ordinary course "
+            "of business, the terms must be recorded in the minutes of the first Board meeting after it.\n\n"
+            "The company must also inform the Registrar of every such contract."),
+    '194': ("This section no longer exists. It was omitted by the Companies (Amendment) Act, 2017, with effect "
+            "from February 2018.\n\n"
+            "It used to prohibit directors and key managerial personnel from forward dealing in the company's "
+            "securities. That conduct is now dealt with under SEBI's regulations rather than this Act."),
+    '195': ("This section no longer exists either. It was omitted at the same time as section 194, in February "
+            "2018.\n\n"
+            "It contained the Companies Act's own prohibition on insider trading. Insider trading is now governed "
+            "entirely by SEBI's Prohibition of Insider Trading Regulations, which is where that subject lives."),
+
+    # ── Chapter XIII — Appointment and remuneration of managerial personnel ──
+    '196': ("A company cannot have a managing director and a manager at the same time — the two roles overlap "
+            "and the Act makes you choose.\n\n"
+            "The term is up to five years at a time, and reappointment cannot be made earlier than one year "
+            "before the current term expires.\n\n"
+            "The person must be at least twenty-one and under seventy, though someone over seventy can be "
+            "appointed by special resolution. They must not be an undischarged insolvent, must not have "
+            "suspended payment to creditors, and must not have been convicted of an offence carrying more than "
+            "six months. Appointment is approved by the Board and then by the members."),
+    '197': ("The ceiling on what a public company can pay its managerial people.\n\n"
+            "Total managerial remuneration cannot exceed eleven per cent of net profits. Within that, one "
+            "managing or whole-time director or manager is capped at five per cent, and all of them together at "
+            "ten per cent; other directors at one per cent where there is a managing director, three per cent "
+            "where there is not.\n\n"
+            "Paying more needs a resolution of the members, and if the company has defaulted to banks or "
+            "debenture holders, their prior approval as well.\n\n"
+            "Where profits are inadequate, Schedule V applies. Money paid over the limit has to be refunded, and "
+            "the company cannot waive it without approval."),
+    '198': ("This is the arithmetic behind section 197: how net profit is worked out for remuneration.\n\n"
+            "It says which credits go in and which are left out, and which expenses are deducted and which are "
+            "not.\n\n"
+            "Profits from the sale of undertakings or immovable property, and unrealised gains on revaluation, "
+            "are excluded. Income tax is not deducted; voluntary compensation, damages and legitimate business "
+            "expenses are. The point is a consistent figure that cannot be shaped to enlarge a pay packet."),
+    '199': ("Where a company has to restate its financial statements because of fraud or non-compliance, it must "
+            "claw back what it overpaid.\n\n"
+            "Remuneration, including stock options, received by any past or present managing director, "
+            "whole-time director, manager or chief executive in excess of what the restated accounts justify has "
+            "to be recovered for the two preceding financial years."),
+    '200': ("When approving an appointment or a remuneration package, the Central Government or the company must "
+            "have regard to a list of factors.\n\n"
+            "They include the financial position of the company, the remuneration of comparable people elsewhere, "
+            "the person's professional qualifications and experience, responsibilities, past performance, and "
+            "the industry standard.\n\n"
+            "It exists so a figure can be justified against something other than the Board's own goodwill."),
+    '201': ("The procedural section for applications to the Central Government under this Chapter.\n\n"
+            "The application must be in the prescribed form, and before it is made the company must publish a "
+            "notice in newspapers — one in English and one in the regional language of the district where the "
+            "registered office is — inviting objections from members.\n\n"
+            "A copy of the notice goes to the members, and any objections received go to the government with the "
+            "application."),
+    '202': ("A company may compensate a managing director, whole-time director or manager for loss of office — "
+            "but not any other director.\n\n"
+            "No compensation is payable where the director resigns because of a reconstruction and is "
+            "reappointed, where they resign otherwise, where their office is vacated under section 167, where "
+            "the company is wound up through their own fault, or where they were guilty of fraud, breach of "
+            "trust or gross negligence.\n\n"
+            "The amount cannot exceed the remuneration they would have earned for the unexpired term, or three "
+            "years, whichever is shorter."),
+    '203': ("Prescribed classes of company must appoint whole-time key managerial personnel: a managing "
+            "director or chief executive officer or manager and, where there is none of those, a whole-time "
+            "director; a company secretary; and a chief financial officer.\n\n"
+            "They are appointed by a Board resolution setting out the terms. A person cannot hold office as key "
+            "managerial personnel in more than one company at a time, apart from its subsidiary.\n\n"
+            "A vacancy has to be filled within six months. Failing to appoint carries a penalty on the company "
+            "and on every director and officer in default."),
+    '204': ("Every listed company, and prescribed classes of other companies, must attach a secretarial audit "
+            "report to the Board's report.\n\n"
+            "The audit is carried out by a company secretary in practice, and it examines whether the company has "
+            "complied with the applicable laws — not just the Companies Act.\n\n"
+            "The Board must explain in its report any qualification or observation the secretarial auditor "
+            "makes. It is the compliance equivalent of a financial audit."),
+    '205': ("What a company secretary is actually for.\n\n"
+            "Reporting to the Board on compliance with this Act, the rules and other laws; ensuring the company "
+            "follows the applicable secretarial standards; and discharging the other duties prescribed.\n\n"
+            "The section makes the role a statutory one rather than an administrative title, which is why the "
+            "secretary is one of the key managerial personnel who signs the accounts."),
+
 }
 
 
