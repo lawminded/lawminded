@@ -105,3 +105,27 @@ Standing preferences and corrections. Read before writing; append when told some
   31 August was sourced. Same trick reaches icsi.edu representations. A
   `share.google/...` link resolves by fetching it and reading the redirect
   chain: it goes to google.com first, then to the real mca.gov.in document.
+
+## 2026-09-11
+
+- **Every article gets its own photograph.** The owner spotted that the PAS-3 vs
+  PAS-4 draft carried the same image as the published RTI vs PIL article. It was
+  byte-identical, and it was not the first time: the CCFS extension article and
+  the ITR due-date article had also been sharing one. The cause was in
+  `automation/gen_image.py` — Pexels ranks results deterministically and the
+  script always took `photos[0]`, so two articles drafted off similar search
+  phrases landed on the same picture. Fixed at the source on 2026-09-11:
+  `best_effort` now hashes the 1200x630 WebP each candidate would produce and
+  skips any that matches a hero already in `static/img/articles`. Before staging,
+  the check is one line:
+
+      md5sum static/img/articles/*.webp | awk '{print $1}' | sort | uniq -d
+
+  Empty output means no article is wearing another article's photo.
+
+- Look at the image before staging it, not just at whether one exists. Two of
+  the Pexels candidates tried that day were unusable for reasons a hash check
+  will never catch: one was a sticky note reading "Tax Deadline" over a 2022
+  calendar, on an MCA filing article, and one had Russian text across the
+  document in frame. The house style already says no text or lettering in the
+  photo; that applies to the stock fallback as much as to a Gemini render.
