@@ -12,7 +12,7 @@ import json
 import re
 
 from app import (app, JUDGMENTS_PUBLISHED, autolink, seotitle, SITE_URL,
-                 TITLE_MAX)
+                 TITLE_MAX, limiter)
 from seo_meta import (SEO_DESCRIPTIONS, SEO_TITLES, SEARCH_META_CHANGED,
                       RETIRED_ARTICLES)
 import content as C
@@ -174,6 +174,15 @@ def _types(blocks):
 
 def main():
     app.config['SERVER_NAME'] = None
+    # This suite walks every published page, several times over (title length,
+    # sitemap, description, JSON-LD). That request count grows with the site
+    # and crossed the production default of 300/hour partway through this
+    # session — a real page (pas-3-vs-pas-4) tripped a limiter meant for
+    # abusive traffic, not a full-site test sweep against a single test client.
+    # Limiter reads its config only once, at init_app time, so flipping
+    # app.config after import has no effect — the instance flag has to be set
+    # directly.
+    limiter.enabled = False
     client = app.test_client()
 
     with app.app_context():

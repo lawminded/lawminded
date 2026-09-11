@@ -390,6 +390,9 @@ SEO_DESCRIPTIONS = {
     'online-fraud-remedies':
         "Scammed online? The first hour matters most. How to report it, freeze the "
         "transaction, and give yourself the best chance of getting money back.",
+    'pas-3-vs-pas-4':
+        "PAS-4 is the offer letter; PAS-3 is the return filed after allotment. Why "
+        "they are not alternatives, and the 15-day deadline that trips companies up.",
     'pmegp-scheme-subsidy-guide':
         "PMEGP gives new entrepreneurs a 15-35% subsidy to start a business, higher "
         "for women and SC/ST applicants. What it covers, and how to apply.",
@@ -646,6 +649,8 @@ INTERNAL_LINKS = {
     'private placement': 'private-placement-section-42',
     'section 42': 'private-placement-section-42',
     'pas-4': 'private-placement-section-42',
+    'pas-3': 'pas-3-vs-pas-4',
+    'return of allotment': 'pas-3-vs-pas-4',
     'reduction of share capital': 'reduction-of-share-capital-section-66',
     'section 66': 'reduction-of-share-capital-section-66',
     'related party transaction': 'related-party-transactions-section-188',
