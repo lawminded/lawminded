@@ -1607,6 +1607,14 @@ def seed_articles():
     except Exception:
         pass
 
+    # PAS-3 vs PAS-4 comparison, queued 5 Sep 2026, written 11 Sep 2026. Second-
+    # biggest comparison-query gap after RTI vs PIL (into blog_seed21.py).
+    try:
+        from blog_seed21 import BLOG_ARTICLES_21
+        articles = articles + list(BLOG_ARTICLES_21)
+    except Exception:
+        pass
+
     # Only insert slugs that aren't already in the table (never overwrite),
     # and never re-seed a retired (de-duplicated) article.
     to_insert = [a for a in articles if a[1] not in existing and a[1] not in RETIRED_SLUGS]

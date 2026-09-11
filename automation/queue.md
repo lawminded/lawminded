@@ -18,20 +18,6 @@ The history of what was asked for is worth keeping.
 
 ## Pending
 
-- [ ] 2026-09-05 | PAS-3 vs PAS-4: the difference, and why they are not
-      alternatives
-      *Owner asked for this on 2026-09-04, off the Search Console data. "pas 3 vs
-      pas 4" sits at 6 impressions and average position 2.8 in
-      docs/gsc-performance-2026-08-26.xlsx with no page of its own — the second
-      best comparison gap after RTI vs PIL. The material is already in
-      private-placement-section-42 (PAS-3 x9, PAS-4 x8); link it, do not repeat
-      it. The angle worth leading on: they are not two options to choose
-      between, they are two steps of one private placement — PAS-4 is the offer
-      letter that goes out before, PAS-3 is the return of allotment filed after.
-      Verify Section 42 and Rule 14 of the Companies (Prospectus and Allotment of
-      Securities) Rules 2014 against the bare Act and the rules themselves,
-      including the filing deadline for PAS-3, before writing a single figure.*
-
 - [ ] 2026-09-06 | Writ petition under Article 32 vs Article 226: which court,
       and what each can do
       *Owner asked for this on 2026-09-04. Distinct from the RTI vs PIL article
@@ -51,6 +37,17 @@ The history of what was asked for is worth keeping.
       installed for the system python and does the job.*
 
 ## Written
+
+- [x] 2026-09-05 | PAS-3 vs PAS-4: the difference, and why they are not
+      alternatives
+      *Asked 2026-09-04, off the Search Console data ("pas 3 vs pas 4", 6
+      impressions, avg position 2.8, no page of its own). Written 2026-09-11 as
+      "PAS-3 vs PAS-4: Not Two Options, But Two Steps of the Same Private
+      Placement". Links to private-placement-section-42 for the full Section 42
+      process rather than repeating it. Verified Rule 14(6) (15 days for a
+      private-placement PAS-3) against three independent bare-text mirrors after
+      one AI-summarised fetch wrongly claimed a 2022 amendment had moved it to
+      30 days — see blog_seed21.py's header comment for the full correction.*
 
 - [x] 2026-08-31 | CCFS-2026 extension beyond 31 August 2026
       *Asked for 2026-08-31. Queued the same evening rather than written: the

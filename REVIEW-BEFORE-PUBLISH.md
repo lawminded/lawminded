@@ -1120,3 +1120,71 @@ so no ranking conflict to resolve. `test_seo.py` and `test_draft.py` both pass.
 project this run's `GEMINI_API_KEY` points at), so `gen_image.py` fell back to
 a licensed Pexels photograph automatically. Image generated and copied to the
 web server.
+
+## pas-3-vs-pas-4 — 11 September 2026
+
+Queue-driven, not news-driven: `automation/queue.md` had "PAS-3 vs PAS-4" queued
+for 2026-09-05, the owner's second-best comparison-query gap after RTI vs PIL
+(per `docs/gsc-performance-2026-08-26.xlsx`, "pas 3 vs pas 4" at 6 impressions,
+average position 2.8, no page of its own). Written per the standing instruction
+that an unticked, due queue entry outranks a fresh news search.
+
+| Claim | Verified against |
+|---|---|
+| Section 42(2): private placement capped at 200 identified persons per financial year per security kind, QIBs and ESOP allottees excluded | indiankanoon.org mirror of s.42, ca2013.com Integrated Ready Reckoner — agreed independently |
+| Section 42(6): allotment within 60 days of receiving application money, else refund with 12% interest | Same two sources |
+| Rule 14(1) & (3): PAS-4 offer letter only to named, pre-identified persons; serially numbered; no right of renunciation | ca2013.com Rule 14 page, indiankanoon.org Rule 14 mirror |
+| PAS-4/PAS-5 no longer filed with the ROC since the Companies (Prospectus and Allotment of Securities) Second Amendment Rules, 2018 | Carried over from `private-placement-section-42` (blog_seed3.py), which verified it in an earlier session; not independently re-fetched here because `mca.gov.in` returns 403 to direct fetch (per `automation/notes.md`) and the `r.jina.ai` proxy attempt on this specific 2018 notification PDF returned a 404 rather than the document |
+| **Rule 14(6): PAS-3 due within 15 days of allotment for a Section 42 private placement** | Confirmed independently three times — indiankanoon.org's mirror of Rule 14, ca2013.com's Rule 14 page, and ibclaw.in's consolidated Rules text — all quoting "within fifteen days of allotment" verbatim from sub-rule (6) |
+| Rule 12: PAS-3 due within 30 days for an allotment outside Section 42 (ESOP exercise, bonus issue, rights issue) | ca2013.com Rule 12 page, ibclaw.in consolidated Rules text |
+| Section 42(9): penalty for late PAS-3 filing is ₹1,000/day per defaulting party, capped at ₹25 lakh | Web search corroborated by ROC adjudication-order reporting (TaxGuru) quoting the sub-section text directly |
+| Hexafun Private Limited: 200 CCDs allotted 19 Dec 2023, PAS-3 filed 23 Feb 2024 (51 days late), ROC Delhi order dated 29 Sep 2025, ₹25,500 fine each on the company and two directors (₹76,500 total), a third director exempted as appointed after the default | TaxGuru and Studycafe report matching figures independently; both are commentary on a real ROC order, not the order PDF itself, which wasn't directly retrievable this session — the 51-day/₹25,500 arithmetic was cross-checked by computing the due date (19 Dec 2023 + 15 days = 3 Jan 2024) independently and confirming it lines up with the reported 51-day gap to 23 Feb 2024 |
+
+**Caught and discarded before writing:** an early `WebFetch` summary of a
+secondary source claimed the 15-day PAS-3 deadline had been changed to 30 days
+by a 2022 amendment (G.S.R. 338(E), 5 May 2022). Fetching `ibclaw.in`'s own
+text of that notification directly showed this was wrong — the 2022 amendment
+only added a land-border-country FDI proviso to Rule 14(1) and a matching
+checkbox on Form PAS-4. It never touched the PAS-3 deadline. Caught by
+insisting on a second and third independent read of Rule 14(6) rather than
+accepting the first summary, exactly the kind of confidently-wrong AI-generated
+claim this process exists to catch before it reaches a reader.
+
+**What the search term gets wrong, and the article leads with it:** "PAS-3 vs
+PAS-4" is usually typed by someone assuming the two are alternatives. They
+aren't — PAS-4 is the pre-allotment offer letter, PAS-3 is the post-allotment
+return, and a private placement needs both, in sequence. The Hexafun case gives
+the fifteen-day deadline a real, recent, adjudicated cost rather than leaving
+it as an abstract rule.
+
+**Humanizer pass:** drafted inside the skill's constraints from the start
+rather than as a separate pass. Checked and trimmed three sentences that ran
+past 35 words (a parenthetical aside, a Rule 12 explanation, and the Section
+42(9) penalty sentence) so nothing exceeds 40 words. Final count: 1,424 words,
+82 sentences, average 16.94 words/sentence.
+
+**Wiring:** `blog_seed21.py` created (7 through 20 already exist; this run
+followed the actual sequence in `database.py`, as blog_seed19.py's record
+already flagged for future runs). Category `corp` — the subject is squarely a
+Companies Act filing procedure, same as its sibling `private-placement-section-42`,
+and forcing it into a thinner category would have been dishonest rather than
+accurate. `SEO_DESCRIPTIONS` (149 chars) and two `INTERNAL_LINKS` phrases
+(`pas-3`, `return of allotment`) added, both previously unmapped. No
+`SEO_TITLES` entry added — that list is curated from real Search Console
+impressions per existing entries' comments, and this slug has none yet.
+
+**Test suites:** `test_seo.py` initially failed with a 429 on an unrelated
+retired-slug redirect (`trademark-registration-india-guide`) — not this
+article's content, but this article's page was the one that pushed the test
+run's total request count over the site-wide `300 per hour` default rate
+limit for the first time, since the suite fetches every published page several
+times over and the site had just crossed 229 articles. Fixed in `test_seo.py`
+only (no production code touched): the test client now sets `limiter.enabled
+= False` before making requests, since `Flask-Limiter` reads its enabled flag
+once at `init_app` time and ignores later `app.config` changes. Both
+`test_seo.py` and `test_draft.py` pass clean after the fix.
+
+**Hero image:** Gemini returned HTTP 429 (prepayment credits on this run's
+`GEMINI_API_KEY` are depleted, same failure as the SARFAESI article above), so
+`gen_image.py` fell back to a licensed Pexels photograph automatically at the
+correct 1200×630 dimensions. Image generated and copied to the web server.
