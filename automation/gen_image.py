@@ -16,6 +16,7 @@ modification without attribution. It does not fall back to a general web image:
 those are somebody's copyright, and this site is monetised.
 """
 import base64
+import hashlib
 import json
 import os
 import sys
@@ -101,42 +102,86 @@ def _pexels_key():
     return key
 
 
-def fetch_stock(query, orientation='landscape'):
-    """A licensed photograph matching the query, as raw bytes. Returns None rather
-    than raising when there is no key or no match, so callers can fall through to
-    the next option."""
+def stock_candidates(query, orientation='landscape'):
+    """Licensed photographs matching the query, best match first, yielded as raw
+    bytes one at a time. A generator rather than a single photo because Pexels
+    ranks deterministically: two articles with similar search phrases both get
+    photos[0] and end up sharing a hero. The caller walks down the list until it
+    finds one the site is not already using."""
     key = _pexels_key()
     if not key:
-        return None
+        return
     url = f'{PEXELS_SEARCH}?{urllib.parse.urlencode({"query": query, "orientation": orientation, "per_page": 15})}'
     try:
         req = urllib.request.Request(url, headers={'Authorization': key, **UA})
         with urllib.request.urlopen(req, timeout=30) as r:
             photos = json.load(r).get('photos') or []
-        if not photos:
-            return None
-        # Take the widest available rendition; save() crops it down anyway, and
-        # starting large keeps the 1200x630 crop sharp.
-        src = photos[0]['src']
-        best = src.get('original') or src.get('large2x') or src.get('large')
-        with urllib.request.urlopen(
-                urllib.request.Request(best, headers=UA), timeout=60) as r:
-            return r.read()
-    except (urllib.error.URLError, urllib.error.HTTPError, KeyError, ValueError) as e:
+    except (urllib.error.URLError, urllib.error.HTTPError, ValueError) as e:
         print(f'  Pexels lookup failed: {e}', file=sys.stderr)
-        return None
+        return
+    for photo in photos:
+        # The widest available rendition; save() crops it down anyway, and
+        # starting large keeps the 1200x630 crop sharp.
+        src = photo.get('src') or {}
+        best = src.get('original') or src.get('large2x') or src.get('large')
+        if not best:
+            continue
+        try:
+            with urllib.request.urlopen(
+                    urllib.request.Request(best, headers=UA), timeout=60) as r:
+                yield r.read()
+        except (urllib.error.URLError, urllib.error.HTTPError) as e:
+            print(f'  Pexels download failed: {e}', file=sys.stderr)
 
 
-def best_effort(subject, stock_query=None):
+def _encode(raw):
+    """The exact 1200x630 WebP bytes save() would write. Kept separate so a
+    candidate can be hashed and compared against the heroes already on disk
+    before anything is written."""
+    img = ImageOps.fit(Image.open(BytesIO(raw)).convert('RGB'), SIZE, Image.LANCZOS)
+    buf = BytesIO()
+    img.save(buf, 'WEBP', quality=82, method=6)
+    return buf.getvalue()
+
+
+def heroes_in_use(root='.', except_slug=None):
+    """md5 -> filename for every hero already on disk. `except_slug` drops the
+    article's own current file, so regenerating an image is not read as the
+    article duplicating itself."""
+    out = {}
+    d = os.path.join(root, 'static', 'img', 'articles')
+    if not os.path.isdir(d):
+        return out
+    for name in sorted(os.listdir(d)):
+        if not name.endswith('.webp') or name[:-5] == except_slug:
+            continue
+        with open(os.path.join(d, name), 'rb') as fh:
+            out.setdefault(hashlib.md5(fh.read()).hexdigest(), name)
+    return out
+
+
+def best_effort(subject, stock_query=None, slug=None, root='.'):
     """Try the sources in order of how well they fit the article, and say which
     one answered. Gemini renders exactly the scene asked for; Pexels gives a real
-    photograph that is merely close; neither is guaranteed to be available."""
+    photograph that is merely close; neither is guaranteed to be available.
+
+    A Pexels photo already used as another article's hero is skipped. Two pages
+    on one site carrying the same stock photograph looks careless to a reader and
+    tells an image crawler the pages are interchangeable."""
     try:
         return generate(subject), 'gemini'
     except SystemExit as e:
         print(f'  Gemini unavailable: {e}', file=sys.stderr)
-    raw = fetch_stock(stock_query or subject)
-    if raw:
+    taken = heroes_in_use(root, except_slug=slug)
+    for raw in stock_candidates(stock_query or subject):
+        try:
+            clash = taken.get(hashlib.md5(_encode(raw)).hexdigest())
+        except OSError as e:
+            print(f'  Unreadable Pexels image, skipping: {e}', file=sys.stderr)
+            continue
+        if clash:
+            print(f'  Skipping a photo already used by {clash}', file=sys.stderr)
+            continue
         return raw, 'pexels'
     return None, 'none'
 
@@ -144,10 +189,10 @@ def best_effort(subject, stock_query=None):
 def save(raw, slug, root='.'):
     """Crop to 1200x630 and write the WebP. ImageOps.fit centre-crops rather than
     squashing, so a 16:9 render loses a sliver of sky instead of distorting."""
-    img = ImageOps.fit(Image.open(BytesIO(raw)).convert('RGB'), SIZE, Image.LANCZOS)
     out = os.path.join(root, 'static', 'img', 'articles', f'{slug}.webp')
     os.makedirs(os.path.dirname(out), exist_ok=True)
-    img.save(out, 'WEBP', quality=82, method=6)
+    with open(out, 'wb') as fh:
+        fh.write(_encode(raw))
     return out
 
 
@@ -175,7 +220,9 @@ if __name__ == '__main__':
         # argv[3], when given, is the plain-language search used if Gemini cannot
         # be reached — "warehouse loading bay" finds a photo where the full scene
         # description would not.
-        raw, source = best_effort(sys.argv[2], sys.argv[3] if len(sys.argv) > 3 else None)
+        raw, source = best_effort(sys.argv[2],
+                                  sys.argv[3] if len(sys.argv) > 3 else None,
+                                  slug=sys.argv[1])
         if not raw:
             sys.exit('No image source available (Gemini unavailable, no Pexels key '
                      'or no match). The article will fall back to the site logo.')
