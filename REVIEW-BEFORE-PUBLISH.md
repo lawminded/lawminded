@@ -1188,3 +1188,78 @@ once at `init_app` time and ignores later `app.config` changes. Both
 `GEMINI_API_KEY` are depleted, same failure as the SARFAESI article above), so
 `gen_image.py` fell back to a licensed Pexels photograph automatically at the
 correct 1200×630 dimensions. Image generated and copied to the web server.
+
+## article-32-vs-article-226 — 12 September 2026
+
+Queue-driven, not news-driven: `automation/queue.md` had this queued on
+2026-09-04 for on-or-after 2026-09-06, the owner's own follow-up to the RTI vs
+PIL article — "the full treatment" of the 32/226 split that piece deliberately
+left out. Written per the standing instruction that a due, unticked queue entry
+outranks a fresh news search.
+
+| Claim | Verified against |
+|---|---|
+| Art 32(1): "The right to move the Supreme Court by appropriate proceedings for the enforcement of the rights conferred by this Part is guaranteed" | Constitution of India, GoI CDN copy ("As on 1st May, 2024", 402 pp.), read directly with `pypdf` — https://cdnbbsr.s3waas.gov.in/s380537a945c7aaa788ccfcdf1b99b5d8f/uploads/2024/07/20240716890312078.pdf |
+| Art 32(2): Supreme Court's writ power is confined to "the enforcement of any of the rights conferred by this Part" — Part III only, no "any other purpose" | Same PDF |
+| Art 32(3): Parliament may empower any other court to exercise the clause (2) powers within its local limits | Same PDF |
+| Art 32(4): "The right guaranteed by this article shall not be suspended except as otherwise provided for by this Constitution" | Same PDF |
+| Article 32 sits in Part III under the sub-heading "Right to Constitutional Remedies" | Same PDF — contents page and body text both checked, not contents alone |
+| Art 226(1): "every High Court shall have power... to issue... directions, orders or writs... for the enforcement of any of the rights conferred by Part III and for any other purpose" | Same PDF |
+| Art 226(2): the power may be exercised by "any High Court exercising jurisdiction in relation to the territories within which the cause of action, wholly or in part, arises," even where the authority's seat or the person's residence is elsewhere | Same PDF |
+| Article 226 sits in Part VI ("The States"), Chapter V, headed "THE HIGH COURTS IN THE STATES" | Same PDF — body text header, not the contents page alone |
+
+**Deliberately left out, without a case citation:** the alternate-remedy
+doctrine (a High Court usually declines a writ petition where an equally
+efficacious statutory remedy exists) and the general principle that writ
+jurisdiction under Article 226 is discretionary. Both are settled judicial
+practice built up over decades, not text in the Constitution itself. No
+specific judgment is named for either, the same call `rti-vs-pil-difference`
+made for the relaxation of locus standi in PIL matters, rather than citing a
+case not read in this session.
+
+**What the article adds that `rti-vs-pil-difference` deliberately left out:**
+that article states Article 226's "any other purpose" reach and stops there.
+This one covers the full split: why Article 32 is textually a right and 226 a
+power (drawn from the clause wording itself, plus each article's Part
+placement), territorial jurisdiction under 226(2), the alternate-remedy
+practice, and the discretion to refuse. Links to `rti-vs-pil-difference` and
+`fundamental-rights` rather than repeating either.
+
+**Humanizer pass:** first draft ran to an 22.4-word average sentence with
+several sentences over 60 words and repeated negative-parallelism framing
+("not a favour," "not a promise... but a provision," "not a constitutional
+bar"). Rewritten section by section: long compound sentences split, most of
+the negative-parallelism framing cut to plain declaratives, headings kept in
+sentence case. Final count: 1,899 words, 112 sentences, average 16.5
+words/sentence. The handful of sentences over 40 words either contain a
+verbatim constitutional quote or were trimmed until only one, containing
+Article 226(2)'s quoted text, remained over the limit.
+
+**Wiring:** `blog_seed7.py` was NOT free — it already held a live,
+news-driven e-way-bill/compounding-of-offences article wired into
+`database.py`. It was briefly overwritten with `Write` before `git diff
+--stat` caught the mistake; reverted with `git checkout --` before anything
+was committed. Used `blog_seed22.py` instead (`blog_seed21.py` was the most
+recent). Added the standing correction to `automation/notes.md`: grep
+`database.py` for the exact filename before writing to any `blog_seed<N>.py`,
+since the numbers are not contiguous with creation order. Category `acts` —
+matches `rti-vs-pil-difference` and `fundamental-rights`, both constitutional-
+law comparison pieces. `SEO_TITLES` (45 chars, since the 83-character editorial
+headline runs past Google's display width), `SEO_DESCRIPTIONS` (144 chars) and
+three `INTERNAL_LINKS` phrases added: `article 32` and `article 226` (new),
+and `writ petition`, moved from `rti-vs-pil-difference` to this article since
+it is now the deeper writ-specific guide. `test_seo.py` and `test_draft.py`
+both pass; FAQPage schema checked directly against the rendered page and
+returns all 6 question/answer pairs.
+
+**Hero image:** Gemini returned HTTP 429 (prepayment credits depleted on this
+run's `GEMINI_API_KEY`, same failure as recent prior articles), so
+`gen_image.py` fell back to Pexels automatically. The first candidate
+("courthouse pillars hallway") was a recognisably American county courthouse
+building, wrong setting for an Indian constitutional-law article, and was
+discarded before staging rather than accepted just because a file existed. A
+second search ("judge gavel wooden desk closeup") returned a generic
+judge-at-a-desk photograph with no identifiable building, no text or
+lettering, and a hash check against every other article's hero confirmed no
+duplicate. That image was used, generated at 1200×630, and copied to the web
+server.
