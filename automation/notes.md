@@ -129,3 +129,17 @@ Standing preferences and corrections. Read before writing; append when told some
   calendar, on an MCA filing article, and one had Russian text across the
   document in frame. The house style already says no text or lettering in the
   photo; that applies to the stock fallback as much as to a Gemini render.
+
+## 2026-09-12
+
+- Before writing to `blog_seed<N>.py`, grep `database.py` for that exact
+  filename first. Writing the Article 32 vs Article 226 article, the next
+  visually-obvious number after blog_seed21.py (the most recently added file)
+  looked like blog_seed7 was still free because weekly-post.md's instructions
+  say "create it if absent." It was not absent — it already held a live,
+  wired-in article (e-way bill Ship-to GSTIN, plus a compounding-of-offences
+  piece) and got clobbered by `Write` for several minutes before the mistake
+  was caught via `git diff --stat` and reverted with `git checkout --`. The
+  seed files are not numbered in the order they were created; gaps get filled
+  later. The only reliable check is `grep -n "blog_seedN import" database.py`
+  for the specific N you're about to use, not "N-1 exists so N must be free."
