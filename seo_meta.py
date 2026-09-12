@@ -170,6 +170,13 @@ SEO_TITLES = {
     # alone is a narrower, secondary search.
     'sarfaesi-nbfc-loan-sold-to-bank-supreme-court':
         'SARFAESI on NBFC Loans Sold to a Bank: SC Rules',
+
+    # No Search Console history: published 12 Sep 2026, an owner-queued topic
+    # rather than a news pickup. The editorial headline runs to 83 characters,
+    # over Google's practical display width, so the query term itself —
+    # "Article 32 vs Article 226" — leads here instead.
+    'article-32-vs-article-226':
+        'Article 32 vs Article 226: A Right vs a Power',
 }
 
 
@@ -192,6 +199,9 @@ SEO_DESCRIPTIONS = {
     'appointment-of-kmp-section-203':
         "Section 203 KMP rules: which companies must appoint an MD, CFO or Company "
         "Secretary, the Rs 10 crore thresholds, and the penalties in lakhs.",
+    'article-32-vs-article-226':
+        "Article 32 gets you the Supreme Court for a fundamental right. Article 226 "
+        "gives a High Court wider reach, but as a power it can decline to use.",
     'auditor-appointment-rotation-removal':
         "First auditor in 30 days, ADT-1 in 15. The 5-year term, when rotation applies, "
         "the cooling-off period, and how removal needs ADT-2 approval.",
@@ -729,7 +739,13 @@ INTERNAL_LINKS = {
     'public interest litigation': 'rti-vs-pil-difference',
     'pil': 'rti-vs-pil-difference',
     'rti application': 'rti-vs-pil-difference',
-    'writ petition': 'rti-vs-pil-difference',
+    # Moved from rti-vs-pil-difference on 12 Sep 2026: article-32-vs-article-226
+    # is now the deeper writ-petition guide (the five writs, alternate remedy,
+    # territorial jurisdiction, discretion to refuse), so a bare "writ petition"
+    # mention should land there instead.
+    'writ petition': 'article-32-vs-article-226',
+    'article 32': 'article-32-vs-article-226',
+    'article 226': 'article-32-vs-article-226',
 
     # ─── Contracts ──────────────────────────────────────────────────────
     'electronic signature': 'electronic-signatures-india',
