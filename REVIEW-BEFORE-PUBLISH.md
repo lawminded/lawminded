@@ -1263,3 +1263,100 @@ judge-at-a-desk photograph with no identifiable building, no text or
 lettering, and a hash check against every other article's hero confirmed no
 duplicate. That image was used, generated at 1200×630, and copied to the web
 server.
+
+## blog_seed23.py — Subhash Chandra: NCLT's five-member bench stay
+
+Weekly run, 13 September 2026. Follow-up to
+`subhash-chandra-nclt-order-personal-guarantee` (blog_seed15.py) and
+`sebi-bars-goenka-chandra-zee-land-pledge-order` (blog_seed17.py), covering a
+new event neither of those touches: the NCLT staying its own 25 August order
+on 1 September, and the unresolved dispute over whether it had the power to
+form a five-member bench to do it. Picked over other candidates checked the
+same day (the 57th GST Council meeting, held 12 September but with no
+decisions public yet; a Karnataka High Court order quashing a ₹482.69 crore
+mining penalty on Adani's ACC Limited, judged too far from the site's
+founder/HR/individual readership) because it was leading Indian legal-press
+coverage in the seven days before this run and is a live sequel to a case
+this site's readers already searched for once.
+
+**Primary source — the 25 August 2026 order itself:** fetched directly from
+Bar and Bench's own PDF hosting and read with `pypdf`, not summarised from a
+news report:
+`https://images.assettype.com/barandbench/2026-08-27/0evinhod/India_Bulls_v__Dr__Subhash_Chandra_order.pdf`
+(Nilesh Sharma, Member (Judicial), Third Member, CP(IB)-97(ND)/2022,
+Indiabulls Housing Finance Ltd v Dr Subhash Chandra, 144 pages).
+
+| Claim | Verified against |
+|---|---|
+| Admitted claims Rs 22,006.57 crore; plan Rs 6.25 crore to creditors + Rs 25 lakh process cost | Order text, LIC Housing Finance's own submission as recorded in the order |
+| LIC Housing Finance claim Rs 1,322.39 crore, repaid Rs 38,09,294 | Order text |
+| Creditor approval by 80.814% of voting share | Order text |
+| Plan approved under Section 114 IBC, subject to exclusion of claims filed by Anil Kumar (960 individuals) and Sunil Jain (300 individuals) | Order text, final ORDER section, page 144 |
+| Plan held binding on all creditors, assenting or dissenting, under Section 115 | Order text, page 144 |
+| Order directs the matter back to "the Original Division Bench for passing appropriate orders in terms of the majority opinion under Section 419(5) of the Companies Act, 2013" | Order text, page 144, quoted verbatim |
+| Section 60(5) of the IBC held not to apply, since this is a Part III (personal guarantor) proceeding, not a Part II corporate one | Order text, page 143 |
+
+**Section 419 of the Companies Act, 2013:** indiacode.nic.in and the MCA's
+own PDF both refused direct fetch (consistent with the mca.gov.in 403
+behaviour already logged in `automation/notes.md` for a different domain —
+this is the same government hosting infrastructure). Verified instead
+against four independent bare-act mirrors that agreed word for word:
+ca2013.com, ibclaw.in, corporatelawreporter.com, and a kanoongpt.in /
+indiankanoon-sourced compilation. Sub-section (4) (Special Benches of three
+or more members, for cases "relating to rehabilitation, restructuring,
+reviving of companies") and sub-section (5) (referring a tied point to
+"one or more of the other Members," decided by "the majority of Members who
+have heard the case, including those who first heard it") are both quoted
+verbatim in the article from this cross-checked text.
+
+**Everything after 25 August is not yet on a court website in usable form**,
+so it rests on named, converging news reporting rather than a second PDF,
+and each claim is attributed to the outlet in the article body itself rather
+than folded into the site's own voice:
+
+| Claim | Source |
+|---|---|
+| 31 August: original bench found Sharma's order did not align with either original position, no majority, referred back to the President | Business Standard and LiveLaw, 1 September 2026 |
+| 1 September: five-member bench (Grewal, Das, Khandelwal, Chaturvedi, Chaturvedi) stayed the 25 August order, restrained Chandra from alienating property, set 23 September for a fresh hearing | Bar and Bench and Moneylife, corroborated by Business Standard, BusinessToday and Newslaundry |
+| Chandra's counsel Sasmit Patra argued NCLT had no power under Section 419 to form a five-member bench for this kind of reference | ThePrint and Business Standard, 2 September 2026 |
+| NCLAT (Justice Yogesh Khanna) declined to rule on the bench's constitution, adjourned the lenders' separate appeal to 7 October | ThePrint and Business Standard, 2 September 2026 |
+| Lenders in that appeal include LIC Housing Finance, Canara Bank and Union Bank, represented by Solicitor General Tushar Mehta | ANI, 2 September 2026 |
+| The specific question of whether 419(5) permits replacing a bench outright, rather than adding members one at a time | Attributed by name to an analysis published by The Bar Bulletin, not stated as the site's own conclusion |
+
+**Deliberately left out:** any prediction of how the 23 September NCLT
+hearing or the 7 October NCLAT hearing will go. Both were still pending as of
+13 September 2026, the day this article was written.
+
+**Humanizer pass:** first draft ran to a 22.7-word average sentence with
+several sentences past 100 words that were not quotes. Rewritten sentence by
+sentence — compound sentences split, one non-quote 41-word sentence in the
+"two dates" section cut in half. Final count: 1,906 words, 123 sentences,
+15.0 words/sentence average. Only two sentences remain over 35 words, both
+verbatim quotes (the Section 419(5) text, and the order's own words sending
+the matter back to the Original Division Bench).
+
+**Wiring:** `blog_seed23.py` is the next free number — grepped
+`database.py` for every `blog_seedN import` first, per the standing
+correction from the Article 32/226 run, rather than assuming the number
+after 22 was open. Category `updates` (a tribunal-procedure development, not
+a restatement of the underlying Act — `corp` is already over-represented and
+this fits the thinner category honestly). `SEO_TITLES` (58 chars) and
+`SEO_DESCRIPTIONS` (150 chars) added. Two `INTERNAL_LINKS` phrases added,
+`section 419(5)` and `five-member bench`, both pointing at this article and
+both specific enough not to collide with the existing `personal guarantee`
+mapping or the deliberately-unmapped bare "Subhash Chandra" (now three
+articles mention him). `test_seo.py` and `test_draft.py` both pass; FAQPage
+schema checked directly against the rendered page and returns all 5
+question/answer pairs, Article and BreadcrumbList schema both present and
+valid.
+
+**Hero image:** Gemini returned HTTP 429 (prepayment credits depleted, same
+failure as the two prior runs), so `gen_image.py` fell back to Pexels. The
+first candidate ("indian courtroom tribunal bench") had visible signage text
+in frame ("MEMBERS OF THE PUBLIC...") and was a Western-style courtroom, not
+an Indian tribunal — discarded before staging rather than accepted because a
+file existed. A second search ("empty wooden judges bench courtroom")
+returned a gavel-on-a-bench close-up with no text, no identifiable building
+and no people; a hash check against every other article's hero confirmed no
+duplicate. That image was used, generated at 1200×630, and copied to the web
+server.
