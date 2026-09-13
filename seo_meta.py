@@ -177,6 +177,13 @@ SEO_TITLES = {
     # "Article 32 vs Article 226" — leads here instead.
     'article-32-vs-article-226':
         'Article 32 vs Article 226: A Right vs a Power',
+
+    # No Search Console history: published 13 Sep 2026, a follow-up to a
+    # story already on the site. "NCLT stay" and "5-member bench" are what
+    # the week's coverage is running; the editorial headline is too long
+    # for the SERP, so the query terms lead here instead.
+    'subhash-chandra-nclt-five-member-bench-stay':
+        'Subhash Chandra NCLT Stay: Why a 5-Member Bench Stepped In',
 }
 
 
@@ -532,6 +539,9 @@ SEO_DESCRIPTIONS = {
     'sarfaesi-nbfc-loan-sold-to-bank-supreme-court':
         "Supreme Court: banks can use SARFAESI on loans bought from NBFCs, even ones "
         "never covered by the Act. What the Kotak Mahindra Bank ruling means.",
+    'subhash-chandra-nclt-five-member-bench-stay':
+        "NCLT's own 5-member bench stayed its Rs 6.25 crore Subhash Chandra order, "
+        "finding no valid majority. What Section 419 requires, and what happens next.",
 }
 
 
@@ -761,6 +771,11 @@ INTERNAL_LINKS = {
     # two targets do not compete for the same phrase.
     'personal guarantee': 'subhash-chandra-nclt-order-personal-guarantee',
     'personal guarantees': 'subhash-chandra-nclt-order-personal-guarantee',
+    # Added 13 Sep 2026 with the five-member-bench follow-up. Specific to the
+    # procedural stay, not the underlying haircut, so these do not compete
+    # with 'personal guarantee' above or the unmapped bare "Subhash Chandra".
+    'section 419(5)': 'subhash-chandra-nclt-five-member-bench-stay',
+    'five-member bench': 'subhash-chandra-nclt-five-member-bench-stay',
     'master service agreement': 'msa-vs-sow',
     'statement of work': 'msa-vs-sow',
     'non-disclosure agreement': 'nda-key-clauses',
